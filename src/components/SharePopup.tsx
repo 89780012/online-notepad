@@ -38,7 +38,7 @@ export default function SharePopup({
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-end p-6 pointer-events-none">
       <div className="animate-in slide-in-from-bottom-5 slide-in-from-right-5 duration-300 pointer-events-auto">
-        <Card className="w-96 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 shadow-xl">
+        <Card className="w-112 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 shadow-xl">
           <CardHeader className="pb-4">
             <CardTitle className="text-green-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
