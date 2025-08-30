@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { CardTitle } from '@/components/ui/card';
-import { Save, Share2, Check, Clock, Plus } from 'lucide-react';
+import { Save, Share2, Check, Clock } from 'lucide-react';
 import PaperCard from './PaperCard';
 import NoteInput from './NoteInput';
 import SharePopup from './SharePopup';
@@ -40,10 +40,10 @@ export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved
   const [shareUrl, setShareUrl] = useState('');
   const [copied, setCopied] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [autoSaving, setAutoSaving] = useState(false);
+  const [autoSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [slugError, setSlugError] = useState('');
-  const [currentNote, setCurrentNote] = useState<Note | null>(null);
+  const [, setCurrentNote] = useState<Note | null>(null);
   const [showSharePopup, setShowSharePopup] = useState(false);
   const [draftRestored, setDraftRestored] = useState(false);
   const [currentLocalNote, setCurrentLocalNote] = useState<LocalNote | null>(null);
@@ -68,7 +68,7 @@ export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved
       localStorage.setItem(STORAGE_KEYS.customSlug, draftSlug);
       localStorage.setItem(STORAGE_KEYS.isPublic, draftPublic.toString());
     }
-  }, []);
+  }, [STORAGE_KEYS.title, STORAGE_KEYS.content, STORAGE_KEYS.customSlug, STORAGE_KEYS.isPublic]);
 
   // 从 localStorage 恢复
   const loadDraftFromStorage = useCallback(() => {
@@ -86,7 +86,7 @@ export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved
       };
     }
     return { title: '', content: '', customSlug: '', isPublic: false };
-  }, []);
+  }, [STORAGE_KEYS.title, STORAGE_KEYS.content, STORAGE_KEYS.customSlug, STORAGE_KEYS.isPublic]);
 
   // 清除 localStorage 草稿
   const clearDraftFromStorage = useCallback(() => {
@@ -96,7 +96,7 @@ export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved
       localStorage.removeItem(STORAGE_KEYS.customSlug);
       localStorage.removeItem(STORAGE_KEYS.isPublic);
     }
-  }, []);
+  }, [STORAGE_KEYS.title, STORAGE_KEYS.content, STORAGE_KEYS.customSlug, STORAGE_KEYS.isPublic]);
 
   // 初始化笔记内容
   useEffect(() => {
@@ -161,7 +161,7 @@ export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved
       lastContentRef.current = { title: '', content: '', customSlug: '' };
       lastSavedTitleRef.current = '';
     }
-  }, [selectedNote, isNewNote]);
+  }, [selectedNote, isNewNote, loadDraftFromStorage, locale]);
 
   // 实时保存草稿到 localStorage (仅在真正新建笔记时)
   useEffect(() => {
@@ -322,7 +322,14 @@ export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved
     // 立即触发保存，使用新生成的地址
     setSaving(true);
     try {
-      const noteData = {
+      const noteData: {
+        title: string;
+        content: string;
+        language: string;
+        isPublic: boolean;
+        customSlug: string;
+        id?: string;
+      } = {
         title: title || t('untitledNote'),
         content,
         language: locale,
@@ -334,7 +341,7 @@ export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved
       const method = existingCloudId ? 'PUT' : 'POST';
       
       if (existingCloudId) {
-        (noteData as any).id = existingCloudId;
+        noteData.id = existingCloudId;
       }
 
       const response = await fetch(url, {
@@ -347,6 +354,7 @@ export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved
 
       if (!response.ok) {
         const errorData = await response.json();
+        console.error('Error details:', errorData);
         if (response.status === 409) {
           setSlugError(t('urlTaken'));
           return;
