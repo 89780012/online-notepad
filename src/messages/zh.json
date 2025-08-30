@@ -1,5 +1,6 @@
 {
-  "title": "在线记事本",
+  "title": "迷你记事本 - 简洁、快速的在线记事本",
+  "metaDescription": "您的免费、快速、简洁的在线记事本。轻松编写、保存和分享笔记。支持深色模式和离线使用。无广告，纯粹专注。",
   "newNote": "新建笔记",
   "noteTitle": "笔记标题",
   "writeNote": "在这里写下您的笔记...",
@@ -26,5 +27,12 @@
   "shared": "已分享",
   "confirmDelete": "确定要删除这条笔记吗？",
   "shareSuccess": "笔记已成功分享！",
-  "shareSuccessMessage": "任何人都可以通过此链接查看您的笔记"
+  "shareSuccessMessage": "任何人都可以通过此链接查看您的笔记",
+  "heroTitle": "极致免费的在线记事本",
+  "heroSubtitle": "一个简洁、快速、安全的在线记事本。轻松书写、保存和分享您的笔记。现已支持深色模式和离线使用。无广告，只有您的思绪。",
+  "featureListTitle": "为何选择迷你记事本？",
+  "featureFree": "一个完全免费的记事本，没有任何广告打扰您。",
+  "featureFast": "为速度而生的快速简洁的笔记应用。",
+  "featureDarkMode": "支持深色模式的记事本，让您在夜晚舒适写作。",
+  "featureOffline": "您的离线记事本，即使没有网络也能工作。"
 }

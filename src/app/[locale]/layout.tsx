@@ -1,5 +1,5 @@
 import {NextIntlClientProvider} from 'next-intl';
-import {getLocale, getMessages} from 'next-intl/server';
+import {getMessages} from 'next-intl/server';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
@@ -14,18 +14,36 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Online Notepad",
-  description: "A simple online notepad with sharing capabilities",
+type Props = {
+  children: React.ReactNode;
+  params: { locale: string };
 };
+
+export async function generateMetadata({
+  params: { locale },
+}: Props): Promise<Metadata> {
+  const messages = await getMessages({ locale });
+
+  return {
+    title: {
+      template: "%s | Mini Notepad",
+      default: messages.title as string,
+    },
+    description: messages.metaDescription as string,
+    alternates: {
+      languages: {
+        en: "https://mininotepad.com/en",
+        zh: "https://mininotepad.com/zh",
+        'x-default': 'https://mininotepad.com/zh',
+      },
+    },
+  };
+}
 
 export default async function LocaleLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
-  const locale = await getLocale();
-
+  params: { locale },
+}: Props) {
   const messages = await getMessages();
 
   return (
@@ -37,6 +55,26 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebApp',
+              name: messages.title,
+              description: messages.metaDescription,
+              url: 'https://mininotepad.com', // Replace with your actual domain
+              applicationCategory: 'Productivity',
+              operatingSystem: 'Any',
+              offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'USD',
+              },
+            }),
+          }}
+        />
       </body>
     </html>
   );

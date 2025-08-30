@@ -1,5 +1,6 @@
 {
-  "title": "Online Notepad",
+  "title": "Mini Notepad - The Simple & Fast Online Notepad",
+  "metaDescription": "Your free, fast, and simple online notepad. Write, save, and share notes seamlessly. Supports dark mode and offline use. No ads, just pure focus.",
   "newNote": "New Note",
   "noteTitle": "Note Title",
   "writeNote": "Write your note here...",
@@ -26,5 +27,12 @@
   "shared": "Shared",
   "confirmDelete": "Are you sure you want to delete this note?",
   "shareSuccess": "Note shared successfully!",
-  "shareSuccessMessage": "Anyone can view your note through this link"
+  "shareSuccessMessage": "Anyone can view your note through this link",
+  "heroTitle": "The Ultimate Free Online Notepad",
+  "heroSubtitle": "A simple, fast, and secure notepad online. Write, save, and share your notes effortlessly. Now with dark mode and offline support. No ads, just your thoughts.",
+  "featureListTitle": "Why Choose Mini Notepad?",
+  "featureFree": "A completely free notepad with no ads to distract you.",
+  "featureFast": "A quick and simple notes app designed for speed.",
+  "featureDarkMode": "A notepad with dark mode for comfortable writing at night.",
+  "featureOffline": "Your offline notepad that works even without internet."
 }

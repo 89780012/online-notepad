@@ -1,14 +1,13 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
 import NoteEditor from '@/components/NoteEditor';
 import NoteList from '@/components/NoteList';
 import LanguageToggle from '@/components/LanguageToggle';
+import MarketingContent from '@/components/MarketingContent';
 import { LocalNote, useLocalNotes } from '@/hooks/useLocalNotes';
 
 export default function HomePage() {
-  const t = useTranslations();
   const { notes, saveNote, deleteNote, loadNotes } = useLocalNotes();
 
   const [selectedNote, setSelectedNote] = useState<LocalNote | null>(null);
@@ -45,9 +44,7 @@ export default function HomePage() {
     <div className="h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col">
       {/* 顶部导航 */}
       <header className="flex justify-between items-center p-4 bg-white border-b border-gray-200 z-10">
-        <h1 className="text-3xl font-bold text-slate-800">
-          {t('title')}
-        </h1>
+        <h1 className="text-3xl font-bold text-slate-800">Mini Notepad</h1>
         <LanguageToggle />
       </header>
 
@@ -63,16 +60,20 @@ export default function HomePage() {
           selectedNoteId={selectedNote?.id}
         />
 
-        {/* 右侧编辑器 */}
+        {/* 右侧编辑器或营销内容 */}
         <main className="flex-1 overflow-auto">
-          <div className="h-full p-4">
-            <NoteEditor
-              selectedNote={selectedNote}
-              isNewNote={isNewNote}
-              onNoteSaved={handleNoteSaved}
-              saveNote={saveNote}
-            />
-          </div>
+          {selectedNote === null && isNewNote ? (
+            <MarketingContent />
+          ) : (
+            <div className="h-full p-4">
+              <NoteEditor
+                selectedNote={selectedNote}
+                isNewNote={isNewNote}
+                onNoteSaved={handleNoteSaved}
+                saveNote={saveNote}
+              />
+            </div>
+          )}
         </main>
       </div>
     </div>
