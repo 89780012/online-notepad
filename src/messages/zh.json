@@ -19,5 +19,12 @@
   "untitledNote": "未命名笔记",
   "lastUpdated": "最后更新",
   "autoSaved": "已自动保存",
-  "saving": "正在保存..."
+  "saving": "正在保存...",
+  "searchNotes": "搜索笔记...",
+  "noNotesFound": "没有找到匹配的笔记",
+  "noNotesYet": "还没有笔记，点击上方按钮创建第一条笔记",
+  "shared": "已分享",
+  "confirmDelete": "确定要删除这条笔记吗？",
+  "shareSuccess": "笔记已成功分享！",
+  "shareSuccessMessage": "任何人都可以通过此链接查看您的笔记"
 }

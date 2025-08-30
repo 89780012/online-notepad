@@ -19,5 +19,12 @@
   "untitledNote": "Untitled Note",
   "lastUpdated": "Last updated",
   "autoSaved": "Auto-saved",
-  "saving": "Saving..."
+  "saving": "Saving...",
+  "searchNotes": "Search notes...",
+  "noNotesFound": "No matching notes found",
+  "noNotesYet": "No notes yet, click the button above to create your first note",
+  "shared": "Shared",
+  "confirmDelete": "Are you sure you want to delete this note?",
+  "shareSuccess": "Note shared successfully!",
+  "shareSuccessMessage": "Anyone can view your note through this link"
 }

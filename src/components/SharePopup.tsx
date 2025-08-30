@@ -112,10 +112,10 @@ export default function SharePopup({
             {shareUrl && !slugError && (
               <div className="bg-green-100 border border-green-200 rounded-lg p-3">
                 <p className="text-green-800 text-sm font-medium">
-                  ✅ 笔记已成功分享！
+                  ✅ {t('shareSuccess')}
                 </p>
                 <p className="text-green-600 text-sm mt-1">
-                  任何人都可以通过此链接查看您的笔记
+                  {t('shareSuccessMessage')}
                 </p>
               </div>
             )}

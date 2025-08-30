@@ -3,13 +3,12 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Save, Share2, Copy, Check, Clock } from 'lucide-react';
+import { CardTitle } from '@/components/ui/card';
+import { Save, Share2, Check, Clock, Plus } from 'lucide-react';
 import PaperCard from './PaperCard';
 import NoteInput from './NoteInput';
 import SharePopup from './SharePopup';
+import { LocalNote } from '@/hooks/useLocalNotes';
 
 interface Note {
   id: string;
@@ -23,7 +22,14 @@ interface Note {
   updatedAt: string;
 }
 
-export default function NoteEditor() {
+interface NoteEditorProps {
+  selectedNote?: LocalNote | null;
+  isNewNote?: boolean;
+  onNoteSaved?: (note: LocalNote, titleChanged?: boolean) => void;
+  saveNote: (noteData: Omit<LocalNote, 'id' | 'createdAt' | 'updatedAt'>, existingId?: string) => LocalNote | undefined;
+}
+
+export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved, saveNote }: NoteEditorProps) {
   const t = useTranslations();
   const locale = useLocale();
   
@@ -40,9 +46,11 @@ export default function NoteEditor() {
   const [currentNote, setCurrentNote] = useState<Note | null>(null);
   const [showSharePopup, setShowSharePopup] = useState(false);
   const [draftRestored, setDraftRestored] = useState(false);
+  const [currentLocalNote, setCurrentLocalNote] = useState<LocalNote | null>(null);
   
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const lastContentRef = useRef({ title: '', content: '', customSlug: '' });
+  const lastSavedTitleRef = useRef('');
 
   // localStorage 键名
   const STORAGE_KEYS = {
@@ -90,26 +98,162 @@ export default function NoteEditor() {
     }
   }, []);
 
-  // 组件挂载时恢复草稿
+  // 初始化笔记内容
   useEffect(() => {
-    const draft = loadDraftFromStorage();
-    if (draft.title || draft.content) {
-      setTitle(draft.title);
-      setContent(draft.content);
-      setCustomSlug(draft.customSlug);
-      setIsPublic(draft.isPublic);
-      lastContentRef.current = { title: draft.title, content: draft.content, customSlug: draft.customSlug };
-      setDraftRestored(true);
+    if (selectedNote && !isNewNote) {
+      // 加载选中的笔记
+      setTitle(selectedNote.title);
+      setContent(selectedNote.content);
+      setCustomSlug(selectedNote.customSlug || '');
+      setIsPublic(selectedNote.isPublic || false);
+      setCurrentLocalNote(selectedNote);
+      lastContentRef.current = { 
+        title: selectedNote.title, 
+        content: selectedNote.content, 
+        customSlug: selectedNote.customSlug || '' 
+      };
+      lastSavedTitleRef.current = selectedNote.title;
       
-      // 3秒后隐藏草稿恢复提示
-      setTimeout(() => setDraftRestored(false), 3000);
+      // 如果是已分享的笔记，设置分享URL
+      if (selectedNote.isPublic && (selectedNote.customSlug || selectedNote.shareToken)) {
+        const slug = selectedNote.customSlug || selectedNote.shareToken;
+        const shareUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/${locale}/share/${slug}`;
+        setShareUrl(shareUrl);
+      }
+    } else if (selectedNote && isNewNote) {
+      // 如果有选中笔记但标记为新建（可能是语言切换导致），也加载选中笔记的内容
+      setTitle(selectedNote.title);
+      setContent(selectedNote.content);
+      setCustomSlug(selectedNote.customSlug || '');
+      setIsPublic(selectedNote.isPublic || false);
+      setCurrentLocalNote(selectedNote);
+      lastContentRef.current = { 
+        title: selectedNote.title, 
+        content: selectedNote.content, 
+        customSlug: selectedNote.customSlug || '' 
+      };
+      lastSavedTitleRef.current = selectedNote.title;
+      
+      // 如果是已分享的笔记，设置分享URL
+      if (selectedNote.isPublic && (selectedNote.customSlug || selectedNote.shareToken)) {
+        const slug = selectedNote.customSlug || selectedNote.shareToken;
+        const shareUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/${locale}/share/${slug}`;
+        setShareUrl(shareUrl);
+      }
+    } else if (isNewNote && !selectedNote) {
+      // 只有在真正新建笔记时（既没有选中笔记，又是新建模式）才尝试加载草稿
+      const draft = loadDraftFromStorage();
+      if (draft.title || draft.content) {
+        setTitle(draft.title);
+        setContent(draft.content);
+        setCustomSlug(draft.customSlug);
+        setIsPublic(draft.isPublic);
+        setDraftRestored(true);
+        setTimeout(() => setDraftRestored(false), 3000);
+      } else {
+        // 完全新建，清空所有内容
+        setTitle('');
+        setContent('');
+        setCustomSlug('');
+        setIsPublic(false);
+      }
+      setCurrentLocalNote(null);
+      lastContentRef.current = { title: '', content: '', customSlug: '' };
+      lastSavedTitleRef.current = '';
     }
-  }, [loadDraftFromStorage]);
+  }, [selectedNote, isNewNote]);
 
-  // 实时保存草稿到 localStorage
+  // 实时保存草稿到 localStorage (仅在真正新建笔记时)
   useEffect(() => {
-    saveDraftToStorage(title, content, customSlug, isPublic);
-  }, [title, content, customSlug, isPublic, saveDraftToStorage]);
+    if (isNewNote && !selectedNote) {
+      saveDraftToStorage(title, content, customSlug, isPublic);
+    }
+  }, [title, content, customSlug, isPublic, saveDraftToStorage, isNewNote, selectedNote]);
+
+  // 云端同步函数
+  const syncToCloud = useCallback(async () => {
+    // 只有已分享的笔记才同步到云端
+    if (!currentLocalNote?.isPublic || !currentLocalNote?.cloudNoteId) {
+      return;
+    }
+
+    // 如果标题和内容都为空，不同步
+    if (!title.trim() && !content.trim()) {
+      return;
+    }
+
+    try {
+      const noteData = {
+        id: currentLocalNote.cloudNoteId,
+        title: title || t('untitledNote'),
+        content,
+        language: locale,
+        isPublic: true,
+        customSlug: currentLocalNote.customSlug
+      };
+
+      const response = await fetch('/api/notes', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(noteData)
+      });
+
+      if (response.ok) {
+        const updatedNote = await response.json();
+        setCurrentNote(updatedNote);
+        console.log('云端同步成功');
+      } else {
+        console.error('云端同步失败:', response.statusText);
+      }
+    } catch (error) {
+      console.error('云端同步出错:', error);
+    }
+  }, [title, content, locale, t, currentLocalNote]);
+
+  // 自动保存到本地存储
+  const autoSaveLocal = useCallback(async () => {
+    // 如果标题和内容都为空，不保存
+    if (!title.trim() && !content.trim()) {
+      return;
+    }
+
+    try {
+      const savedNote = saveNote({
+        title: title || '无标题',
+        content,
+        customSlug,
+        isPublic
+      }, currentLocalNote?.id);
+
+      if (savedNote) {
+        const titleChanged = title !== lastSavedTitleRef.current;
+        
+        setCurrentLocalNote(savedNote);
+        setLastSaved(new Date());
+        lastContentRef.current = { title, content, customSlug };
+        lastSavedTitleRef.current = title;
+        
+        // 通知父组件笔记已保存，传递标题是否变化的信息
+        if (onNoteSaved) {
+          onNoteSaved(savedNote, titleChanged);
+        }
+        
+        // 清除草稿
+        clearDraftFromStorage();
+        
+        // 如果是已分享的笔记，触发云端同步
+        if (savedNote.isPublic && savedNote.cloudNoteId) {
+          setTimeout(() => {
+            syncToCloud();
+          }, 500); // 延迟500ms后同步，避免频繁请求
+        }
+      }
+    } catch (error) {
+      console.error('Error saving note locally:', error);
+    }
+  }, [title, content, customSlug, isPublic, saveNote, currentLocalNote?.id, onNoteSaved, clearDraftFromStorage, syncToCloud]);
 
   // 生成随机字符串
   const generateRandomSlug = (length = 8) => {
@@ -121,102 +265,27 @@ export default function NoteEditor() {
     return result;
   };
 
-  // 自动保存功能
-  const autoSave = useCallback(async () => {
-    const currentContent = { title, content, customSlug };
-    
-    // 检查内容是否有变化
-    if (
-      currentContent.title === lastContentRef.current.title &&
-      currentContent.content === lastContentRef.current.content &&
-      currentContent.customSlug === lastContentRef.current.customSlug
-    ) {
-      return;
-    }
-    
-    // 如果标题和内容都为空，不保存
-    if (!title.trim() && !content.trim()) {
-      return;
-    }
-
-    setAutoSaving(true);
-    
-    try {
-      const noteData = {
-        title: title || t('untitledNote'),
-        content,
-        language: locale,
-        isPublic,
-        customSlug: customSlug || undefined
-      };
-
-      const url = currentNote ? '/api/notes' : '/api/notes';
-      const method = currentNote ? 'PUT' : 'POST';
-      
-      if (currentNote) {
-        (noteData as any).id = currentNote.id;
-      }
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(noteData)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (response.status === 409) {
-          setSlugError(t('urlTaken'));
-          return;
-        }
-        throw new Error('Failed to save note');
-      }
-
-      const savedNote = await response.json();
-      setCurrentNote(savedNote);
-      setLastSaved(new Date());
-      lastContentRef.current = currentContent;
-      setSlugError('');
-      
-      // 成功保存后清除草稿
-      clearDraftFromStorage();
-      
-      if (savedNote.shareToken || savedNote.customSlug) {
-        const slug = savedNote.customSlug || savedNote.shareToken;
-        const newShareUrl = `${window.location.origin}/${locale}/share/${slug}`;
-        setShareUrl(newShareUrl);
-      }
-      
-    } catch (error) {
-      console.error('Error auto-saving note:', error);
-    } finally {
-      setAutoSaving(false);
-    }
-  }, [title, content, customSlug, locale, isPublic, t, currentNote]);
-
-  // 设置自动保存定时器
+  // 设置自动保存定时器（本地保存）
   useEffect(() => {
     if (autoSaveTimeoutRef.current) {
       clearTimeout(autoSaveTimeoutRef.current);
     }
 
     autoSaveTimeoutRef.current = setTimeout(() => {
-      autoSave();
-    }, 2000); // 2秒后自动保存
+      autoSaveLocal();
+    }, 3000); // 2秒后自动保存到本地
 
     return () => {
       if (autoSaveTimeoutRef.current) {
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
-  }, [title, content, customSlug, autoSave]);
+  }, [title, content, customSlug, autoSaveLocal]);
 
-  // 手动保存
+  // 手动保存（本地保存）
   const handleSave = async () => {
     setSaving(true);
-    await autoSave();
+    await autoSaveLocal();
     setSaving(false);
   };
 
@@ -226,7 +295,21 @@ export default function NoteEditor() {
       return;
     }
 
-    // 如果没有自定义地址，生成一个随机地址
+    // 检查当前笔记是否已经有分享链接
+    const existingSlug = currentLocalNote?.customSlug || currentLocalNote?.shareToken;
+    const existingCloudId = currentLocalNote?.cloudNoteId;
+    
+    if (existingSlug && currentLocalNote?.isPublic) {
+      // 如果已经有分享链接，直接显示
+      const existingShareUrl = `${window.location.origin}/${locale}/share/${existingSlug}`;
+      setShareUrl(existingShareUrl);
+      setCustomSlug(existingSlug);
+      setIsPublic(true);
+      setShowSharePopup(true);
+      return;
+    }
+
+    // 如果没有分享链接，生成一个随机地址
     let slugToUse = customSlug;
     if (!customSlug) {
       slugToUse = generateRandomSlug();
@@ -247,11 +330,11 @@ export default function NoteEditor() {
         customSlug: slugToUse
       };
 
-      const url = currentNote ? '/api/notes' : '/api/notes';
-      const method = currentNote ? 'PUT' : 'POST';
+      const url = '/api/notes';
+      const method = existingCloudId ? 'PUT' : 'POST';
       
-      if (currentNote) {
-        (noteData as any).id = currentNote.id;
+      if (existingCloudId) {
+        (noteData as any).id = existingCloudId;
       }
 
       const response = await fetch(url, {
@@ -279,6 +362,24 @@ export default function NoteEditor() {
       
       // 成功保存后清除草稿
       clearDraftFromStorage();
+      
+      // 更新本地笔记信息，保存云端信息
+      if (currentLocalNote && saveNote) {
+        const updatedLocalNote = {
+          ...currentLocalNote,
+          title: title || currentLocalNote.title,
+          content,
+          customSlug: slugToUse,
+          isPublic: true,
+          shareToken: savedNote.shareToken,
+          cloudNoteId: savedNote.id
+        };
+        
+        const updatedNote = saveNote(updatedLocalNote, currentLocalNote.id);
+        if (updatedNote) {
+          setCurrentLocalNote(updatedNote);
+        }
+      }
       
       if (savedNote.shareToken || savedNote.customSlug) {
         const slug = savedNote.customSlug || savedNote.shareToken;
@@ -322,10 +423,9 @@ export default function NoteEditor() {
     return true;
   };
 
-  const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setCustomSlug(value);
-    validateSlug(value);
+  const handleSlugChange = (val: string) => {
+    setCustomSlug(val);
+    validateSlug(val);
   };
 
   return (
@@ -338,7 +438,9 @@ export default function NoteEditor() {
               <div className="w-3 h-3 bg-red-400 rounded-full shadow-sm"></div>
               <div className="w-3 h-3 bg-yellow-400 rounded-full shadow-sm"></div>
               <div className="w-3 h-3 bg-green-400 rounded-full shadow-sm"></div>
-              <span className="ml-4 font-semibold">{t('newNote')}</span>
+              <span className="ml-4 font-semibold">
+                {isNewNote ? t('newNote') : (title || '无标题')}
+              </span>
             </div>
             <div className="flex items-center gap-3 text-sm text-gray-500">
               {draftRestored && (
@@ -350,24 +452,24 @@ export default function NoteEditor() {
               {autoSaving && (
                 <span className="flex items-center gap-1 text-blue-600">
                   <Clock className="w-3 h-3 animate-spin" />
-                  {t('saving')}
+                  正在保存...
                 </span>
               )}
               {lastSaved && !autoSaving && (
                 <span className="flex items-center gap-1 text-green-600">
                   <Check className="w-3 h-3" />
-                  {t('autoSaved')} {lastSaved.toLocaleTimeString()}
+                  已保存 {lastSaved.toLocaleTimeString()}
                 </span>
               )}
               <div className="flex gap-2">
                 <Button 
                   onClick={handleSave} 
-                  disabled={saving || autoSaving}
+                  disabled={saving}
                   size="sm"
                   className="flex items-center gap-2 shadow-sm"
                 >
                   <Save className="w-4 h-4" />
-                  {saving ? t('saving') : t('save')}
+                  {saving ? '保存中' : '保存'}
                 </Button>
                 <Button 
                   variant="outline" 
