@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardTitle } from '@/components/ui/card';
 import LanguageToggle from '@/components/LanguageToggle';
+import PaperCard from '@/components/PaperCard';
+import NoteDisplay from '@/components/NoteDisplay';
 
 interface SharedNote {
   id: string;
@@ -61,21 +63,27 @@ export default async function SharedNotePage({
         </header>
         
         <main className="max-w-4xl mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>{note.title}</span>
+          <PaperCard
+            header={
+              <CardTitle className="flex items-center justify-between text-gray-800">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 bg-red-400 rounded-full shadow-sm"></div>
+                  <div className="w-3 h-3 bg-yellow-400 rounded-full shadow-sm"></div>
+                  <div className="w-3 h-3 bg-green-400 rounded-full shadow-sm"></div>
+                  <span className="ml-4 font-semibold">{note.title || t('untitledNote')}</span>
+                </div>
                 <span className="text-sm font-normal text-slate-500">
                   {t('lastUpdated')}: {formattedDate}
                 </span>
               </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="whitespace-pre-wrap text-base leading-relaxed min-h-[400px] p-4 bg-slate-50 rounded-lg">
-                {note.content || t('writeNote')}
-              </div>
-            </CardContent>
-          </Card>
+            }
+          >
+            <NoteDisplay
+              title={note.title}
+              content={note.content}
+              showPlaceholder={false}
+            />
+          </PaperCard>
         </main>
       </div>
     </div>

@@ -10,8 +10,14 @@
   "chinese": "中文",
   "shareNote": "Share Note",
   "shareUrl": "Share URL",
+  "customUrl": "Custom URL (optional)",
+  "customUrlPlaceholder": "my-custom-url",
+  "customUrlHelp": "Only letters, numbers, hyphens and underscores allowed",
+  "urlTaken": "This URL is already taken",
   "copyUrl": "Copy URL",
   "copied": "Copied!",
   "untitledNote": "Untitled Note",
-  "lastUpdated": "Last updated"
+  "lastUpdated": "Last updated",
+  "autoSaved": "Auto-saved",
+  "saving": "Saving..."
 }

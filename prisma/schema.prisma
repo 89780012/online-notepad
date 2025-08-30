@@ -14,14 +14,15 @@ datasource db {
 }
 
 model Note {
-  id          String   @id @default(cuid())
-  title       String
-  content     String
-  language    String   @default("en") // "en" or "zh"
-  isPublic    Boolean  @default(false)
-  shareToken  String?  @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(cuid())
+  title        String
+  content      String
+  language     String   @default("en") // "en" or "zh"
+  isPublic     Boolean  @default(false)
+  shareToken   String?  @unique
+  customSlug   String?  @unique // 用户自定义的分享URL后缀
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
   
   @@map("notes")
 }

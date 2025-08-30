@@ -8,9 +8,13 @@ export async function GET(
   try {
     const { token } = await params;
     
-    const note = await prisma.note.findUnique({
+    // 尝试通过customSlug或shareToken查找笔记
+    const note = await prisma.note.findFirst({
       where: { 
-        shareToken: token,
+        OR: [
+          { shareToken: token },
+          { customSlug: token }
+        ],
         isPublic: true
       }
     });

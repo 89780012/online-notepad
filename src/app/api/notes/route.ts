@@ -7,7 +7,8 @@ const createNoteSchema = z.object({
   title: z.string().min(1),
   content: z.string(),
   language: z.enum(['en', 'zh']),
-  isPublic: z.boolean().default(false)
+  isPublic: z.boolean().default(false),
+  customSlug: z.string().min(1).max(50).regex(/^[a-zA-Z0-9-_]+$/).optional()
 });
 
 const updateNoteSchema = z.object({
@@ -15,7 +16,8 @@ const updateNoteSchema = z.object({
   title: z.string().min(1),
   content: z.string(),
   language: z.enum(['en', 'zh']),
-  isPublic: z.boolean().default(false)
+  isPublic: z.boolean().default(false),
+  customSlug: z.string().min(1).max(50).regex(/^[a-zA-Z0-9-_]+$/).optional()
 });
 
 export async function POST(request: NextRequest) {
@@ -23,12 +25,33 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = createNoteSchema.parse(body);
     
+    // 检查自定义slug是否已被使用
+    if (validatedData.customSlug) {
+      const existingNote = await prisma.note.findUnique({
+        where: { customSlug: validatedData.customSlug }
+      });
+      
+      if (existingNote) {
+        return NextResponse.json(
+          { error: 'Custom URL is already taken' },
+          { status: 409 }
+        );
+      }
+    }
+    
     const shareToken = validatedData.isPublic ? nanoid(10) : null;
+    const customSlug = validatedData.isPublic && validatedData.customSlug 
+      ? validatedData.customSlug 
+      : null;
     
     const note = await prisma.note.create({
       data: {
-        ...validatedData,
-        shareToken
+        title: validatedData.title,
+        content: validatedData.content,
+        language: validatedData.language,
+        isPublic: validatedData.isPublic,
+        shareToken,
+        customSlug
       }
     });
     
@@ -65,9 +88,27 @@ export async function PUT(request: NextRequest) {
       );
     }
     
+    // 检查自定义slug是否已被其他笔记使用
+    if (validatedData.customSlug && validatedData.customSlug !== existingNote.customSlug) {
+      const slugTaken = await prisma.note.findUnique({
+        where: { customSlug: validatedData.customSlug }
+      });
+      
+      if (slugTaken) {
+        return NextResponse.json(
+          { error: 'Custom URL is already taken' },
+          { status: 409 }
+        );
+      }
+    }
+    
     const shareToken = validatedData.isPublic && !existingNote.shareToken 
       ? nanoid(10) 
       : existingNote.shareToken;
+      
+    const customSlug = validatedData.isPublic && validatedData.customSlug 
+      ? validatedData.customSlug 
+      : (validatedData.isPublic ? existingNote.customSlug : null);
     
     const note = await prisma.note.update({
       where: { id: validatedData.id },
@@ -76,7 +117,8 @@ export async function PUT(request: NextRequest) {
         content: validatedData.content,
         language: validatedData.language,
         isPublic: validatedData.isPublic,
-        shareToken: validatedData.isPublic ? shareToken : null
+        shareToken: validatedData.isPublic ? shareToken : null,
+        customSlug
       }
     });
     

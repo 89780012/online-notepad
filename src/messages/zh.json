@@ -10,8 +10,14 @@
   "chinese": "中文",
   "shareNote": "分享笔记",
   "shareUrl": "分享链接",
+  "customUrl": "自定义链接后缀（可选）",
+  "customUrlPlaceholder": "我的自定义链接",
+  "customUrlHelp": "只允许字母、数字、连字符和下划线",
+  "urlTaken": "此链接已被使用",
   "copyUrl": "复制链接",
   "copied": "已复制！",
   "untitledNote": "未命名笔记",
-  "lastUpdated": "最后更新"
+  "lastUpdated": "最后更新",
+  "autoSaved": "已自动保存",
+  "saving": "正在保存..."
 }
