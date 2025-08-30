@@ -1,0 +1,197 @@
+{
+  "timestamp": "2025-08-30T08:02:13.000Z",
+  "projectName": "online-notepad",
+  "projectDescription": "基于 Next.js 的在线记事本应用，支持多语言和笔记分享功能",
+  "scanSummary": {
+    "totalFilesEstimated": 45,
+    "scannedFiles": 15,
+    "coveragePercentage": 33.3,
+    "ignoredDirectories": [
+      "node_modules",
+      ".git",
+      "dist",
+      "build",
+      ".next"
+    ]
+  },
+  "modules": [
+    {
+      "name": "前端应用",
+      "path": "src/",
+      "language": "TypeScript",
+      "status": "active",
+      "description": "Next.js 应用主体，包含页面、API、组件",
+      "entryPoints": [
+        "src/app/[locale]/layout.tsx",
+        "src/app/[locale]/page.tsx",
+        "src/middleware.ts"
+      ],
+      "apiEndpoints": [
+        "src/app/api/notes/route.ts",
+        "src/app/api/notes/share/[token]/route.ts"
+      ],
+      "components": [
+        "src/components/NoteEditor.tsx",
+        "src/components/LanguageToggle.tsx",
+        "src/components/ui/"
+      ],
+      "config": [
+        "src/i18n.ts",
+        "src/lib/prisma.ts",
+        "src/lib/utils.ts"
+      ],
+      "tests": {
+        "exists": false,
+        "recommended": [
+          "src/__tests__/components/",
+          "src/__tests__/api/"
+        ]
+      },
+      "coverage": {
+        "interfaces": "complete",
+        "dependencies": "complete",
+        "tests": "missing",
+        "dataModel": "complete"
+      }
+    },
+    {
+      "name": "数据库模型",
+      "path": "prisma/",
+      "language": "Prisma Schema",
+      "status": "active",
+      "description": "数据库 schema 定义和迁移管理",
+      "entryPoints": [
+        "prisma/schema.prisma"
+      ],
+      "dataModels": [
+        "Note"
+      ],
+      "migrations": {
+        "exists": false,
+        "recommended": "prisma/migrations/"
+      },
+      "seeds": {
+        "exists": false,
+        "recommended": "prisma/seed.ts"
+      },
+      "coverage": {
+        "schema": "complete",
+        "migrations": "missing",
+        "seeds": "missing"
+      }
+    },
+    {
+      "name": "静态资源",
+      "path": "public/",
+      "language": "Assets",
+      "status": "active",
+      "description": "图标和静态文件",
+      "files": [
+        "public/file.svg",
+        "public/globe.svg",
+        "public/next.svg",
+        "public/vercel.svg",
+        "public/window.svg"
+      ],
+      "coverage": {
+        "catalog": "complete"
+      }
+    }
+  ],
+  "globalFiles": {
+    "config": [
+      "package.json",
+      "next.config.ts",
+      "tsconfig.json",
+      "postcss.config.mjs",
+      "eslint.config.mjs",
+      "components.json"
+    ],
+    "docs": [
+      "README.md",
+      "CLAUDE.md"
+    ],
+    "ignore": [
+      ".gitignore"
+    ]
+  },
+  "dependencies": {
+    "runtime": [
+      "next@15.5.2",
+      "react@19.1.0",
+      "@prisma/client@^6.15.0",
+      "next-intl@^4.3.5",
+      "zod@^4.1.5"
+    ],
+    "ui": [
+      "@radix-ui/react-label@^2.1.7",
+      "@radix-ui/react-slot@^1.2.3",
+      "lucide-react@^0.542.0",
+      "tailwindcss@^4"
+    ],
+    "dev": [
+      "typescript@^5",
+      "eslint@^9",
+      "@types/node@^20",
+      "@types/react@^19"
+    ]
+  },
+  "qualityTools": {
+    "linting": {
+      "tool": "ESLint",
+      "config": "eslint.config.mjs",
+      "extends": ["eslint-config-next"]
+    },
+    "typeChecking": {
+      "tool": "TypeScript",
+      "config": "tsconfig.json",
+      "strict": true
+    },
+    "formatting": {
+      "recommended": "Prettier (未配置)",
+      "status": "missing"
+    },
+    "testing": {
+      "framework": "建议 Jest + Testing Library",
+      "status": "missing"
+    }
+  },
+  "gaps": [
+    {
+      "category": "testing",
+      "description": "缺少测试文件和配置",
+      "recommendations": [
+        "添加 Jest 和 Testing Library 依赖",
+        "创建 __tests__ 目录结构",
+        "为核心组件添加单元测试",
+        "为 API 端点添加集成测试"
+      ]
+    },
+    {
+      "category": "database",
+      "description": "缺少数据库迁移管理",
+      "recommendations": [
+        "创建 prisma/migrations 目录",
+        "添加种子数据脚本 prisma/seed.ts",
+        "考虑添加数据库索引优化"
+      ]
+    },
+    {
+      "category": "tooling",
+      "description": "缺少代码格式化工具",
+      "recommendations": [
+        "配置 Prettier",
+        "添加 pre-commit hooks",
+        "配置 VS Code workspace settings"
+      ]
+    }
+  ],
+  "nextSteps": [
+    "补扫建议: 检查是否有隐藏的配置文件(.env.example, .vscode/)",
+    "深度分析: 读取更多业务组件细节",
+    "质量改进: 添加测试覆盖率工具",
+    "文档补充: 添加 API 文档和部署指南"
+  ],
+  "truncated": false,
+  "scanLimitations": "无限制，完成全量扫描"
+}

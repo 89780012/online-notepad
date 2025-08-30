@@ -1,0 +1,17 @@
+{
+  "title": "Online Notepad",
+  "newNote": "New Note",
+  "noteTitle": "Note Title",
+  "writeNote": "Write your note here...",
+  "save": "Save",
+  "share": "Share",
+  "language": "Language",
+  "english": "English",
+  "chinese": "中文",
+  "shareNote": "Share Note",
+  "shareUrl": "Share URL",
+  "copyUrl": "Copy URL",
+  "copied": "Copied!",
+  "untitledNote": "Untitled Note",
+  "lastUpdated": "Last updated"
+}
