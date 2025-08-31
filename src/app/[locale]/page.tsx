@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 import NoteEditor from '@/components/NoteEditor';
 import NoteList from '@/components/NoteList';
 import LanguageToggle from '@/components/LanguageToggle';
+import ThemeToggle from '@/components/ThemeToggle';
 import MarketingContent from '@/components/MarketingContent';
 import { LocalNote, useLocalNotes } from '@/hooks/useLocalNotes';
 
@@ -46,11 +47,14 @@ export default function HomePage() {
   };
 
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col">
+    <div className="h-screen bg-gradient-to-br from-background to-muted flex flex-col">
       {/* 顶部导航 */}
-      <header className="flex justify-between items-center p-4 bg-white border-b border-gray-200 z-10">
-        <h1 className="text-3xl font-bold text-slate-800">Mini Notepad</h1>
-        <LanguageToggle />
+      <header className="flex justify-between items-center p-4 bg-background border-b border-border z-10">
+        <h1 className="text-3xl font-bold text-foreground">Mini Notepad</h1>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <LanguageToggle />
+        </div>
       </header>
 
       {/* 主要内容区域 */}

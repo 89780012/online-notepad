@@ -4,6 +4,8 @@ import { CardTitle } from '@/components/ui/card';
 import LanguageToggle from '@/components/LanguageToggle';
 import PaperCard from '@/components/PaperCard';
 import NoteDisplay from '@/components/NoteDisplay';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface SharedNote {
   id: string;
@@ -53,26 +55,30 @@ export default async function SharedNotePage({
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <div className="container mx-auto p-4">
-        <header className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-slate-800">
-            {t('title')}
-          </h1>
-          <LanguageToggle />
-        </header>
+    <ThemeProvider defaultTheme="system">
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted">
+        <div className="container mx-auto p-4">
+          <header className="flex justify-between items-center mb-8">
+            <h1 className="text-3xl font-bold text-foreground">
+              {t('title')}
+            </h1>
+            <div className="flex items-center gap-4">
+              <ThemeToggle />
+              <LanguageToggle />
+            </div>
+          </header>
         
         <main className="max-w-4xl mx-auto">
           <PaperCard
             header={
-              <CardTitle className="flex items-center justify-between text-gray-800">
+              <CardTitle className="flex items-center justify-between text-card-foreground">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 bg-red-400 rounded-full shadow-sm"></div>
                   <div className="w-3 h-3 bg-yellow-400 rounded-full shadow-sm"></div>
                   <div className="w-3 h-3 bg-green-400 rounded-full shadow-sm"></div>
                   <span className="ml-4 font-semibold">{note.title || t('untitledNote')}</span>
                 </div>
-                <span className="text-sm font-normal text-slate-500">
+                <span className="text-sm font-normal text-muted-foreground">
                   {t('lastUpdated')}: {formattedDate}
                 </span>
               </CardTitle>
@@ -85,7 +91,8 @@ export default async function SharedNotePage({
             />
           </PaperCard>
         </main>
+        </div>
       </div>
-    </div>
+    </ThemeProvider>
   );
 }

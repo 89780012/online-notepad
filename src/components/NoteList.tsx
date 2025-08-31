@@ -52,9 +52,9 @@ export default function NoteList({ notes, deleteNote, onNoteSelect, onNewNote, o
   };
 
   return (
-    <div className="w-80 bg-white border-r border-gray-200 flex flex-col h-full">
+    <div className="w-80 bg-background border-r border-border flex flex-col h-full">
       {/* 头部：新建按钮和搜索 */}
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-border">
         <Button 
           onClick={onNewNote}
           className="w-full mb-3 flex items-center gap-2"
@@ -64,7 +64,7 @@ export default function NoteList({ notes, deleteNote, onNoteSelect, onNewNote, o
         </Button>
         
         <div className="relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder={t('searchNotes')}
             value={searchQuery}
@@ -77,8 +77,8 @@ export default function NoteList({ notes, deleteNote, onNoteSelect, onNewNote, o
       {/* 笔记列表 */}
       <div className="flex-1 overflow-y-auto">
         {filteredNotes.length === 0 ? (
-          <div className="p-4 text-center text-gray-500">
-            <FileText className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+          <div className="p-4 text-center text-muted-foreground">
+            <FileText className="w-12 h-12 mx-auto mb-2 text-muted-foreground opacity-50" />
             <p className="text-sm">
               {searchQuery ? t('noNotesFound') : t('noNotesYet')}
             </p>
@@ -87,23 +87,23 @@ export default function NoteList({ notes, deleteNote, onNoteSelect, onNewNote, o
           filteredNotes.map((note) => (
             <div
               key={note.id}
-              className={`px-4 py-3 cursor-pointer border-b border-gray-100 hover:bg-gray-50 transition-colors group ${ 
-                selectedNoteId === note.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+              className={`px-4 py-3 cursor-pointer border-b border-border hover:bg-accent transition-colors group ${ 
+                selectedNoteId === note.id ? 'bg-accent border-l-4 border-l-primary' : ''
               }`}
               onClick={() => onNoteSelect(note)}
             >
               <div className="flex justify-between items-center">
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-sm truncate text-gray-900">
+                  <h3 className="font-medium text-sm truncate text-foreground">
                     {note.title || t('untitledNote')}
                   </h3>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-2">
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-muted-foreground">
                     {formatDate(note.updatedAt)}
                   </span>
                   {note.isPublic && (
-                    <span className="text-xs text-green-600 bg-green-100 px-1.5 py-0.5 rounded-full">
+                    <span className="text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
                       {t('shared')}
                     </span>
                   )}
@@ -111,7 +111,7 @@ export default function NoteList({ notes, deleteNote, onNoteSelect, onNewNote, o
                     variant="ghost"
                     size="sm"
                     onClick={(e) => handleDeleteNote(e, note.id)}
-                    className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 hover:bg-red-100 hover:text-red-600 transition-opacity"
+                    className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-opacity"
                   >
                     <Trash2 className="w-3 h-3" />
                   </Button>

@@ -38,9 +38,9 @@ export default function SharePopup({
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-end p-6 pointer-events-none">
       <div className="animate-in slide-in-from-bottom-5 slide-in-from-right-5 duration-300 pointer-events-auto">
-        <Card className="w-112 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 shadow-xl">
+        <Card className="w-112 bg-card border-border shadow-xl">
           <CardHeader className="pb-4">
-            <CardTitle className="text-green-800 flex items-center justify-between">
+            <CardTitle className="text-foreground flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Share2 className="w-5 h-5" />
                 {t('shareNote')}
@@ -49,7 +49,7 @@ export default function SharePopup({
                 variant="ghost"
                 size="sm"
                 onClick={onClose}
-                className="h-6 w-6 p-0 hover:bg-green-100"
+                className="h-6 w-6 p-0 hover:bg-muted"
               >
                 <X className="w-4 h-4" />
               </Button>
@@ -59,42 +59,42 @@ export default function SharePopup({
           <CardContent className="space-y-4">
             {/* 自定义URL输入 */}
             <div className="space-y-2">
-              <Label className="text-green-800 font-medium">{t('customUrl')}</Label>
+              <Label className="text-foreground font-medium">{t('customUrl')}</Label>
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600 shrink-0">
+                <span className="text-sm text-muted-foreground shrink-0">
                   {typeof window !== 'undefined' ? window.location.origin : ''}/${locale}/share/
                 </span>
                 <Input
                   value={customSlug}
                   onChange={(e) => onSlugChange(e.target.value)}
                   placeholder={t('customUrlPlaceholder')}
-                  className={`flex-1 ${slugError ? 'border-red-300 focus:border-red-300' : 'border-green-300 focus:border-green-500'} bg-white`}
+                  className={`flex-1 ${slugError ? 'border-destructive focus:border-destructive' : 'border-border focus:border-primary'} bg-background`}
                 />
               </div>
               {slugError && (
-                <p className="text-sm text-red-600">{slugError}</p>
+                <p className="text-sm text-destructive">{slugError}</p>
               )}
-              <p className="text-sm text-green-700">{t('customUrlHelp')}</p>
+              <p className="text-sm text-muted-foreground">{t('customUrlHelp')}</p>
             </div>
 
             {/* 分享链接显示 */}
             {shareUrl && (
               <div className="space-y-2">
-                <Label className="text-green-800 font-medium">{t('shareUrl')}</Label>
+                <Label className="text-foreground font-medium">{t('shareUrl')}</Label>
                 <div className="flex gap-2">
                   <Input
                     value={shareUrl}
                     readOnly
-                    className="bg-white border-green-300 text-sm"
+                    className="bg-background border-border text-sm"
                   />
                   <Button
                     variant="outline"
                     onClick={onCopyUrl}
-                    className="flex items-center gap-2 whitespace-nowrap border-green-300 hover:bg-green-100 shrink-0"
+                    className="flex items-center gap-2 whitespace-nowrap border-border hover:bg-muted shrink-0"
                   >
                     {copied ? (
                       <>
-                        <Check className="w-4 h-4 text-green-600" />
+                        <Check className="w-4 h-4 text-primary" />
                         {t('copied')}
                       </>
                     ) : (
@@ -110,11 +110,11 @@ export default function SharePopup({
 
             {/* 成功提示 */}
             {shareUrl && !slugError && (
-              <div className="bg-green-100 border border-green-200 rounded-lg p-3">
-                <p className="text-green-800 text-sm font-medium">
+              <div className="bg-primary/10 border border-primary/20 rounded-lg p-3">
+                <p className="text-primary text-sm font-medium">
                   ✅ {t('shareSuccess')}
                 </p>
-                <p className="text-green-600 text-sm mt-1">
+                <p className="text-muted-foreground text-sm mt-1">
                   {t('shareSuccessMessage')}
                 </p>
               </div>

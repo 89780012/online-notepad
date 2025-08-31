@@ -15,12 +15,12 @@ export default function MarketingContent() {
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-slate-50">
+    <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-background">
       <div className="max-w-3xl">
-        <h1 className="text-5xl font-bold tracking-tight text-slate-900 sm:text-6xl">
+        <h1 className="text-5xl font-bold tracking-tight text-foreground sm:text-6xl">
           {t('heroTitle')}
         </h1>
-        <p className="mt-6 text-lg leading-8 text-slate-600">
+        <p className="mt-6 text-lg leading-8 text-muted-foreground">
           {t('heroSubtitle')}
         </p>
 
@@ -32,8 +32,8 @@ export default function MarketingContent() {
             <ul className="space-y-4">
               {features.map((feature) => (
                 <li key={feature.key} className="flex items-start">
-                  <CheckCircle2 className="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-1" />
-                  <span className="text-slate-700">{feature.text}</span>
+                  <CheckCircle2 className="w-6 h-6 text-primary mr-3 flex-shrink-0 mt-1" />
+                  <span className="text-foreground">{feature.text}</span>
                 </li>
               ))}
             </ul>

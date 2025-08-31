@@ -441,30 +441,30 @@ export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved
       {/* 纸张样式的主编辑区域 */}
       <PaperCard
         header={
-          <CardTitle className="flex items-center justify-between text-gray-800">
+          <CardTitle className="flex items-center justify-between text-foreground">
             <div className="flex items-center gap-3">
-              <div className="w-3 h-3 bg-red-400 rounded-full shadow-sm"></div>
-              <div className="w-3 h-3 bg-yellow-400 rounded-full shadow-sm"></div>
-              <div className="w-3 h-3 bg-green-400 rounded-full shadow-sm"></div>
+              <div className="w-3 h-3 bg-red-500 dark:bg-red-400 rounded-full shadow-sm"></div>
+              <div className="w-3 h-3 bg-yellow-500 dark:bg-yellow-400 rounded-full shadow-sm"></div>
+              <div className="w-3 h-3 bg-green-500 dark:bg-green-400 rounded-full shadow-sm"></div>
               <span className="ml-4 font-semibold">
                 {isNewNote ? t('newNote') : (title || '无标题')}
               </span>
             </div>
-            <div className="flex items-center gap-3 text-sm text-gray-500">
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
               {draftRestored && (
-                <span className="flex items-center gap-1 text-blue-600">
+                <span className="flex items-center gap-1 text-primary">
                   <Check className="w-3 h-3" />
                   已恢复草稿
                 </span>
               )}
               {autoSaving && (
-                <span className="flex items-center gap-1 text-blue-600">
+                <span className="flex items-center gap-1 text-primary">
                   <Clock className="w-3 h-3 animate-spin" />
                   正在保存...
                 </span>
               )}
               {lastSaved && !autoSaving && (
-                <span className="flex items-center gap-1 text-green-600">
+                <span className="flex items-center gap-1 text-primary">
                   <Check className="w-3 h-3" />
                   已保存 {lastSaved.toLocaleTimeString()}
                 </span>
