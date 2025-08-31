@@ -11,7 +11,8 @@ export default function HomePage() {
   const { notes, saveNote, deleteNote, loadNotes } = useLocalNotes();
 
   const [selectedNote, setSelectedNote] = useState<LocalNote | null>(null);
-  const [isNewNote, setIsNewNote] = useState(true);
+  const [isNewNote, setIsNewNote] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
 
   useEffect(() => {
     loadNotes();
@@ -20,23 +21,27 @@ export default function HomePage() {
   const handleNoteSelect = (note: LocalNote) => {
     setSelectedNote(note);
     setIsNewNote(false);
+    setShowEditor(true);
   };
 
   const handleNewNote = () => {
     setSelectedNote(null);
     setIsNewNote(true);
+    setShowEditor(true);
   };
 
   const handleNoteSaved = useCallback((savedNote: LocalNote) => {
     setSelectedNote(savedNote);
     setIsNewNote(false);
+    setShowEditor(true);
   }, []);
 
   const handleNoteDelete = (noteId: string) => {
     // The hook handles the deletion. We just need to update the UI if the deleted note was being edited.
     if (selectedNote?.id === noteId) {
       setSelectedNote(null);
-      setIsNewNote(true);
+      setIsNewNote(false);
+      setShowEditor(false);
     }
   };
 
@@ -62,7 +67,7 @@ export default function HomePage() {
 
         {/* 右侧编辑器或营销内容 */}
         <main className="flex-1 overflow-auto">
-          {selectedNote === null && isNewNote ? (
+          {!showEditor ? (
             <MarketingContent />
           ) : (
             <div className="h-full p-4">
