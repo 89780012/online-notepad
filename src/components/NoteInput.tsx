@@ -51,6 +51,32 @@ export default function NoteInput({ title, content, onTitleChange, onContentChan
     });
   };
 
+  // 处理键盘事件，支持tab键
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const target = e.target as HTMLInputElement | HTMLTextAreaElement;
+      const start = target.selectionStart || 0;
+      const end = target.selectionEnd || 0;
+      
+      // 插入tab字符（使用2个空格代替tab）
+      const tabChar = '  ';
+      const newValue = target.value.substring(0, start) + tabChar + target.value.substring(end);
+      
+      // 更新对应的状态
+      if (target === textareaRef.current) {
+        onContentChange(newValue);
+      } else {
+        onTitleChange(newValue);
+      }
+      
+      // 设置光标位置到tab后面
+      setTimeout(() => {
+        target.selectionStart = target.selectionEnd = start + tabChar.length;
+      }, 0);
+    }
+  };
+
   return (
     <>
       {/* 标题输入区域 */}
@@ -59,6 +85,7 @@ export default function NoteInput({ title, content, onTitleChange, onContentChan
           id="title"
           value={title}
           onChange={(e) => onTitleChange(e.target.value)}
+          onKeyDown={handleKeyDown}
           onFocus={() => setTitleFocused(true)}
           onBlur={() => setTitleFocused(false)}
           placeholder=""
@@ -89,6 +116,7 @@ export default function NoteInput({ title, content, onTitleChange, onContentChan
           id="content"
           value={content}
           onChange={handleContentChange}
+          onKeyDown={handleKeyDown}
           onFocus={() => setContentFocused(true)}
           onBlur={() => setContentFocused(false)}
           placeholder=""

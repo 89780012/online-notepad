@@ -34,5 +34,7 @@
   "featureFree": "A completely free notepad with no ads to distract you.",
   "featureFast": "A quick and simple notes app designed for speed.",
   "featureDarkMode": "A notepad with dark mode for comfortable writing at night.",
-  "featureOffline": "Your offline notepad that works even without internet."
+  "featureOffline": "Your offline notepad that works even without internet.",
+  "focusMode": "Focus Mode",
+  "exitFocusMode": "Exit Focus Mode"
 }

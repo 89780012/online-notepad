@@ -34,5 +34,7 @@
   "featureFree": "一个完全免费的记事本，没有任何广告打扰您。",
   "featureFast": "为速度而生的快速简洁的笔记应用。",
   "featureDarkMode": "支持深色模式的记事本，让您在夜晚舒适写作。",
-  "featureOffline": "您的离线记事本，即使没有网络也能工作。"
+  "featureOffline": "您的离线记事本，即使没有网络也能工作。",
+  "focusMode": "专注模式",
+  "exitFocusMode": "退出专注模式"
 }
