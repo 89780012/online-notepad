@@ -32,6 +32,9 @@ export async function generateMetadata({
       default: messages.title as string,
     },
     description: messages.metaDescription as string,
+    verification: {
+      google: "E0GDXD3a6YNYh4z337vXsHw5kIwitdrAhD0wQe23BNM",
+    },
     alternates: {
       languages: {
         en: "https://mininotepad.com/en",
