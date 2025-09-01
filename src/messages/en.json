@@ -36,5 +36,8 @@
   "featureDarkMode": "A notepad with dark mode for comfortable writing at night.",
   "featureOffline": "Your offline notepad that works even without internet.",
   "focusMode": "Focus Mode",
-  "exitFocusMode": "Exit Focus Mode"
+  "exitFocusMode": "Exit Focus Mode",
+  "showSidebar": "Show Sidebar",
+  "hideSidebar": "Hide Sidebar",
+  "startWriting": "Start Writing"
 }

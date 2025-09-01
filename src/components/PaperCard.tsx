@@ -17,28 +17,33 @@ export default function PaperCard({ children, header, className = "" }: PaperCar
   useEffect(() => {
     // 根据主题设置线条颜色
     if (resolvedTheme === 'dark') {
-      setLineColor('#374151'); // 暗色模式下的线条颜色
+      setLineColor('oklch(0.285 0.022 79.5)'); // 使用新的暗色纸张边框色
     } else {
-      setLineColor('#e5e7eb'); // 亮色模式下的线条颜色
+      setLineColor('oklch(0.896 0.015 75.8)'); // 使用新的亮色纸张边框色
     }
   }, [resolvedTheme]);
 
   return (
-    <Card className={`bg-card shadow-xl border-0 relative overflow-hidden ${className}`}>
-      {/* 纸张边距线 */}
-      <div className="absolute left-16 top-0 bottom-0 w-px bg-red-300 dark:bg-red-400 z-10"></div>
-      <div className="absolute left-20 top-0 bottom-0 w-px bg-blue-200 dark:bg-blue-300 z-10"></div>
+    <Card className={`bg-card/95 backdrop-blur-sm shadow-2xl border border-border/50 relative overflow-hidden paper-texture ${className}`}>
+      {/* 纸张边距线 - 更加精致的样式 */}
+      <div className="absolute left-16 top-0 bottom-0 w-px bg-red-400/60 dark:bg-red-300/40 z-10 shadow-sm"></div>
+      <div className="absolute left-20 top-0 bottom-0 w-px bg-blue-300/50 dark:bg-blue-200/30 z-10 shadow-sm"></div>
+      
+      {/* 纸张孔洞效果 */}
+      <div className="absolute left-8 top-8 w-2 h-2 bg-background border border-border/30 rounded-full shadow-inner"></div>
+      <div className="absolute left-8 top-16 w-2 h-2 bg-background border border-border/30 rounded-full shadow-inner"></div>
+      <div className="absolute left-8 top-24 w-2 h-2 bg-background border border-border/30 rounded-full shadow-inner"></div>
       
       {/* 可选的头部区域 */}
       {header && (
-        <CardHeader className="border-b border-border bg-muted/30 relative z-20">
+        <CardHeader className="border-b border-border/30 bg-muted/20 backdrop-blur-sm relative z-20">
           {header}
         </CardHeader>
       )}
       
       {/* 纸张样式的内容区域 */}
       <CardContent 
-        className="p-0 bg-card relative" 
+        className="p-0 bg-card/90 backdrop-blur-sm relative" 
         style={{
           backgroundImage: `repeating-linear-gradient(
             transparent,

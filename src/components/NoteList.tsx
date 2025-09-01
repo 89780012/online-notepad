@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, FileText, Trash2, Plus } from 'lucide-react';
+import { Search, FileText, Trash2, Plus, X } from 'lucide-react';
 import { LocalNote } from '@/hooks/useLocalNotes';
 
 interface NoteListProps {
@@ -14,16 +14,54 @@ interface NoteListProps {
   onNewNote: () => void;
   onNoteDelete?: (noteId: string) => void;
   selectedNoteId?: string;
+  onCloseSidebar?: () => void; // 新增：关闭侧边栏的回调
 }
 
-export default function NoteList({ notes, deleteNote, onNoteSelect, onNewNote, onNoteDelete, selectedNoteId }: NoteListProps) {
+export default function NoteList({ 
+  notes, 
+  deleteNote, 
+  onNoteSelect, 
+  onNewNote, 
+  onNoteDelete, 
+  selectedNoteId,
+  onCloseSidebar 
+}: NoteListProps) {
   const t = useTranslations();
   const [searchQuery, setSearchQuery] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+
+  // 检测屏幕尺寸，判断是否为移动端
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // lg断点是1024px
+    };
+    
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
 
   const filteredNotes = notes.filter(note =>
     note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     note.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleNoteSelect = (note: LocalNote) => {
+    onNoteSelect(note);
+    // 只在移动端选择笔记后关闭侧边栏
+    if (isMobile) {
+      onCloseSidebar?.();
+    }
+  };
+
+  const handleNewNote = () => {
+    onNewNote();
+    // 只在移动端创建新笔记后关闭侧边栏
+    if (isMobile) {
+      onCloseSidebar?.();
+    }
+  };
 
   const handleDeleteNote = (e: React.MouseEvent, noteId: string) => {
     e.stopPropagation();
@@ -52,33 +90,48 @@ export default function NoteList({ notes, deleteNote, onNoteSelect, onNewNote, o
   };
 
   return (
-    <div className="w-80 bg-background border-r border-border flex flex-col h-full">
-      {/* 头部：新建按钮和搜索 */}
-      <div className="p-4 border-b border-border">
+    <div className="w-80 bg-sidebar/95 backdrop-blur-sm border-r border-sidebar-border flex flex-col h-full shadow-lg">
+      {/* 头部：关闭按钮、新建按钮和搜索 */}
+      <div className="p-4 border-b border-sidebar-border bg-sidebar-accent/30">
+        {/* 移动端关闭按钮 */}
+        <div className="flex justify-between items-center mb-3 lg:hidden">
+          <h2 className="text-lg font-semibold text-sidebar-foreground font-serif">笔记列表</h2>
+          {onCloseSidebar && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onCloseSidebar}
+              className="text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+        
         <Button 
-          onClick={onNewNote}
-          className="w-full mb-3 flex items-center gap-2"
+          onClick={handleNewNote}
+          className="w-full mb-3 flex items-center gap-2 bg-sidebar-primary hover:bg-sidebar-primary/90 text-sidebar-primary-foreground shadow-sm"
         >
           <Plus className="w-4 h-4" />
           {t('newNote')}
         </Button>
         
         <div className="relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-sidebar-foreground/50" />
           <Input
             placeholder={t('searchNotes')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
+            className="pl-9 bg-sidebar-accent/50 border-sidebar-border focus:border-sidebar-primary"
           />
         </div>
       </div>
 
       {/* 笔记列表 */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto bg-sidebar/50">
         {filteredNotes.length === 0 ? (
-          <div className="p-4 text-center text-muted-foreground">
-            <FileText className="w-12 h-12 mx-auto mb-2 text-muted-foreground opacity-50" />
+          <div className="p-4 text-center text-sidebar-foreground/60">
+            <FileText className="w-12 h-12 mx-auto mb-2 text-sidebar-foreground/30" />
             <p className="text-sm">
               {searchQuery ? t('noNotesFound') : t('noNotesYet')}
             </p>
@@ -87,23 +140,23 @@ export default function NoteList({ notes, deleteNote, onNoteSelect, onNewNote, o
           filteredNotes.map((note) => (
             <div
               key={note.id}
-              className={`px-4 py-3 cursor-pointer border-b border-border hover:bg-accent transition-colors group ${ 
-                selectedNoteId === note.id ? 'bg-accent border-l-4 border-l-primary' : ''
+              className={`px-4 py-3 cursor-pointer border-b border-sidebar-border/50 hover:bg-sidebar-accent/50 transition-colors group ${ 
+                selectedNoteId === note.id ? 'bg-sidebar-accent border-l-4 border-l-sidebar-primary' : ''
               }`}
-              onClick={() => onNoteSelect(note)}
+              onClick={() => handleNoteSelect(note)}
             >
               <div className="flex justify-between items-center">
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-sm truncate text-foreground">
+                  <h3 className="font-medium text-sm truncate text-sidebar-foreground">
                     {note.title || t('untitledNote')}
                   </h3>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-2">
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-sidebar-foreground/60">
                     {formatDate(note.updatedAt)}
                   </span>
                   {note.isPublic && (
-                    <span className="text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
+                    <span className="text-xs text-sidebar-primary bg-sidebar-primary/10 px-1.5 py-0.5 rounded-full">
                       {t('shared')}
                     </span>
                   )}
