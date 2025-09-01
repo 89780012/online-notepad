@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { NoteMode, NOTE_MODES } from '@/types/note-modes';
 
 export interface LocalNote {
   id: string;
   title: string;
   content: string;
+  mode: NoteMode; // 新增：笔记编辑模式
   createdAt: string;
   updatedAt: string;
   customSlug?: string;
@@ -76,6 +78,7 @@ export function useLocalNotes() {
       const newNote: LocalNote = {
         id: crypto.randomUUID(),
         ...noteData,
+        mode: noteData.mode || NOTE_MODES.PLAIN_TEXT, // 默认使用纯文本模式
         createdAt: now,
         updatedAt: now
       };

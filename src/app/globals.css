@@ -165,3 +165,104 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Safari and Chrome */
 }
+
+/* Markdown 代码高亮样式 */
+.markdown-content pre {
+  overflow-x: auto;
+}
+
+.markdown-content code {
+  font-family: 'Monaco', 'Consolas', 'Lucida Console', monospace;
+}
+
+/* 亮色模式代码高亮 */
+.hljs {
+  background: oklch(0.965 0.008 78.1);
+  color: oklch(0.245 0.018 75.6);
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-title,
+.hljs-section,
+.hljs-doctag,
+.hljs-name,
+.hljs-strong {
+  color: oklch(0.487 0.125 215.2);
+  font-weight: bold;
+}
+
+.hljs-string,
+.hljs-title,
+.hljs-section,
+.hljs-attribute,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+  color: oklch(0.456 0.185 142.3);
+}
+
+.hljs-comment,
+.hljs-quote,
+.hljs-deletion,
+.hljs-meta {
+  color: oklch(0.556 0.025 68.2);
+  font-style: italic;
+}
+
+.hljs-number,
+.hljs-regexp,
+.hljs-literal,
+.hljs-type,
+.hljs-built_in,
+.hljs-builtin-name {
+  color: oklch(0.625 0.135 35.8);
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+/* 暗色模式代码高亮 */
+.dark .hljs {
+  background: oklch(0.245 0.018 82.5);
+  color: oklch(0.845 0.012 76.2);
+}
+
+.dark .hljs-keyword,
+.dark .hljs-selector-tag,
+.dark .hljs-title,
+.dark .hljs-section,
+.dark .hljs-doctag,
+.dark .hljs-name,
+.dark .hljs-strong {
+  color: oklch(0.675 0.155 210.8);
+  font-weight: bold;
+}
+
+.dark .hljs-string,
+.dark .hljs-title,
+.dark .hljs-section,
+.dark .hljs-attribute,
+.dark .hljs-symbol,
+.dark .hljs-bullet,
+.dark .hljs-addition {
+  color: oklch(0.656 0.185 142.3);
+}
+
+.dark .hljs-comment,
+.dark .hljs-quote,
+.dark .hljs-deletion,
+.dark .hljs-meta {
+  color: oklch(0.656 0.025 72.8);
+  font-style: italic;
+}
+
+.dark .hljs-number,
+.dark .hljs-regexp,
+.dark .hljs-literal,
+.dark .hljs-type,
+.dark .hljs-built_in,
+.dark .hljs-builtin-name {
+  color: oklch(0.725 0.135 35.8);
+}

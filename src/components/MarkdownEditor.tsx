@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { CardTitle } from '@/components/ui/card';
 import { Save, Share2, Check, Clock } from 'lucide-react';
 import PaperCard from './PaperCard';
-import NoteInput from './NoteInput';
+import MarkdownInput from './MarkdownInput';
 import SharePopup from './SharePopup';
 import { LocalNote } from '@/hooks/useLocalNotes';
 import { NOTE_MODES } from '@/types/note-modes';
@@ -23,14 +23,14 @@ interface Note {
   updatedAt: string;
 }
 
-interface NoteEditorProps {
+interface MarkdownEditorProps {
   selectedNote?: LocalNote | null;
   isNewNote?: boolean;
   onNoteSaved?: (note: LocalNote, titleChanged?: boolean) => void;
   saveNote: (noteData: Omit<LocalNote, 'id' | 'createdAt' | 'updatedAt'>, existingId?: string) => LocalNote | undefined;
 }
 
-export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved, saveNote }: NoteEditorProps) {
+export default function MarkdownEditor({ selectedNote, isNewNote = true, onNoteSaved, saveNote }: MarkdownEditorProps) {
   const t = useTranslations();
   const locale = useLocale();
   
@@ -55,10 +55,10 @@ export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved
 
   // localStorage 键名
   const STORAGE_KEYS = {
-    title: 'notepad_draft_title',
-    content: 'notepad_draft_content',
-    customSlug: 'notepad_draft_slug',
-    isPublic: 'notepad_draft_public'
+    title: 'notepad_draft_title_markdown',
+    content: 'notepad_draft_content_markdown',
+    customSlug: 'notepad_draft_slug_markdown',
+    isPublic: 'notepad_draft_public_markdown'
   };
 
   // 保存到 localStorage
@@ -224,7 +224,7 @@ export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved
       const savedNote = saveNote({
         title: title || '无标题',
         content,
-        mode: NOTE_MODES.PLAIN_TEXT, // 固定为纯文本模式
+        mode: NOTE_MODES.MARKDOWN, // 固定为Markdown模式
         customSlug,
         isPublic
       }, currentLocalNote?.id);
@@ -275,7 +275,7 @@ export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved
 
     autoSaveTimeoutRef.current = setTimeout(() => {
       autoSaveLocal();
-    }, 3000); // 2秒后自动保存到本地
+    }, 3000); // 3秒后自动保存到本地
 
     return () => {
       if (autoSaveTimeoutRef.current) {
@@ -440,7 +440,7 @@ export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* 纸张样式的主编辑区域 */}
+      {/* 纸张样式的Markdown编辑区域 */}
       <PaperCard
         header={
           <CardTitle className="flex items-center justify-between text-foreground">
@@ -495,8 +495,8 @@ export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved
           </CardTitle>
         }
       >
-        {/* 纯文本编辑器 */}
-        <NoteInput
+        {/* Markdown 编辑器 */}
+        <MarkdownInput
           title={title}
           content={content}
           onTitleChange={setTitle}

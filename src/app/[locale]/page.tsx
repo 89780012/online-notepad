@@ -3,6 +3,8 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Maximize2, Minimize2, Keyboard, Menu, X, Plus } from 'lucide-react';
 import NoteEditor from '@/components/NoteEditor';
+import MarkdownEditor from '@/components/MarkdownEditor';
+import ModeSelector from '@/components/ModeSelector';
 import NoteList from '@/components/NoteList';
 import LanguageToggle from '@/components/LanguageToggle';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -10,6 +12,7 @@ import MarketingContent from '@/components/MarketingContent';
 import { LocalNote, useLocalNotes } from '@/hooks/useLocalNotes';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
+import { NoteMode, NOTE_MODES } from '@/types/note-modes';
 
 export default function HomePage() {
   const { notes, saveNote, deleteNote, loadNotes } = useLocalNotes();
@@ -20,21 +23,45 @@ export default function HomePage() {
   const [showEditor, setShowEditor] = useState(false);
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false); // 默认隐藏侧边栏
+  const [currentMode, setCurrentMode] = useState<NoteMode>(NOTE_MODES.PLAIN_TEXT); // 新增：当前编辑模式
+  
+  // localStorage 键名
+  const MODE_STORAGE_KEY = 'notepad_current_mode';
 
   useEffect(() => {
     loadNotes();
+    // 从localStorage恢复模式状态
+    if (typeof window !== 'undefined') {
+      const savedMode = localStorage.getItem(MODE_STORAGE_KEY) as NoteMode;
+      if (savedMode && Object.values(NOTE_MODES).includes(savedMode)) {
+        setCurrentMode(savedMode);
+      }
+    }
   }, [loadNotes]);
 
   const handleNoteSelect = (note: LocalNote) => {
     setSelectedNote(note);
     setIsNewNote(false);
     setShowEditor(true);
+    // 根据笔记的模式来设置当前模式
+    if (note.mode && Object.values(NOTE_MODES).includes(note.mode)) {
+      setCurrentMode(note.mode);
+    }
   };
 
   const handleNewNote = () => {
     setSelectedNote(null);
     setIsNewNote(true);
     setShowEditor(true);
+    // 新建笔记时使用当前全局模式
+  };
+
+  const handleModeChange = (mode: NoteMode) => {
+    setCurrentMode(mode);
+    // 保存模式到localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(MODE_STORAGE_KEY, mode);
+    }
   };
 
   const handleNoteSaved = useCallback((savedNote: LocalNote) => {
@@ -101,12 +128,21 @@ export default function HomePage() {
 
         {/* 全屏编辑器 */}
         <div className="flex-1 p-4">
-          <NoteEditor
-            selectedNote={selectedNote}
-            isNewNote={isNewNote}
-            onNoteSaved={handleNoteSaved}
-            saveNote={saveNote}
-          />
+          {currentMode === NOTE_MODES.PLAIN_TEXT ? (
+            <NoteEditor
+              selectedNote={selectedNote}
+              isNewNote={isNewNote}
+              onNoteSaved={handleNoteSaved}
+              saveNote={saveNote}
+            />
+          ) : currentMode === NOTE_MODES.MARKDOWN ? (
+            <MarkdownEditor
+              selectedNote={selectedNote}
+              isNewNote={isNewNote}
+              onNoteSaved={handleNoteSaved}
+              saveNote={saveNote}
+            />
+          ) : null}
         </div>
       </div>
     );
@@ -130,6 +166,15 @@ export default function HomePage() {
           <h1 className="text-3xl font-bold text-foreground font-serif">Mini Notepad</h1>
         </div>
         <div className="flex items-center gap-2">
+          {/* 模式选择器 - 只在有编辑器时显示 */}
+          {showEditor && (
+            <ModeSelector
+              currentMode={currentMode}
+              onModeChange={handleModeChange}
+              className="mr-2"
+            />
+          )}
+          
           {/* 新建笔记按钮 */}
           <Button
             onClick={handleNewNote}
@@ -194,12 +239,21 @@ export default function HomePage() {
             <MarketingContent onNewNote={handleNewNote} />
           ) : (
             <div className="h-full p-4">
-              <NoteEditor
-                selectedNote={selectedNote}
-                isNewNote={isNewNote}
-                onNoteSaved={handleNoteSaved}
-                saveNote={saveNote}
-              />
+              {currentMode === NOTE_MODES.PLAIN_TEXT ? (
+                <NoteEditor
+                  selectedNote={selectedNote}
+                  isNewNote={isNewNote}
+                  onNoteSaved={handleNoteSaved}
+                  saveNote={saveNote}
+                />
+              ) : currentMode === NOTE_MODES.MARKDOWN ? (
+                <MarkdownEditor
+                  selectedNote={selectedNote}
+                  isNewNote={isNewNote}
+                  onNoteSaved={handleNoteSaved}
+                  saveNote={saveNote}
+                />
+              ) : null}
             </div>
           )}
         </main>
