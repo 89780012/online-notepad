@@ -120,16 +120,29 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+  html {
+    height: 100%;
   }
+  
   body {
     @apply bg-background text-foreground;
+    height: 100%;
+    min-height: 100vh;
     /* 给整个页面添加纸张纹理 */
     background-image: 
       radial-gradient(circle at 20% 50%, oklch(0.995 0.004 82.1 / 0.3) 0%, transparent 50%),
       radial-gradient(circle at 80% 20%, oklch(0.985 0.008 78.1 / 0.2) 0%, transparent 50%),
       radial-gradient(circle at 40% 80%, oklch(0.975 0.006 76.5 / 0.15) 0%, transparent 50%);
+  }
+
+  /* 确保Next.js根容器占满高度 */
+  #__next {
+    height: 100%;
+    min-height: 100vh;
+  }
+
+  * {
+    @apply border-border outline-ring/50;
   }
   
   /* 暗色模式下的纸张纹理 */

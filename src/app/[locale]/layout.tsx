@@ -54,9 +54,9 @@ export default async function LocaleLayout({
  const messages = await getMessages();
 
   return (
-    <html lang={locale}>
+    <html lang={locale} className="h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
         suppressHydrationWarning={true}
       >
         <ThemeProvider defaultTheme="system">

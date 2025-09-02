@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { Maximize2, Minimize2, Keyboard, Menu, X, Plus } from 'lucide-react';
+import { Menu, X, Plus } from 'lucide-react';
 import NoteEditor from '@/components/NoteEditor';
-import MarkdownEditor from '@/components/MarkdownEditor';
-import ModeSelector from '@/components/ModeSelector';
+import EnhancedMarkdownEditor from '@/components/EnhancedMarkdownEditor';
+import VerticalToolbar from '@/components/VerticalToolbar';
 import NoteList from '@/components/NoteList';
 import LanguageToggle from '@/components/LanguageToggle';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -21,9 +21,11 @@ export default function HomePage() {
   const [selectedNote, setSelectedNote] = useState<LocalNote | null>(null);
   const [isNewNote, setIsNewNote] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
-  const [isFocusMode, setIsFocusMode] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false); // 默认隐藏侧边栏
   const [currentMode, setCurrentMode] = useState<NoteMode>(NOTE_MODES.PLAIN_TEXT); // 新增：当前编辑模式
+  const [currentTitle, setCurrentTitle] = useState('');
+  const [currentContent, setCurrentContent] = useState('');
+  const [isFocusMode, setIsFocusMode] = useState(false);
   
   // localStorage 键名
   const MODE_STORAGE_KEY = 'notepad_current_mode';
@@ -43,6 +45,8 @@ export default function HomePage() {
     setSelectedNote(note);
     setIsNewNote(false);
     setShowEditor(true);
+    setCurrentTitle(note.title);
+    setCurrentContent(note.content);
     // 根据笔记的模式来设置当前模式
     if (note.mode && Object.values(NOTE_MODES).includes(note.mode)) {
       setCurrentMode(note.mode);
@@ -53,6 +57,8 @@ export default function HomePage() {
     setSelectedNote(null);
     setIsNewNote(true);
     setShowEditor(true);
+    setCurrentTitle('');
+    setCurrentContent('');
     // 新建笔记时使用当前全局模式
   };
 
@@ -68,14 +74,25 @@ export default function HomePage() {
     setSelectedNote(savedNote);
     setIsNewNote(false);
     setShowEditor(true);
+    setCurrentTitle(savedNote.title);
+    setCurrentContent(savedNote.content);
   }, []);
 
-  const handleNoteDelete = (noteId: string) => {
-    // The hook handles the deletion. We just need to update the UI if the deleted note was being edited.
-    if (selectedNote?.id === noteId) {
-      setSelectedNote(null);
-      setIsNewNote(false);
-      setShowEditor(false);
+  const handleSaveNote = async () => {
+    try {
+      const savedNote = saveNote({
+        title: currentTitle || '无标题',
+        content: currentContent,
+        mode: currentMode,
+        customSlug: selectedNote?.customSlug || '',
+        isPublic: selectedNote?.isPublic || false
+      }, selectedNote?.id);
+
+      if (savedNote) {
+        handleNoteSaved(savedNote);
+      }
+    } catch (error) {
+      console.error('保存笔记失败:', error);
     }
   };
 
@@ -83,12 +100,8 @@ export default function HomePage() {
     setIsFocusMode(!isFocusMode);
   };
 
-  const handleExitFocusMode = useCallback(() => {
+  const handleExitFocusMode = () => {
     setIsFocusMode(false);
-  }, []);
-
-  const toggleSidebar = () => {
-    setShowSidebar(!showSidebar);
   };
 
   // ESC键退出专注模式
@@ -105,42 +118,59 @@ export default function HomePage() {
     }
   }, [isFocusMode]);
 
+  const handleNoteDelete = (noteId: string) => {
+    // The hook handles the deletion. We just need to update the UI if the deleted note was being edited.
+    if (selectedNote?.id === noteId) {
+      setSelectedNote(null);
+      setIsNewNote(false);
+      setShowEditor(false);
+    }
+  };
+
+
+  const toggleSidebar = () => {
+    setShowSidebar(!showSidebar);
+  };
+
+
+
   // 专注模式渲染
-  if (isFocusMode && showEditor) {
+  if (isFocusMode) {
     return (
-      <div className="h-screen bg-card flex flex-col relative paper-texture">
+      <div className="fixed inset-0 bg-card flex flex-col relative paper-texture z-50 h-screen">
         {/* 专注模式退出按钮 */}
         <Button
           variant="ghost"
           size="sm"
           onClick={handleExitFocusMode}
           className="absolute top-4 right-4 z-50 opacity-50 hover:opacity-100 transition-opacity hover:bg-accent/80"
-          title={t('exitFocusMode')}
+          title="退出专注模式"
         >
-          <Minimize2 className="h-4 w-4" />
+          <X className="h-4 w-4" />
         </Button>
         
         {/* 专注模式快捷键提示 */}
         <div className="absolute bottom-4 left-4 z-50 opacity-30 hover:opacity-80 transition-opacity text-sm text-muted-foreground flex items-center gap-1">
-          <Keyboard className="h-3 w-3" />
-          <span>按 ESC 退出专注模式</span>
+          <span>按 ESC 键退出专注模式</span>
         </div>
 
         {/* 全屏编辑器 */}
-        <div className="flex-1 p-4">
+        <div className="flex-1 p-6 max-w-none overflow-hidden h-full min-h-0">
           {currentMode === NOTE_MODES.PLAIN_TEXT ? (
             <NoteEditor
               selectedNote={selectedNote}
               isNewNote={isNewNote}
               onNoteSaved={handleNoteSaved}
               saveNote={saveNote}
+              isFocusMode={true}
             />
           ) : currentMode === NOTE_MODES.MARKDOWN ? (
-            <MarkdownEditor
-              selectedNote={selectedNote}
-              isNewNote={isNewNote}
-              onNoteSaved={handleNoteSaved}
-              saveNote={saveNote}
+            <EnhancedMarkdownEditor
+              title={currentTitle}
+              content={currentContent}
+              onTitleChange={setCurrentTitle}
+              onContentChange={setCurrentContent}
+              isFocusMode={true}
             />
           ) : null}
         </div>
@@ -166,14 +196,6 @@ export default function HomePage() {
           <h1 className="text-3xl font-bold text-foreground font-serif">Mini Notepad</h1>
         </div>
         <div className="flex items-center gap-2">
-          {/* 模式选择器 - 只在有编辑器时显示 */}
-          {showEditor && (
-            <ModeSelector
-              currentMode={currentMode}
-              onModeChange={handleModeChange}
-              className="mr-2"
-            />
-          )}
           
           {/* 新建笔记按钮 */}
           <Button
@@ -185,18 +207,6 @@ export default function HomePage() {
             {t('newNote')}
           </Button>
           
-          {/* 专注模式按钮 - 只在有编辑器时显示 */}
-          {showEditor && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleFocusMode}
-              className="text-muted-foreground hover:text-foreground hover:bg-accent/80"
-              title={t('focusMode')}
-            >
-              <Maximize2 className="h-4 w-4" />
-            </Button>
-          )}
           <ThemeToggle />
           <LanguageToggle />
         </div>
@@ -232,29 +242,77 @@ export default function HomePage() {
 
         {/* 右侧编辑器或营销内容 */}
         <main className={`
-          flex-1 overflow-auto transition-all duration-300 ease-in-out
+          flex-1 overflow-auto transition-all duration-300 ease-in-out relative
           ${showSidebar ? 'lg:ml-0' : 'ml-0'}
         `}>
           {!showEditor ? (
             <MarketingContent onNewNote={handleNewNote} />
           ) : (
-            <div className="h-full p-4">
-              {currentMode === NOTE_MODES.PLAIN_TEXT ? (
-                <NoteEditor
-                  selectedNote={selectedNote}
-                  isNewNote={isNewNote}
-                  onNoteSaved={handleNoteSaved}
-                  saveNote={saveNote}
-                />
-              ) : currentMode === NOTE_MODES.MARKDOWN ? (
-                <MarkdownEditor
-                  selectedNote={selectedNote}
-                  isNewNote={isNewNote}
-                  onNoteSaved={handleNoteSaved}
-                  saveNote={saveNote}
-                />
-              ) : null}
-            </div>
+            <>
+              {/* 主编辑区域 */}
+              <div className="flex">
+                {/* 笔记编辑器容器 */}
+                <div className="flex-1 h-full p-4 relative">
+                  {currentMode === NOTE_MODES.PLAIN_TEXT ? (
+                    <NoteEditor
+                      selectedNote={selectedNote}
+                      isNewNote={isNewNote}
+                      onNoteSaved={handleNoteSaved}
+                      saveNote={saveNote}
+                      onToggleFocusMode={toggleFocusMode}
+                    />
+                  ) : currentMode === NOTE_MODES.MARKDOWN ? (
+                    <div className="max-w-5xl mx-auto space-y-6">
+                      {/* 顶部功能栏 */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 bg-red-500 dark:bg-red-400 rounded-full shadow-sm"></div>
+                          <div className="w-3 h-3 bg-yellow-500 dark:bg-yellow-400 rounded-full shadow-sm"></div>
+                          <div className="w-3 h-3 bg-green-500 dark:bg-green-400 rounded-full shadow-sm"></div>
+                          <span className="ml-4 font-semibold text-foreground">
+                            {isNewNote ? t('newNote') : (currentTitle || '无标题')}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button 
+                            onClick={handleSaveNote}
+                            size="sm"
+                            className="flex items-center gap-2 shadow-sm"
+                          >
+                            保存
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            onClick={() => {/* 分享逻辑 */}}
+                            size="sm"
+                            className="flex items-center gap-2 shadow-sm"
+                          >
+                            分享
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      {/* Markdown 编辑器 */}
+                      <EnhancedMarkdownEditor
+                        title={currentTitle}
+                        content={currentContent}
+                        onTitleChange={setCurrentTitle}
+                        onContentChange={setCurrentContent}
+                        onToggleFocusMode={toggleFocusMode}
+                      />
+                    </div>
+                  ) : null}
+                  
+                  {/* 垂直工具栏 - 紧挨着编辑区域右侧 */}
+                  <VerticalToolbar
+                    currentMode={currentMode}
+                    onModeChange={handleModeChange}
+                    onNewNote={handleNewNote}
+                    onExport={() => {/* 导出逻辑 */}}
+                  />
+                </div>
+              </div>
+            </>
           )}
         </main>
       </div>

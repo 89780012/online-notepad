@@ -1,18 +1,19 @@
 {
-  "timestamp": "2025-09-01T21:06:33.000Z",
+  "timestamp": "2025-09-02T17:04:43.000Z",
   "projectName": "online-notepad",
-  "projectDescription": "基于 Next.js 的现代化在线记事本应用，支持专注模式、多主题、自定义分享链接等功能",
+  "projectDescription": "基于 Next.js 的现代化在线记事本应用，支持专注模式、多主题、多种编辑模式（纯文本/Markdown）、增强编辑器、垂直工具栏、自定义分享链接等功能",
   "scanSummary": {
-    "totalFilesEstimated": 55,
-    "scannedFiles": 45,
-    "coveragePercentage": 81.8,
+    "totalFilesEstimated": 65,
+    "scannedFiles": 58,
+    "coveragePercentage": 89.2,
     "ignoredDirectories": [
       "node_modules",
       ".git",
       "dist",
       "build",
       ".next",
-      "coverage"
+      "coverage",
+      "__pycache__"
     ]
   },
   "modules": [
@@ -21,10 +22,11 @@
       "path": "src/",
       "language": "TypeScript",
       "status": "active",
-      "description": "Next.js 应用主体，包含页面、API、组件、主题系统、专注模式",
+      "description": "Next.js 应用主体，包含页面、API、组件、编辑器系统、主题系统、专注模式、垂直工具栏",
       "entryPoints": [
         "src/app/[locale]/layout.tsx",
         "src/app/[locale]/page.tsx",
+        "src/app/[locale]/share/[token]/page.tsx",
         "src/middleware.ts",
         "src/contexts/ThemeContext.tsx"
       ],
@@ -34,11 +36,17 @@
       ],
       "components": [
         "src/components/NoteEditor.tsx",
+        "src/components/MarkdownEditor.tsx",
+        "src/components/EnhancedMarkdownEditor.tsx",
+        "src/components/VerticalToolbar.tsx",
+        "src/components/MarkdownInput.tsx",
+        "src/components/ModeSelector.tsx",
         "src/components/NoteList.tsx",
         "src/components/SharePopup.tsx",
         "src/components/ThemeToggle.tsx",
         "src/components/LanguageToggle.tsx",
         "src/components/MarketingContent.tsx",
+        "src/components/PaperCard.tsx",
         "src/components/ui/"
       ],
       "hooks": [
@@ -46,6 +54,9 @@
       ],
       "contexts": [
         "src/contexts/ThemeContext.tsx"
+      ],
+      "types": [
+        "src/types/note-modes.ts"
       ],
       "config": [
         "src/i18n/config.ts",
@@ -63,10 +74,14 @@
           "src/__tests__/components/",
           "src/__tests__/api/",
           "src/__tests__/hooks/",
-          "src/__tests__/contexts/"
+          "src/__tests__/contexts/",
+          "src/__tests__/types/"
         ]
       },
       "newFeatures": [
+        "增强版 Markdown 编辑器 (EnhancedMarkdownEditor)",
+        "垂直工具栏 (VerticalToolbar)",
+        "编辑模式系统 (NoteMode types)",
         "专注模式 (Focus Mode)",
         "主题系统 (Light/Dark/System)",
         "自定义分享链接 (customSlug)",
@@ -79,7 +94,10 @@
         "tests": "missing",
         "dataModel": "complete",
         "themes": "complete",
-        "i18n": "complete"
+        "i18n": "complete",
+        "editingModes": "complete",
+        "markdownEditor": "complete",
+        "verticalToolbar": "complete"
       }
     },
     {
@@ -101,7 +119,7 @@
             "language (String, default: 'en')",
             "isPublic (Boolean, default: false)",
             "shareToken (String?, unique)",
-            "customSlug (String?, unique) [NEW]",
+            "customSlug (String?, unique)",
             "createdAt (DateTime)",
             "updatedAt (DateTime)"
           ]
@@ -174,7 +192,8 @@
       "postcss.config.mjs",
       "eslint.config.mjs",
       "components.json",
-      "tsconfig.tsbuildinfo"
+      "pnpm-lock.yaml",
+      "package-lock.json"
     ],
     "docs": [
       "README.md",
@@ -186,7 +205,8 @@
       ".gitignore"
     ],
     "meta": [
-      ".claude/index.json"
+      ".claude/index.json",
+      ".claude/settings.local.json"
     ]
   },
   "dependencies": {
@@ -198,6 +218,12 @@
       "zod@^4.1.5",
       "nanoid@^5.1.5",
       "prisma@^6.15.0"
+    ],
+    "markdown": [
+      "react-markdown@^10.1.0",
+      "rehype-highlight@^7.0.2",
+      "rehype-raw@^7.0.0",
+      "remark-gfm@^4.0.1"
     ],
     "ui": [
       "@radix-ui/react-label@^2.1.7",
@@ -223,9 +249,20 @@
   "coreFeatures": {
     "noteManagement": {
       "create": "支持标题和内容编辑",
+      "editingModes": "纯文本和 Markdown 两种编辑模式，支持增强编辑器",
       "autoSave": "实时本地存储",
       "search": "笔记列表搜索功能",
-      "localStorage": "离线功能支持"
+      "localStorage": "离线功能支持",
+      "modeSelector": "可切换的编辑模式选择器",
+      "verticalToolbar": "浮动垂直工具栏，支持快捷操作"
+    },
+    "markdownFeatures": {
+      "enhancedEditor": "EnhancedMarkdownEditor 组件，完整工具栏支持",
+      "viewModes": "三种视图模式：编辑/预览/分屏",
+      "toolbar": "丰富的格式化工具栏（标题、粗体、斜体、代码、链接等）",
+      "syntaxHighlight": "集成 rehype-highlight 插件",
+      "gfmSupport": "GitHub Flavored Markdown 和原始 HTML 支持",
+      "smartCursor": "智能文本插入和光标定位"
     },
     "sharing": {
       "publicSharing": "生成安全分享令牌",
@@ -234,11 +271,13 @@
       "shareControl": "公开/私有状态切换"
     },
     "userExperience": {
-      "focusMode": "全屏无干扰写作环境",
+      "focusMode": "全屏无干扰写作环境，支持增强编辑器",
       "themeSystem": "亮色/暗黑/系统自适应",
       "i18n": "中英文界面切换",
       "responsive": "移动端和桌面端适配",
-      "keyboardShortcuts": "ESC 键退出专注模式"
+      "keyboardShortcuts": "ESC 键退出专注模式",
+      "verticalToolbar": "浮动工具栏提供快捷访问",
+      "realtimePreview": "Markdown 实时预览功能"
     }
   },
   "qualityTools": {
@@ -260,6 +299,9 @@
       "framework": "建议 Jest + Testing Library",
       "status": "missing",
       "priority": [
+        "增强 Markdown 编辑器工具栏功能测试",
+        "垂直工具栏交互体验测试",
+        "编辑模式切换测试",
         "专注模式键盘交互测试",
         "主题切换逻辑测试",
         "自定义链接验证测试",
@@ -268,10 +310,28 @@
     }
   },
   "architectureUpdates": {
+    "enhancedMarkdownEditor": {
+      "description": "完整的 Markdown 编辑和预览系统，包含工具栏",
+      "implementation": "react-markdown + rehype plugins + 工具栏组件",
+      "features": ["三种视图模式", "工具栏支持", "智能文本插入", "语法高亮", "实时预览"],
+      "location": "src/components/EnhancedMarkdownEditor.tsx"
+    },
+    "verticalToolbar": {
+      "description": "浮动垂直工具栏，支持编辑模式切换和快捷操作",
+      "implementation": "React 组件 + 浮动布局 + 菜单系统",
+      "features": ["圆形按钮设计", "编辑模式切换菜单", "当前模式指示", "响应式适配"],
+      "location": "src/components/VerticalToolbar.tsx"
+    },
+    "noteModesSystem": {
+      "description": "可扩展的编辑模式类型系统",
+      "implementation": "TypeScript 类型定义 + 配置对象",
+      "features": ["类型安全", "功能配置", "模式验证", "扩展性"],
+      "location": "src/types/note-modes.ts"
+    },
     "focusMode": {
-      "description": "全屏专注写作模式",
+      "description": "全屏专注写作模式，支持所有编辑器",
       "implementation": "useState + 条件渲染",
-      "features": ["ESC 键退出", "专用 UI", "键盘提示"],
+      "features": ["ESC 键退出", "专用 UI", "键盘提示", "支持增强编辑器"],
       "location": "src/app/[locale]/page.tsx"
     },
     "themeSystem": {
@@ -289,7 +349,7 @@
     "localStorage": {
       "description": "本地笔记存储优化",
       "implementation": "Custom Hook + localStorage",
-      "features": ["实时保存", "搜索过滤", "数据同步"],
+      "features": ["实时保存", "搜索过滤", "数据同步", "模式支持"],
       "location": "src/hooks/useLocalNotes.ts"
     }
   },
@@ -302,9 +362,12 @@
         "添加 Jest 和 Testing Library 依赖",
         "创建 __tests__ 目录结构",
         "为核心组件添加单元测试",
+        "增强 Markdown 编辑器工具栏功能测试",
+        "垂直工具栏交互体验测试",
         "为 API 端点添加集成测试",
         "专注模式和主题系统的交互测试",
-        "customSlug 验证逻辑测试"
+        "customSlug 验证逻辑测试",
+        "编辑模式切换功能测试"
       ]
     },
     {
@@ -330,30 +393,56 @@
       ]
     },
     {
+      "category": "security",
+      "priority": "medium",
+      "description": "Markdown 编辑器安全防护",
+      "recommendations": [
+        "为 Markdown 编辑器添加 XSS 防护",
+        "内容净化处理",
+        "HTML 输入验证",
+        "CSP 安全策略配置"
+      ]
+    },
+    {
       "category": "performance",
       "priority": "low",
       "description": "性能优化机会",
       "recommendations": [
         "实现代码分割和懒加载",
         "添加缓存策略（Redis 或 ISR）",
+        "优化 Markdown 渲染性能",
         "优化图片和静态资源",
         "实现服务端渲染优化"
       ]
     }
   ],
   "nextSteps": [
-    "高优先级: 建立测试框架，特别是新功能（专注模式、主题、customSlug）的测试",
+    "高优先级: 建立测试框架，特别是新功能（增强Markdown编辑器、垂直工具栏、模式系统、专注模式、主题）的测试",
+    "高优先级: 为增强 Markdown 编辑器添加 XSS 防护和内容净化",
     "中优先级: 完善数据库种子数据和索引优化",
     "中优先级: 配置代码格式化工具和开发工作流",
     "补扫建议: 检查是否有隐藏的配置文件(.env.example, .vscode/, .github/)",
+    "功能优化: 为垂直工具栏添加更多快捷操作",
     "文档补充: 添加 API 文档、部署指南和用户使用说明"
   ],
   "recentUpdates": {
     "majorFeatures": [
-      "专注模式：全屏编辑体验，ESC 键快速退出",
+      "增强版 Markdown 编辑器：完整工具栏 + 三种视图模式",
+      "垂直工具栏：浮动圆形按钮设计 + 编辑模式切换菜单",
+      "编辑模式系统：类型安全的可扩展编辑模式框架",
+      "专注模式：全屏编辑体验，ESC 键快速退出，支持所有编辑模式",
       "主题系统：亮色/暗黑/系统自适应，持久化存储",
       "自定义分享链接：用户友好的 customSlug 功能",
       "本地存储优化：改进的离线体验和数据持久化"
+    ],
+    "technicalEnhancements": [
+      "react-markdown 集成和 rehype 插件支持",
+      "智能文本插入和光标定位系统",
+      "类型安全的编辑模式定义系统",
+      "浮动工具栏的响应式设计",
+      "模式特定的功能配置和验证",
+      "增强的本地存储支持编辑模式信息",
+      "优化的组件结构和代码复用"
     ],
     "apiEnhancements": [
       "customSlug 字段支持和唯一性验证",
@@ -361,6 +450,10 @@
       "改进的错误处理和冲突解决"
     ],
     "uxImprovements": [
+      "三种 Markdown 视图模式（编辑/预览/分屏）",
+      "完整的格式化工具栏体验",
+      "垂直工具栏的直观设计和交互",
+      "流畅的编辑模式切换体验",
       "响应式设计增强",
       "键盘快捷键支持",
       "平滑的主题切换动画",
@@ -368,23 +461,28 @@
     ]
   },
   "truncated": false,
-  "scanLimitations": "无限制，完成全面更新扫描",
+  "scanLimitations": "无限制，完成全面架构分析和增量更新",
   "coverageReport": {
     "completedAreas": [
       "核心功能架构分析",
-      "新增功能识别和文档化",
+      "增强 Markdown 编辑器识别和文档化",
+      "垂直工具栏组件完整分析",
+      "编辑模式系统完整架构梳理",
       "API 接口变更梳理",
       "数据模型更新记录",
-      "组件结构完整分析"
+      "组件结构完整分析",
+      "主题系统和专注模式深度分析"
     ],
     "partialAreas": [
       "性能优化策略（需要实际测试验证）",
-      "SEO 优化状态（基础配置完成）"
+      "SEO 优化状态（基础配置完成）",
+      "安全性评估（Markdown XSS 防护需加强）"
     ],
     "missingAreas": [
       "测试覆盖率（完全缺失）",
       "部署配置细节",
-      "监控和日志配置"
+      "监控和日志配置",
+      "Markdown 内容净化和安全防护"
     ]
   }
 }

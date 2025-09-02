@@ -10,9 +10,10 @@ interface NoteInputProps {
   content: string;
   onTitleChange: (title: string) => void;
   onContentChange: (content: string) => void;
+  showPaperLines?: boolean;
 }
 
-export default function NoteInput({ title, content, onTitleChange, onContentChange }: NoteInputProps) {
+export default function NoteInput({ title, content, onTitleChange, onContentChange, showPaperLines = true }: NoteInputProps) {
   const t = useTranslations();
   const [titleFocused, setTitleFocused] = useState(false);
   const [contentFocused, setContentFocused] = useState(false);
@@ -78,7 +79,7 @@ export default function NoteInput({ title, content, onTitleChange, onContentChan
   };
 
   return (
-    <>
+    <div className="h-full flex flex-col">
       {/* 标题输入区域 */}
       <div className="relative mb-8 h-16">
         <Input
@@ -110,7 +111,7 @@ export default function NoteInput({ title, content, onTitleChange, onContentChan
       </div>
       
       {/* 内容输入区域 */}
-      <div className="relative">
+      <div className="relative flex-1 min-h-0">
         <Textarea
           ref={textareaRef}
           id="content"
@@ -120,12 +121,11 @@ export default function NoteInput({ title, content, onTitleChange, onContentChan
           onFocus={() => setContentFocused(true)}
           onBlur={() => setContentFocused(false)}
           placeholder=""
-          className="w-full bg-transparent !border-0 !outline-0 !ring-0 !shadow-none focus:!border-0 focus:!outline-0 focus:!ring-0 focus:!shadow-none rounded-none p-0 m-0 resize-none text-foreground font-mono pl-20 pr-4 overflow-hidden scrollbar-hide"
+          className="w-full h-full bg-transparent !border-0 !outline-0 !ring-0 !shadow-none focus:!border-0 focus:!outline-0 focus:!ring-0 focus:!shadow-none rounded-none p-0 m-0 resize-none text-foreground font-mono pl-20 pr-4 overflow-auto scrollbar-hide"
           style={{ 
             lineHeight: '32px',
             letterSpacing: '0.5px',
             caretColor: 'hsl(var(--primary))',
-            minHeight: '512px',
             border: 'none !important',
             outline: 'none !important',
             boxShadow: 'none !important',
@@ -142,14 +142,16 @@ export default function NoteInput({ title, content, onTitleChange, onContentChan
       </div>
       
       {/* 纸张书写引导线 */}
-      <div className="absolute inset-0 pointer-events-none">
-        {!title && !titleFocused && (
-          <div className="absolute top-8 left-[84px] w-1 h-1 bg-primary/40 rounded-full animate-pulse"></div>
-        )}
-        {!content && !contentFocused && title && (
-          <div className="absolute top-24 left-[84px] w-1 h-1 bg-primary/40 rounded-full animate-pulse"></div>
-        )}
-      </div>
-    </>
+      {showPaperLines && (
+        <div className="absolute inset-0 pointer-events-none">
+          {!title && !titleFocused && (
+            <div className="absolute top-8 left-[84px] w-1 h-1 bg-primary/40 rounded-full animate-pulse"></div>
+          )}
+          {!content && !contentFocused && title && (
+            <div className="absolute top-24 left-[84px] w-1 h-1 bg-primary/40 rounded-full animate-pulse"></div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

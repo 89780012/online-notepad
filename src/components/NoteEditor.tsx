@@ -4,12 +4,13 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { CardTitle } from '@/components/ui/card';
-import { Save, Share2, Check, Clock } from 'lucide-react';
+import { Save, Share2, Check, Clock, Maximize2 } from 'lucide-react';
 import PaperCard from './PaperCard';
 import NoteInput from './NoteInput';
 import SharePopup from './SharePopup';
 import { LocalNote } from '@/hooks/useLocalNotes';
 import { NOTE_MODES } from '@/types/note-modes';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface Note {
   id: string;
@@ -28,11 +29,14 @@ interface NoteEditorProps {
   isNewNote?: boolean;
   onNoteSaved?: (note: LocalNote, titleChanged?: boolean) => void;
   saveNote: (noteData: Omit<LocalNote, 'id' | 'createdAt' | 'updatedAt'>, existingId?: string) => LocalNote | undefined;
+  isFocusMode?: boolean;
+  onToggleFocusMode?: () => void;
 }
 
-export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved, saveNote }: NoteEditorProps) {
+export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved, saveNote, isFocusMode = false, onToggleFocusMode }: NoteEditorProps) {
   const t = useTranslations();
   const locale = useLocale();
+  const { resolvedTheme } = useTheme();
   
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -438,8 +442,49 @@ export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved
     validateSlug(val);
   };
 
+  // 专注模式渲染
+  if (isFocusMode) {
+    return (
+      <div className="w-full h-full flex flex-col paper-texture min-h-0">
+        {/* 纸张边距线 - 复制PaperCard的效果 */}
+        <div className="absolute left-16 top-0 bottom-0 w-px bg-red-400/60 dark:bg-red-300/40 z-10 shadow-sm"></div>
+        <div className="absolute left-20 top-0 bottom-0 w-px bg-blue-300/50 dark:bg-blue-200/30 z-10 shadow-sm"></div>
+        
+        {/* 纸张孔洞效果 */}
+        <div className="absolute left-8 top-8 w-2 h-2 bg-background border border-border/30 rounded-full shadow-inner"></div>
+        <div className="absolute left-8 top-16 w-2 h-2 bg-background border border-border/30 rounded-full shadow-inner"></div>
+        <div className="absolute left-8 top-24 w-2 h-2 bg-background border border-border/30 rounded-full shadow-inner"></div>
+        
+        {/* 全屏编辑器，带纸张线条背景 */}
+        <div 
+          className="relative flex-1 bg-card/90 backdrop-blur-sm min-h-0"
+          style={{
+            backgroundImage: `repeating-linear-gradient(
+              transparent,
+              transparent 31px,
+              ${resolvedTheme === 'dark' ? 'oklch(0.285 0.022 79.5)' : 'oklch(0.896 0.015 75.8)'} 31px,
+              ${resolvedTheme === 'dark' ? 'oklch(0.285 0.022 79.5)' : 'oklch(0.896 0.015 75.8)'} 32px
+            )`,
+            paddingTop: '32px',
+            paddingBottom: '32px'
+          }}
+        >
+          <div className="px-8 relative h-full">
+            <NoteInput
+              title={title}
+              content={content}
+              onTitleChange={setTitle}
+              onContentChange={setContent}
+              showPaperLines={false} // 因为已经有背景线条了
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-6">
       {/* 纸张样式的主编辑区域 */}
       <PaperCard
         header={
@@ -489,6 +534,15 @@ export default function NoteEditor({ selectedNote, isNewNote = true, onNoteSaved
                 >
                   <Share2 className="w-4 h-4" />
                   {t('share')}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onToggleFocusMode}
+                  className="text-muted-foreground hover:text-foreground hover:bg-accent/80"
+                  title="专注模式"
+                >
+                  <Maximize2 className="h-4 w-4" />
                 </Button>
               </div>
             </div>
