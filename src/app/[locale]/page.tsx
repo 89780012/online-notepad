@@ -91,13 +91,11 @@ export default function HomePage() {
   // 自动保存函数
   const autoSaveNote = useCallback(async () => {
     if (!currentTitle && !currentContent) return;
-    
-    console.log(1111111)
+
     const currentContentKey = `${currentTitle}:${currentContent}`;
     if (currentContentKey === lastAutoSaveRef.current) {
       return; // 内容没有变化，不需要保存
     }
-    console.log(2222222)
 
     setIsAutoSaving(true);
     try {
@@ -127,7 +125,6 @@ export default function HomePage() {
     }
     
     autoSaveTimeoutRef.current = setTimeout(() => {
-      console.log('自动保存...');
       autoSaveNote();
     }, 2000); // 2秒后自动保存
   }, [autoSaveNote]);
@@ -453,7 +450,7 @@ export default function HomePage() {
       <div className="flex flex-1 overflow-hidden relative">
         {/* 左侧笔记列表 - 默认隐藏，可通过工具栏按钮打开 */}
         <div className={`
-          w-80 border-r border-border bg-card/30 z-20
+          w-64 border-r border-border bg-card/30 z-20
           ${showSidebar ? 'block' : 'hidden'}
           ${showSidebar ? 'absolute left-0 top-0 h-full' : ''}
         `}>

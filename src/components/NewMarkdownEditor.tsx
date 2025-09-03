@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef, Suspense } from 'react';
+import { useState, useCallback, useRef, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { Maximize2, Minimize2, Save, Share2, FolderOpen, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,12 +8,12 @@ import { Input } from '@/components/ui/input';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 import { useTranslations } from 'next-intl';
-// import 'katex/dist/katex.css';
+import 'katex/dist/katex.css';
 
 // 动态导入 MDEditor 以避免 SSR 问题
 const MDEditor = dynamic(
-  () => import('@uiw/react-md-editor'),
-  { 
+  () => import('@uiw/react-md-editor').then((mod) => ({ default: mod.default })),
+  {
     ssr: false,
     loading: () => (
       <div className="flex items-center justify-center h-full">
@@ -52,10 +52,52 @@ export default function NewMarkdownEditor({
 }: NewMarkdownEditorProps) {
   const t = useTranslations();
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [showSaveStatus, setShowSaveStatus] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const saveStatusTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // 监听自动保存状态变化
+  useEffect(() => {
+    if (isAutoSaving) {
+      setShowSaveStatus(true);
+      if (saveStatusTimeoutRef.current) {
+        clearTimeout(saveStatusTimeoutRef.current);
+      }
+    } else if (showSaveStatus) {
+      // 保存完成后，显示"已保存"状态3秒
+      saveStatusTimeoutRef.current = setTimeout(() => {
+        setShowSaveStatus(false);
+      }, 3000);
+    }
+  }, [isAutoSaving, showSaveStatus]);
+
+  // 清理定时器
+  useEffect(() => {
+    return () => {
+      if (saveStatusTimeoutRef.current) {
+        clearTimeout(saveStatusTimeoutRef.current);
+      }
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleContentChange = useCallback((value?: string) => {
     onContentChange(value || '');
+
+    // 设置正在输入状态
+    setIsTyping(true);
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    // 1秒后清除输入状态
+    typingTimeoutRef.current = setTimeout(() => {
+      setIsTyping(false);
+    }, 1000);
   }, [onContentChange]);
 
   const handleFullScreenToggle = () => {
@@ -124,17 +166,26 @@ export default function NewMarkdownEditor({
             className="flex-1 max-w-md border-none bg-transparent text-lg font-semibold focus:ring-0"
           />
           
-          {/* 自动保存状态提示 */}
-          {isAutoSaving ? (
-            <div className="text-sm text-blue-600 dark:text-blue-400 flex items-center gap-1">
-              <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
-              {t('autoSaving')}
+          {/* 状态提示 */}
+          {isTyping ? (
+            <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1">
+              <span className="w-2 h-2 bg-gray-500 rounded-full animate-pulse"></span>
+              {t('typing')}
             </div>
-          ) : (
-            <div className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
-              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-              {t('allChangesSaved')}
-            </div>
+          ) : showSaveStatus && (
+            <>
+              {isAutoSaving ? (
+                <div className="text-sm text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                  {t('autoSaving')}
+                </div>
+              ) : (
+                <div className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  {t('allChangesSaved')}
+                </div>
+              )}
+            </>
           )}
         </div>
         

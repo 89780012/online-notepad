@@ -127,7 +127,7 @@ export default function NoteList({
   };
 
   return (
-    <div className="w-80 bg-sidebar/95 backdrop-blur-sm border-r border-sidebar-border flex flex-col h-full shadow-lg">
+    <div className="w-64 bg-sidebar/95 backdrop-blur-sm border-r border-sidebar-border flex flex-col h-full shadow-lg">
       {/* 头部：关闭按钮、新建按钮和搜索 */}
       <div className="p-4 border-b border-sidebar-border bg-sidebar-accent/30">
         {/* 移动端关闭按钮 */}
