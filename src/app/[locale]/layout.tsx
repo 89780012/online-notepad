@@ -1,5 +1,5 @@
 import {NextIntlClientProvider} from 'next-intl';
-import {getMessages} from 'next-intl/server';
+import {getLocale,getMessages} from 'next-intl/server';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from '@/contexts/ThemeContext';
@@ -17,14 +17,11 @@ const geistMono = Geist_Mono({
 
 type Props = {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
 };
 
 export async function generateMetadata({
-  params,
 }: Props): Promise<Metadata> {
-  const { locale } = await params
-  const messages = await getMessages({ locale });
+  const messages = await getMessages();
 
   return {
     title: {
@@ -46,11 +43,10 @@ export async function generateMetadata({
 }
 
 export default async function LocaleLayout({
-  children,
-  params,
+  children
 }: Props) {
 
- const { locale } = await params
+ const locale = await getLocale();
  const messages = await getMessages();
 
   return (
