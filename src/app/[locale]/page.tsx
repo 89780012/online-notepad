@@ -161,14 +161,92 @@ export default function HomePage() {
     lastAutoSaveRef.current = `${note.title}:${note.content}`;
   };
 
+  // 创建多语言模板的函数
+  const createNoteTemplate = (t: (key: string) => string, locale: string) => `# ${t('newNoteTitle')}
+
+## ${t('overview')}
+${t('writeYourThoughts')}
+
+## ${t('keyPoints')}
+- ${t('firstPoint')}
+- ${t('secondPoint')}
+- ${t('thirdPoint')}
+
+## ${t('codeExample')}
+\`\`\`javascript
+${t('addCodeHere')}
+console.log('Hello, World!');
+\`\`\`
+
+## ${t('mathFormula')}
+${t('useLatexSyntax')} $E = mc^2$
+
+## ${t('taskList')}
+- [ ] ${t('pendingTask1')}
+- [ ] ${t('pendingTask2')}
+- [x] ${t('completedTask')}
+
+## ${t('linkText')}
+[${t('linkText')}](https://example.com)
+
+---
+*${t('createdAt')} ${new Date().toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US')}*
+`;
+
   const handleNewNote = () => {
     setSelectedNote(null);
     setShowEditor(true);
     setCurrentTitle('');
-    setCurrentContent('');
-    
+    setCurrentContent(createNoteTemplate(t, locale));
+
     // 重置自动保存状态
     lastAutoSaveRef.current = '';
+  };
+
+  // 清除 Markdown 格式的函数
+  const stripMarkdown = (text: string): string => {
+    return text
+      // 移除标题
+      .replace(/^#{1,6}\s+/gm, '')
+      // 移除粗体和斜体
+      .replace(/\*\*([^*]+)\*\*/g, '$1')
+      .replace(/\*([^*]+)\*/g, '$1')
+      .replace(/__([^_]+)__/g, '$1')
+      .replace(/_([^_]+)_/g, '$1')
+      // 移除删除线
+      .replace(/~~([^~]+)~~/g, '$1')
+      // 移除代码块
+      .replace(/```[\s\S]*?```/g, '')
+      .replace(/`([^`]+)`/g, '$1')
+      // 移除链接
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      // 移除图片
+      .replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1')
+      // 移除引用
+      .replace(/^>\s+/gm, '')
+      // 移除列表标记
+      .replace(/^[\s]*[-*+]\s+/gm, '')
+      .replace(/^[\s]*\d+\.\s+/gm, '')
+      // 移除任务列表
+      .replace(/^[\s]*-\s+\[[x\s]\]\s+/gm, '')
+      // 移除水平线
+      .replace(/^---+$/gm, '')
+      // 移除多余的空行
+      .replace(/\n\s*\n\s*\n/g, '\n\n')
+      .trim();
+  };
+
+  // 处理清除 Markdown 格式
+  const handleClearMarkdown = () => {
+    const plainText = stripMarkdown(currentContent);
+    setCurrentContent(plainText);
+    console.log('Markdown格式已清除');
+  };
+
+  // 处理使用模板
+  const handleUseTemplate = () => {
+    setCurrentContent(createNoteTemplate(t, locale));
+    console.log('已应用笔记模板');
   };
 
   const handleNoteSaved = useCallback((savedNote: LocalNote) => {
@@ -408,6 +486,8 @@ export default function HomePage() {
           isFocusMode={true}
           onToggleFocusMode={handleExitFocusMode}
           isAutoSaving={isAutoSaving}
+          onClearMarkdown={handleClearMarkdown}
+          onUseTemplate={handleUseTemplate}
         />
       </div>
     );
@@ -483,6 +563,8 @@ export default function HomePage() {
                 onSaveAs={handleSaveAs}
                 onToggleFocusMode={toggleFocusMode}
                 isAutoSaving={isAutoSaving}
+                onClearMarkdown={handleClearMarkdown}
+                onUseTemplate={handleUseTemplate}
               />
             </div>
           )}
