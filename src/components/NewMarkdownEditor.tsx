@@ -250,8 +250,9 @@ export default function NewMarkdownEditor({
 
   return (
     <div className={`flex flex-col h-full ${isFocusMode ? 'h-screen' : ''}`}>
-      {/* Header 工具栏 */}
-      <div className="flex items-center justify-between p-4 bg-card border-b border-border">
+      <div className={`editor-container flex flex-col h-full ${isFocusMode ? 'border-none shadow-none rounded-none' : ''}`}>
+        {/* Header 工具栏 */}
+        <div className="flex items-center justify-between p-4 bg-card border-b border-border">
         <div className="flex items-center gap-4 flex-1">
           {/* 装饰性指示器 */}
           <div className="flex items-center gap-2">
@@ -413,6 +414,7 @@ export default function NewMarkdownEditor({
             data-color-mode={resolvedTheme}
           />
         </Suspense>
+      </div>
       </div>
     </div>
   );

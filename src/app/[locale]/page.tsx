@@ -547,11 +547,11 @@ ${t('useLatexSyntax')} $E = mc^2$
         </div>
 
         {/* 右侧编辑器或营销内容 */}
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto bg-background">
           {!showEditor ? (
             <MarketingContent onNewNote={handleNewNote} />
           ) : (
-            <div className="max-w-7xl mx-auto w-full h-full">
+            <div className="max-w-7xl mx-auto w-full h-full p-4">
               <NewMarkdownEditor
                 title={currentTitle}
                 content={currentContent}

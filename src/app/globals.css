@@ -46,77 +46,77 @@
 :root {
   --radius: 0.625rem;
   
-  /* 纸张色彩方案 - 亮色模式 */
-  --background: oklch(0.985 0.006 76.82); /* 象牙白/米白色背景 */
-  --foreground: oklch(0.205 0.015 78.5); /* 深棕色文字 */
-  --card: oklch(0.995 0.004 82.1); /* 纸张白色 */
-  --card-foreground: oklch(0.205 0.015 78.5);
-  --popover: oklch(0.995 0.004 82.1);
-  --popover-foreground: oklch(0.205 0.015 78.5);
-  --primary: oklch(0.487 0.125 215.2); /* 钢笔蓝色 */
-  --primary-foreground: oklch(0.995 0.004 82.1);
-  --secondary: oklch(0.965 0.008 78.1); /* 浅米色 */
-  --secondary-foreground: oklch(0.245 0.018 75.6);
-  --muted: oklch(0.965 0.008 78.1); /* 浅纸张色 */
-  --muted-foreground: oklch(0.556 0.025 68.2); /* 中性灰棕色 */
-  --accent: oklch(0.965 0.008 78.1);
-  --accent-foreground: oklch(0.245 0.018 75.6);
-  --destructive: oklch(0.577 0.245 27.325); /* 红色保持不变 */
-  --border: oklch(0.896 0.015 75.8); /* 纸张边框色 */
-  --input: oklch(0.896 0.015 75.8);
-  --ring: oklch(0.487 0.125 215.2); /* 钢笔蓝色 */
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  
-  /* 侧边栏纸张风格 */
-  --sidebar: oklch(0.975 0.006 78.3); /* 浅纸张色 */
-  --sidebar-foreground: oklch(0.205 0.015 78.5);
-  --sidebar-primary: oklch(0.487 0.125 215.2);
-  --sidebar-primary-foreground: oklch(0.995 0.004 82.1);
-  --sidebar-accent: oklch(0.955 0.01 77.2);
-  --sidebar-accent-foreground: oklch(0.245 0.018 75.6);
-  --sidebar-border: oklch(0.886 0.018 74.5);
-  --sidebar-ring: oklch(0.487 0.125 215.2);
+  /* GitHub 亮色主题色彩方案 */
+  --background: oklch(1 0 0); /* 纯白色背景 */
+  --foreground: oklch(0.15 0.005 240); /* 深灰色文字 */
+  --card: oklch(1 0 0); /* 纯白色卡片 */
+  --card-foreground: oklch(0.15 0.005 240);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0.005 240);
+  --primary: oklch(0.45 0.18 212); /* GitHub 蓝色 */
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.96 0.005 240); /* 浅灰色背景 */
+  --secondary-foreground: oklch(0.25 0.008 240);
+  --muted: oklch(0.96 0.005 240); /* 静音背景 */
+  --muted-foreground: oklch(0.45 0.01 240); /* 中性灰色 */
+  --accent: oklch(0.96 0.005 240);
+  --accent-foreground: oklch(0.25 0.008 240);
+  --destructive: oklch(0.55 0.25 15); /* GitHub 红色 */
+  --border: oklch(0.85 0.008 240); /* 边框颜色 */
+  --input: oklch(0.85 0.008 240);
+  --ring: oklch(0.45 0.18 212); /* GitHub 蓝色聚焦环 */
+  --chart-1: oklch(0.45 0.18 212);
+  --chart-2: oklch(0.5 0.15 160);
+  --chart-3: oklch(0.55 0.12 60);
+  --chart-4: oklch(0.5 0.2 300);
+  --chart-5: oklch(0.45 0.22 30);
+
+  /* GitHub 风格侧边栏 */
+  --sidebar: oklch(0.98 0.002 240); /* 浅灰色侧边栏 */
+  --sidebar-foreground: oklch(0.15 0.005 240);
+  --sidebar-primary: oklch(0.45 0.18 212);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.94 0.006 240);
+  --sidebar-accent-foreground: oklch(0.25 0.008 240);
+  --sidebar-border: oklch(0.82 0.01 240);
+  --sidebar-ring: oklch(0.45 0.18 212);
 }
 
 .dark {
-  /* 纸张色彩方案 - 暗色模式（夜间模式下的复古纸张） */
-  --background: oklch(0.165 0.012 85.3); /* 深色纸张背景 */
-  --foreground: oklch(0.885 0.008 78.5); /* 浅色文字 */
-  --card: oklch(0.195 0.015 83.2); /* 深色纸张 */
-  --card-foreground: oklch(0.885 0.008 78.5);
-  --popover: oklch(0.195 0.015 83.2);
-  --popover-foreground: oklch(0.885 0.008 78.5);
-  --primary: oklch(0.675 0.155 210.8); /* 亮钢笔蓝色 */
-  --primary-foreground: oklch(0.165 0.012 85.3);
-  --secondary: oklch(0.245 0.018 82.5); /* 深米色 */
-  --secondary-foreground: oklch(0.845 0.012 76.2);
-  --muted: oklch(0.245 0.018 82.5);
-  --muted-foreground: oklch(0.656 0.025 72.8); /* 中性浅灰棕色 */
-  --accent: oklch(0.245 0.018 82.5);
-  --accent-foreground: oklch(0.845 0.012 76.2);
-  --destructive: oklch(0.704 0.191 22.216); /* 暗红色 */
-  --border: oklch(0.285 0.022 79.5); /* 深纸张边框色 */
-  --input: oklch(0.285 0.022 79.5);
-  --ring: oklch(0.675 0.155 210.8); /* 亮钢笔蓝色 */
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  
-  /* 暗色侧边栏纸张风格 */
-  --sidebar: oklch(0.185 0.014 84.1);
-  --sidebar-foreground: oklch(0.885 0.008 78.5);
-  --sidebar-primary: oklch(0.675 0.155 210.8);
-  --sidebar-primary-foreground: oklch(0.165 0.012 85.3);
-  --sidebar-accent: oklch(0.225 0.016 81.8);
-  --sidebar-accent-foreground: oklch(0.845 0.012 76.2);
-  --sidebar-border: oklch(0.265 0.020 80.2);
-  --sidebar-ring: oklch(0.675 0.155 210.8);
+  /* GitHub 暗黑主题色彩方案 - 基于 #0D1117 */
+  --background: oklch(0.08 0.015 240); /* #0D1117 主背景色 */
+  --foreground: oklch(0.92 0.005 240); /* 高对比度白色文字 */
+  --card: oklch(0.12 0.018 240); /* 稍亮的卡片背景 */
+  --card-foreground: oklch(0.92 0.005 240);
+  --popover: oklch(0.12 0.018 240);
+  --popover-foreground: oklch(0.92 0.005 240);
+  --primary: oklch(0.58 0.18 212); /* GitHub 蓝色 */
+  --primary-foreground: oklch(0.08 0.015 240);
+  --secondary: oklch(0.16 0.02 240); /* 次要背景色 */
+  --secondary-foreground: oklch(0.85 0.008 240);
+  --muted: oklch(0.16 0.02 240); /* 静音背景 */
+  --muted-foreground: oklch(0.65 0.015 240); /* 静音文字 */
+  --accent: oklch(0.16 0.02 240);
+  --accent-foreground: oklch(0.85 0.008 240);
+  --destructive: oklch(0.65 0.25 15); /* 红色警告 */
+  --border: oklch(0.22 0.025 240); /* 边框颜色 */
+  --input: oklch(0.22 0.025 240);
+  --ring: oklch(0.58 0.18 212); /* 聚焦环颜色 */
+  --chart-1: oklch(0.58 0.18 212);
+  --chart-2: oklch(0.65 0.15 160);
+  --chart-3: oklch(0.7 0.12 60);
+  --chart-4: oklch(0.6 0.2 300);
+  --chart-5: oklch(0.55 0.22 30);
+
+  /* GitHub 风格侧边栏 */
+  --sidebar: oklch(0.1 0.016 240); /* 侧边栏背景 */
+  --sidebar-foreground: oklch(0.92 0.005 240);
+  --sidebar-primary: oklch(0.58 0.18 212);
+  --sidebar-primary-foreground: oklch(0.08 0.015 240);
+  --sidebar-accent: oklch(0.14 0.019 240);
+  --sidebar-accent-foreground: oklch(0.85 0.008 240);
+  --sidebar-border: oklch(0.2 0.023 240);
+  --sidebar-ring: oklch(0.58 0.18 212);
 }
 
 @layer base {
@@ -128,11 +128,11 @@
     @apply bg-background text-foreground;
     height: 100%;
     min-height: 100vh;
-    /* 给整个页面添加纸张纹理 */
-    background-image: 
-      radial-gradient(circle at 20% 50%, oklch(0.995 0.004 82.1 / 0.3) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, oklch(0.985 0.008 78.1 / 0.2) 0%, transparent 50%),
-      radial-gradient(circle at 40% 80%, oklch(0.975 0.006 76.5 / 0.15) 0%, transparent 50%);
+    /* GitHub 亮色模式下的微妙背景纹理 */
+    background-image:
+      radial-gradient(circle at 20% 50%, oklch(0.98 0.002 240 / 0.2) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, oklch(0.97 0.003 240 / 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 40% 80%, oklch(0.975 0.002 240 / 0.1) 0%, transparent 50%);
   }
 
   /* 确保Next.js根容器占满高度 */
@@ -145,28 +145,121 @@
     @apply border-border outline-ring/50;
   }
   
-  /* 暗色模式下的纸张纹理 */
+  /* GitHub 暗色模式下的背景纹理 */
   .dark body {
-    background-image: 
-      radial-gradient(circle at 20% 50%, oklch(0.195 0.018 83.5 / 0.4) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, oklch(0.175 0.015 81.2 / 0.3) 0%, transparent 50%),
-      radial-gradient(circle at 40% 80%, oklch(0.185 0.012 79.8 / 0.2) 0%, transparent 50%);
+    background-image:
+      radial-gradient(circle at 20% 50%, oklch(0.12 0.02 240 / 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, oklch(0.1 0.018 240 / 0.2) 0%, transparent 50%),
+      radial-gradient(circle at 40% 80%, oklch(0.11 0.019 240 / 0.15) 0%, transparent 50%);
   }
 }
 
-/* 纸张样式类 */
+/* GitHub 风格纸张样式类 */
 .paper-texture {
-  background-image: 
-    radial-gradient(circle at 1px 1px, oklch(0.896 0.015 75.8 / 0.15) 1px, transparent 0),
-    linear-gradient(to right, oklch(0.975 0.006 78.3 / 0.1) 1px, transparent 1px);
+  background-image:
+    radial-gradient(circle at 1px 1px, oklch(0.85 0.008 240 / 0.1) 1px, transparent 0),
+    linear-gradient(to right, oklch(0.94 0.006 240 / 0.08) 1px, transparent 1px);
   background-size: 20px 20px, 40px 40px;
 }
 
 .dark .paper-texture {
-  background-image: 
-    radial-gradient(circle at 1px 1px, oklch(0.285 0.022 79.5 / 0.2) 1px, transparent 0),
-    linear-gradient(to right, oklch(0.225 0.016 81.8 / 0.15) 1px, transparent 1px);
+  background-image:
+    radial-gradient(circle at 1px 1px, oklch(0.22 0.025 240 / 0.25) 1px, transparent 0),
+    linear-gradient(to right, oklch(0.14 0.019 240 / 0.2) 1px, transparent 1px);
   background-size: 20px 20px, 40px 40px;
+}
+
+/* 编辑器区域样式优化 */
+.editor-container {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
+  overflow: hidden;
+  transition: all 0.2s ease-in-out;
+}
+
+.editor-container:hover {
+  border-color: var(--ring);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.dark .editor-container {
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.3),
+    0 1px 2px -1px rgb(0 0 0 / 0.3);
+}
+
+.dark .editor-container:hover {
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.4),
+    0 2px 4px -2px rgb(0 0 0 / 0.4);
+}
+
+/* MDEditor 样式覆盖 */
+.w-md-editor {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+.w-md-editor-text-container,
+.w-md-editor-text,
+.w-md-editor-text-textarea {
+  background-color: var(--card) !important;
+  color: var(--foreground) !important;
+  border: none !important;
+}
+
+.w-md-editor-preview {
+  background-color: var(--card) !important;
+  color: var(--foreground) !important;
+  border-left: 1px solid var(--border) !important;
+}
+
+/* 编辑器工具栏样式优化 */
+.editor-container .w-md-editor-toolbar {
+  background-color: var(--muted) !important;
+  border-bottom: 1px solid var(--border) !important;
+  border-radius: 0 !important;
+}
+
+.editor-container .w-md-editor-toolbar button {
+  color: var(--muted-foreground) !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.editor-container .w-md-editor-toolbar button:hover {
+  background-color: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+}
+
+/* 编辑器分割线样式 */
+.w-md-editor-bar {
+  background-color: var(--border) !important;
+}
+
+/* 编辑器聚焦状态 */
+.editor-container:focus-within {
+  border-color: var(--ring) !important;
+  box-shadow: 0 0 0 2px var(--ring) !important;
+}
+
+/* 专注模式下的编辑器样式 */
+.editor-container.border-none {
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.editor-container.border-none:hover,
+.editor-container.border-none:focus-within {
+  border: none !important;
+  box-shadow: none !important;
 }
 
 /* 隐藏滚动条但保持滚动功能 */
@@ -188,10 +281,10 @@
   font-family: 'Monaco', 'Consolas', 'Lucida Console', monospace;
 }
 
-/* 亮色模式代码高亮 */
+/* GitHub 亮色模式代码高亮 */
 .hljs {
-  background: oklch(0.965 0.008 78.1);
-  color: oklch(0.245 0.018 75.6);
+  background: oklch(0.96 0.005 240);
+  color: oklch(0.25 0.008 240);
 }
 
 .hljs-keyword,
@@ -201,7 +294,7 @@
 .hljs-doctag,
 .hljs-name,
 .hljs-strong {
-  color: oklch(0.487 0.125 215.2);
+  color: oklch(0.4 0.15 300); /* 紫色关键字 */
   font-weight: bold;
 }
 
@@ -212,14 +305,14 @@
 .hljs-symbol,
 .hljs-bullet,
 .hljs-addition {
-  color: oklch(0.456 0.185 142.3);
+  color: oklch(0.35 0.12 120); /* 绿色字符串 */
 }
 
 .hljs-comment,
 .hljs-quote,
 .hljs-deletion,
 .hljs-meta {
-  color: oklch(0.556 0.025 68.2);
+  color: oklch(0.5 0.02 240); /* 灰色注释 */
   font-style: italic;
 }
 
@@ -229,17 +322,17 @@
 .hljs-type,
 .hljs-built_in,
 .hljs-builtin-name {
-  color: oklch(0.625 0.135 35.8);
+  color: oklch(0.45 0.15 60); /* 橙色数字 */
 }
 
 .hljs-emphasis {
   font-style: italic;
 }
 
-/* 暗色模式代码高亮 */
+/* GitHub 暗色模式代码高亮 */
 .dark .hljs {
-  background: oklch(0.245 0.018 82.5);
-  color: oklch(0.845 0.012 76.2);
+  background: oklch(0.16 0.02 240);
+  color: oklch(0.85 0.008 240);
 }
 
 .dark .hljs-keyword,
@@ -249,7 +342,7 @@
 .dark .hljs-doctag,
 .dark .hljs-name,
 .dark .hljs-strong {
-  color: oklch(0.675 0.155 210.8);
+  color: oklch(0.75 0.15 300); /* 紫色关键字 */
   font-weight: bold;
 }
 
@@ -260,14 +353,14 @@
 .dark .hljs-symbol,
 .dark .hljs-bullet,
 .dark .hljs-addition {
-  color: oklch(0.656 0.185 142.3);
+  color: oklch(0.7 0.12 120); /* 绿色字符串 */
 }
 
 .dark .hljs-comment,
 .dark .hljs-quote,
 .dark .hljs-deletion,
 .dark .hljs-meta {
-  color: oklch(0.656 0.025 72.8);
+  color: oklch(0.55 0.02 240); /* 灰色注释 */
   font-style: italic;
 }
 
@@ -277,5 +370,5 @@
 .dark .hljs-type,
 .dark .hljs-built_in,
 .dark .hljs-builtin-name {
-  color: oklch(0.725 0.135 35.8);
+  color: oklch(0.68 0.15 60); /* 橙色数字 */
 }
