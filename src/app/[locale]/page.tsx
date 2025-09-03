@@ -144,9 +144,10 @@ export default function HomePage() {
 
   // 清理自动保存定时器
   useEffect(() => {
+    const timeoutId = autoSaveTimeoutRef.current;
     return () => {
-      if (autoSaveTimeoutRef.current) {
-        clearTimeout(autoSaveTimeoutRef.current);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
       }
     };
   }, []);
@@ -327,7 +328,7 @@ ${t('useLatexSyntax')} $E = mc^2$
       if (!response.ok) {
         // 如果随机slug冲突，重新生成
         if (result.error === 'Custom URL is already taken') {
-          const newSlug = `${randomSlug}-${Date.now()}`;
+          const newSlug = `${randomSlug}`;
           const retryResponse = await fetch('/api/notes', {
             method: selectedNote.cloudNoteId ? 'PUT' : 'POST',
             headers: { 'Content-Type': 'application/json' },
