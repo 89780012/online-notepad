@@ -4,7 +4,11 @@
       "Bash(npm run build:*)",
       "Bash(npm run dev:*)",
       "Bash(npm run lint)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx prisma:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

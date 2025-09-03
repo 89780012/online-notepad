@@ -1,7 +1,21 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { LocalNote, NOTE_MODES } from '@/types';
+import { NOTE_MODES } from '@/types';
+
+// 定义 LocalNote 接口
+export interface LocalNote {
+  id: string;
+  title: string;
+  content: string;
+  mode: typeof NOTE_MODES[keyof typeof NOTE_MODES];
+  createdAt: string;
+  updatedAt: string;
+  customSlug?: string;
+  isPublic?: boolean;
+  shareToken?: string;
+  cloudNoteId?: string;
+}
 
 const STORAGE_KEY = 'notepad_local_notes';
 

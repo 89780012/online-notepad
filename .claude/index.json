@@ -1,13 +1,13 @@
 {
-  "timestamp": "2025-09-03T10:14:14.000Z",
+  "timestamp": "2025-09-03T02:15:30.000Z",
   "project_name": "online-notepad",
   "scan_summary": {
-    "total_estimated_files": 65,
-    "scanned_files": 45,
-    "coverage_percentage": 69.2,
+    "total_estimated_files": 68,
+    "scanned_files": 52,
+    "coverage_percentage": 76.5,
     "truncated": false,
-    "scan_phases_completed": ["file_inventory", "module_priority_scan", "deep_supplement"],
-    "scan_strategy": "adaptive_architect_v3"
+    "scan_phases_completed": ["file_inventory", "module_priority_scan", "deep_supplement", "architecture_analysis"],
+    "scan_strategy": "adaptive_architect_v4"
   },
   "modules": [
     {
@@ -17,39 +17,56 @@
       "language": "TypeScript",
       "status": "active",
       "documentation": "src/CLAUDE.md",
-      "description": "Next.js应用主体，包含页面、API、组件、编辑器",
+      "description": "Next.js应用主体，包含页面、API、组件、编辑器、钩子函数、类型定义",
       "entry_points": [
         "app/[locale]/page.tsx",
         "app/[locale]/layout.tsx",
-        "middleware.ts"
+        "middleware.ts",
+        "i18n/config.ts"
       ],
       "key_interfaces": [
         "API routes: /api/notes, /api/notes/share/[token]",
         "Page routes: /[locale]/, /[locale]/share/[token]",
-        "ThemeContext API"
+        "ThemeContext API",
+        "useLocalNotes Hook",
+        "NoteMode type system"
       ],
       "dependencies": [
         "react@19.1.0",
         "next@15.5.2",
         "next-intl@4.3.5",
         "@prisma/client@6.15.0",
-        "tailwindcss@4.0"
+        "tailwindcss@4.0",
+        "@uiw/react-md-editor@4.0.8",
+        "react-markdown@10.1.0",
+        "rehype-highlight@7.0.2",
+        "lucide-react@0.542.0",
+        "zod@4.1.5",
+        "nanoid@5.1.5"
       ],
       "test_coverage": "0%",
-      "file_count": 41,
+      "file_count": 44,
       "key_features": [
-        "多种编辑模式（纯文本/Markdown）",
-        "专注模式",
+        "多语言路由系统（中英文）",
+        "Markdown增强编辑器（工具栏、预览、分屏）",
+        "专注模式（全屏编辑，ESC退出）",
         "主题系统（亮色/暗黑/系统自适应）",
-        "垂直工具栏",
-        "增强Markdown编辑器",
-        "国际化支持"
+        "自定义分享链接（customSlug）",
+        "本地存储笔记管理",
+        "响应式侧边栏设计",
+        "实时自动保存",
+        "数学公式支持（KaTeX）",
+        "语法高亮",
+        "类型安全的编辑模式系统"
       ],
       "coverage": {
         "interfaces": "complete",
         "dependencies": "complete", 
         "tests": "missing",
-        "dataModel": "complete"
+        "dataModel": "complete",
+        "components": "complete",
+        "hooks": "complete",
+        "contexts": "complete"
       }
     },
     {
@@ -59,12 +76,12 @@
       "language": "Prisma Schema",
       "status": "active",
       "documentation": "prisma/CLAUDE.md",
-      "description": "数据库schema定义和迁移",
+      "description": "PostgreSQL数据库模式定义和迁移管理",
       "entry_points": [
         "schema.prisma"
       ],
       "key_interfaces": [
-        "Note model with customSlug support",
+        "Note model（支持customSlug、分享功能）",
         "Generated TypeScript types",
         "Prisma Client API"
       ],
@@ -75,10 +92,13 @@
       "test_coverage": "0%",
       "file_count": 4,
       "key_features": [
-        "PostgreSQL支持",
+        "PostgreSQL数据库支持",
         "自定义分享链接（customSlug）",
-        "多语言支持",
-        "时间戳自动管理"
+        "多语言笔记支持",
+        "分享令牌系统（shareToken）",
+        "公开/私有笔记控制",
+        "时间戳自动管理",
+        "数据库迁移版本控制"
       ],
       "coverage": {
         "schema": "complete",
@@ -93,11 +113,12 @@
       "type": "static_assets",
       "language": "Assets",
       "status": "active",
-      "description": "静态资源文件、SEO配置",
-      "file_count": 7,
+      "description": "静态资源、图标、SEO配置文件",
+      "file_count": 8,
       "key_features": [
-        "图标文件",
-        "SEO配置（robots.txt, sitemap.xml）"
+        "应用图标（favicon.ico）",
+        "SEO配置（robots.txt, sitemap.xml）",
+        "PWA资源准备"
       ]
     },
     {
@@ -106,10 +127,10 @@
       "type": "documentation",
       "language": "Markdown",
       "status": "active",
-      "description": "项目文档和策略文件",
+      "description": "项目营销和SEO策略文档",
       "file_count": 1,
       "key_features": [
-        "关键词策略文档"
+        "关键词SEO策略文档"
       ]
     }
   ],
@@ -120,183 +141,233 @@
     "eslint.config.mjs",
     "components.json",
     "postcss.config.mjs",
-    "CLAUDE.md"
+    "CLAUDE.md",
+    ".gitignore",
+    "README.md"
   ],
   "ignored_patterns": [
-    "node_modules/**",
-    ".git/**",
-    ".github/**", 
-    "dist/**",
-    "build/**",
-    ".next/**",
-    "__pycache__/**",
-    "*.lock",
-    "*.log",
-    "*.bin",
-    "*.pdf",
-    "*.png",
-    "*.jpg", 
-    "*.jpeg",
-    "*.gif",
-    "*.mp4",
-    "*.zip",
-    "*.tar",
-    "*.gz"
+    "/node_modules",
+    "/.pnp", 
+    ".pnp.*",
+    ".yarn/*",
+    "/coverage",
+    "/.next/",
+    "/out/",
+    "/build",
+    ".DS_Store",
+    "*.pem",
+    "npm-debug.log*",
+    "yarn-debug.log*", 
+    "yarn-error.log*",
+    ".pnpm-debug.log*",
+    ".env*",
+    ".vercel",
+    "*.tsbuildinfo",
+    "next-env.d.ts",
+    "/src/generated/prisma"
   ],
-  "ignored_file_count": 15000,
+  "ignored_file_count": 18500,
   "architecture_highlights": {
     "frameworks": ["Next.js 15.5.2 App Router", "React 19.1.0"],
     "ui_library": ["Tailwind CSS 4.0", "Radix UI", "Lucide React"],
     "database": ["PostgreSQL", "Prisma ORM"],
+    "markdown": ["@uiw/react-md-editor", "react-markdown", "rehype-highlight", "remark-gfm"],
+    "i18n": ["next-intl"],
+    "validation": ["Zod"],
+    "styling": ["clsx", "tailwind-merge", "class-variance-authority"],
     "features": [
-      "多语言支持（中英文）",
-      "多种编辑模式",
-      "专注模式", 
-      "主题系统",
-      "自定义分享链接",
-      "Markdown增强编辑器",
-      "垂直工具栏",
-      "本地存储支持"
+      "App Router国际化路由",
+      "TypeScript严格模式",
+      "服务端渲染（SSR）",
+      "客户端状态管理（Context + Hooks）",
+      "RESTful API设计",
+      "Markdown实时编辑和预览",
+      "主题持久化和系统跟随",
+      "专注模式全屏体验",
+      "自定义URL分享",
+      "本地离线存储",
+      "响应式移动端适配",
+      "SEO优化和结构化数据"
     ]
   },
   "coverage_gaps": [
     {
       "category": "testing",
       "priority": "high",
-      "description": "缺少测试文件，建议覆盖率达到80%+",
+      "description": "完全缺少测试覆盖，需建立完整测试体系",
       "affected_modules": ["src", "prisma"],
       "recommendations": [
-        "添加组件单元测试（EnhancedMarkdownEditor, VerticalToolbar）",
-        "添加API路由集成测试",
-        "添加Hook测试（useLocalNotes）",
-        "添加数据库模型测试"
+        "建立测试框架（Jest + Testing Library + Playwright）",
+        "为核心组件添加单元测试（NewMarkdownEditor, ThemeProvider, useLocalNotes）",
+        "添加API路由集成测试（/api/notes）",
+        "添加数据库模型测试",
+        "创建E2E测试覆盖分享流程和专注模式",
+        "目标测试覆盖率：80%+"
       ]
     },
     {
-      "category": "performance",
-      "priority": "medium", 
-      "description": "性能优化机会",
+      "category": "security",
+      "priority": "high", 
+      "description": "Markdown编辑器和用户输入需要安全防护",
       "affected_modules": ["src"],
       "recommendations": [
-        "实现组件懒加载",
-        "优化Markdown渲染性能",
-        "添加缓存策略",
-        "优化包大小"
-      ]
-    },
-    {
-      "category": "accessibility",
-      "priority": "medium",
-      "description": "可访问性改进",
-      "affected_modules": ["src"],
-      "recommendations": [
-        "改善键盘导航",
-        "增强屏幕阅读器支持",
-        "优化焦点管理",
-        "添加ARIA标签"
+        "为react-markdown添加XSS防护和内容净化",
+        "配置CSP（Content Security Policy）",
+        "验证API输入参数",
+        "防护HTML注入攻击",
+        "实现速率限制"
       ]
     },
     {
       "category": "error_handling",
       "priority": "medium",
-      "description": "错误处理和边界保护",
+      "description": "错误处理和边界保护不完整",
       "affected_modules": ["src"],
       "recommendations": [
-        "添加React Error Boundary",
-        "改善API错误处理",
-        "添加用户友好的错误提示",
-        "实现错误日志记录"
+        "添加React Error Boundary组件",
+        "改善API错误响应处理",
+        "添加全局错误提示组件",
+        "实现错误日志和监控",
+        "优化加载和错误状态UI"
       ]
     },
     {
-      "category": "security",
-      "priority": "medium",
-      "description": "Markdown编辑器安全防护",
+      "category": "performance",
+      "priority": "medium", 
+      "description": "性能优化机会和代码分割",
       "affected_modules": ["src"],
       "recommendations": [
-        "添加XSS防护",
-        "实现内容净化",
-        "配置CSP策略",
-        "验证用户输入"
+        "实现组件懒加载（React.lazy）",
+        "优化Markdown渲染性能",
+        "添加虚拟滚动（大量笔记时）",
+        "优化包大小和代码分割",
+        "添加缓存策略",
+        "实现服务端缓存"
+      ]
+    },
+    {
+      "category": "accessibility",
+      "priority": "medium",
+      "description": "可访问性需要改进",
+      "affected_modules": ["src"],
+      "recommendations": [
+        "改善键盘导航（Tab顺序）",
+        "增强屏幕阅读器支持",
+        "优化焦点管理（专注模式）",
+        "添加ARIA标签和语义化标记",
+        "确保色彩对比度合规",
+        "支持高对比度模式"
+      ]
+    },
+    {
+      "category": "tooling",
+      "priority": "medium",
+      "description": "开发工具和代码质量工具缺失",
+      "affected_modules": ["root"],
+      "recommendations": [
+        "配置Prettier代码格式化",
+        "设置pre-commit hooks（husky + lint-staged）",
+        "添加代码覆盖率报告",
+        "配置CI/CD管道",
+        "添加类型检查工作流",
+        "实现自动化部署"
       ]
     },
     {
       "category": "database",
       "priority": "low",
-      "description": "数据库优化和管理",
+      "description": "数据库管理和优化",
       "affected_modules": ["prisma"],
       "recommendations": [
-        "添加种子数据脚本",
-        "优化数据库索引",
-        "实现备份策略",
-        "添加性能监控"
+        "添加数据库种子脚本",
+        "优化数据库索引（分享令牌、自定义slug）",
+        "实现数据备份策略",
+        "添加数据库性能监控",
+        "考虑数据归档策略"
       ]
     }
   ],
   "next_steps_recommendations": [
     {
       "priority": "high",
-      "category": "testing",
+      "category": "security",
       "tasks": [
-        "建立测试框架（Jest + Testing Library）",
-        "为核心组件添加单元测试",
-        "创建API路由集成测试",
-        "添加E2E测试覆盖关键流程"
+        "为Markdown渲染添加DOMPurify净化",
+        "配置严格的CSP策略",
+        "实现API输入验证和速率限制",
+        "添加CSRF保护"
       ]
     },
     {
-      "priority": "high", 
-      "category": "security",
+      "priority": "high",
+      "category": "testing",
       "tasks": [
-        "为Markdown编辑器添加XSS防护",
-        "实现内容净化处理",
-        "配置安全策略头"
+        "安装测试依赖（@testing-library/react, @testing-library/jest-dom, playwright）",
+        "创建测试配置文件（jest.config.js）",
+        "为关键组件编写测试（NewMarkdownEditor, ThemeProvider）",
+        "添加API路由测试",
+        "建立CI测试管道"
       ]
     },
     {
       "priority": "medium",
       "category": "tooling", 
       "tasks": [
-        "配置Prettier代码格式化",
-        "设置pre-commit hooks",
-        "添加代码覆盖率报告",
-        "优化开发工作流"
+        "配置Prettier（.prettierrc）",
+        "设置ESLint规则增强",
+        "安装husky和lint-staged",
+        "创建GitHub Actions工作流",
+        "添加代码质量徽章"
       ]
     },
     {
       "priority": "medium",
       "category": "performance",
       "tasks": [
-        "实现组件懒加载",
-        "优化打包配置",
-        "添加性能监控",
-        "实现缓存策略"
+        "实现组件代码分割",
+        "优化Markdown编辑器bundle大小", 
+        "添加图片懒加载（如果使用）",
+        "实现缓存头配置",
+        "监控Core Web Vitals"
+      ]
+    },
+    {
+      "priority": "medium",
+      "category": "ux",
+      "tasks": [
+        "添加Error Boundary组件",
+        "改善加载状态UI",
+        "优化移动端交互体验",
+        "添加键盘快捷键帮助",
+        "实现撤销/重做功能"
       ]
     },
     {
       "priority": "low",
       "category": "enhancement",
       "tasks": [
-        "创建数据库种子脚本",
-        "添加更多编辑模式", 
-        "扩展垂直工具栏功能",
-        "改善移动端体验"
+        "扩展编辑模式（富文本、代码、绘图）",
+        "添加笔记导出功能（PDF、Word）",
+        "实现笔记标签和分类",
+        "添加笔记搜索功能增强",
+        "支持协作编辑"
       ]
     }
   ],
   "scan_metadata": {
-    "scan_strategy": "adaptive_architect_v3",
+    "scan_strategy": "adaptive_architect_v4",
     "phases": {
       "phase_a": "file_inventory_complete",
-      "phase_b": "module_priority_scan_complete",
-      "phase_c": "deep_supplement_complete"
+      "phase_b": "module_priority_scan_complete", 
+      "phase_c": "deep_supplement_complete",
+      "phase_d": "architecture_analysis_complete"
     },
     "tool_usage": {
-      "glob_calls": 8,
-      "read_calls": 15, 
-      "write_calls": 3
+      "glob_calls": 12,
+      "read_calls": 24, 
+      "write_calls": 1
     },
-    "duration_estimate": "15 minutes",
+    "duration_estimate": "20 minutes",
     "incremental_update_ready": true,
     "breakpoint_continuation_ready": true
   },
@@ -304,26 +375,44 @@
     "code_organization": "excellent",
     "type_safety": "excellent", 
     "architecture_clarity": "excellent",
-    "documentation_completeness": "good",
-    "test_coverage": "poor",
+    "documentation_completeness": "excellent",
+    "test_coverage": "critical",
     "security_posture": "needs_improvement",
-    "performance_optimization": "moderate"
+    "performance_optimization": "good",
+    "accessibility": "needs_improvement",
+    "maintainability": "excellent"
   },
   "technology_debt": {
+    "critical": [
+      "零测试覆盖率",
+      "Markdown XSS防护缺失"
+    ],
     "high_priority": [
-      "缺少测试覆盖",
-      "Markdown XSS防护缺失", 
-      "错误边界处理不足"
+      "错误边界处理不足",
+      "API安全验证缺失",
+      "性能优化机会"
     ],
     "medium_priority": [
       "代码格式化工具缺失",
-      "性能优化机会",
-      "可访问性改进空间"
+      "可访问性标准不完整",
+      "开发工作流自动化"
     ],
     "low_priority": [
       "数据库种子数据",
       "更多编辑模式支持",
-      "监控和日志系统"
+      "监控和分析系统",
+      "PWA功能支持"
     ]
-  }
+  },
+  "competitive_advantages": [
+    "现代化技术栈（Next.js 15, React 19）",
+    "优秀的TypeScript类型安全",
+    "国际化支持完整",
+    "响应式设计优秀",
+    "Markdown编辑体验出色",
+    "专注模式独特设计",
+    "自定义分享链接功能",
+    "主题系统完善",
+    "代码架构清晰可扩展"
+  ]
 }

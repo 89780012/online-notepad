@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,25 +12,20 @@ interface SharePopupProps {
   isOpen: boolean;
   onClose: () => void;
   shareUrl: string;
-  customSlug: string;
-  slugError: string;
-  onSlugChange: (value: string) => void;
   onCopyUrl: () => void;
   copied: boolean;
+  isGenerating?: boolean;
 }
 
 export default function SharePopup({
   isOpen,
   onClose,
   shareUrl,
-  customSlug,
-  slugError,
-  onSlugChange,
   onCopyUrl,
-  copied
+  copied,
+  isGenerating = false
 }: SharePopupProps) {
   const t = useTranslations();
-  const locale = useLocale();
 
   // 弹框显示动画
   if (!isOpen) return null;
@@ -57,30 +52,15 @@ export default function SharePopup({
           </CardHeader>
           
           <CardContent className="space-y-4">
-            {/* 自定义URL输入 */}
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">{t('customUrl')}</Label>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground shrink-0">
-                  {typeof window !== 'undefined' ? window.location.origin : ''}/${locale}/share/
-                </span>
-                <Input
-                  value={customSlug}
-                  onChange={(e) => onSlugChange(e.target.value)}
-                  placeholder={t('customUrlPlaceholder')}
-                  className={`flex-1 ${slugError ? 'border-destructive focus:border-destructive' : 'border-border focus:border-primary'} bg-background`}
-                />
-              </div>
-              {slugError && (
-                <p className="text-sm text-destructive">{slugError}</p>
-              )}
-              <p className="text-sm text-muted-foreground">{t('customUrlHelp')}</p>
-            </div>
-
             {/* 分享链接显示 */}
-            {shareUrl && (
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">{t('shareUrl')}</Label>
+            <div className="space-y-2">
+              <Label className="text-foreground font-medium">{t('shareUrl')}</Label>
+              {isGenerating ? (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent"></div>
+                  <span className="text-sm">{t('generatingShareLink')}</span>
+                </div>
+              ) : shareUrl ? (
                 <div className="flex gap-2">
                   <Input
                     value={shareUrl}
@@ -105,11 +85,11 @@ export default function SharePopup({
                     )}
                   </Button>
                 </div>
-              </div>
-            )}
+              ) : null}
+            </div>
 
             {/* 成功提示 */}
-            {shareUrl && !slugError && (
+            {shareUrl && !isGenerating && (
               <div className="bg-primary/10 border border-primary/20 rounded-lg p-3">
                 <p className="text-primary text-sm font-medium">
                   ✅ {t('shareSuccess')}

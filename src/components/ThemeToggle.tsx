@@ -3,6 +3,7 @@
 import { Moon, Sun, Monitor } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslations } from 'next-intl';
 
 interface ThemeToggleProps {
   className?: string;
@@ -16,6 +17,7 @@ export function ThemeToggle({
   variant = 'ghost'
 }: ThemeToggleProps) {
   const { theme, setTheme } = useTheme();
+  const t = useTranslations();
 
   const handleToggle = () => {
     // 循环切换：light -> dark -> system -> light
@@ -41,13 +43,13 @@ export function ThemeToggle({
   const getAriaLabel = () => {
     switch (theme) {
       case 'light':
-        return '切换到暗黑模式';
+        return t('toggleToDarkMode');
       case 'dark':
-        return '切换到系统模式';
+        return t('toggleToSystemMode');
       case 'system':
-        return '切换到亮色模式';
+        return t('toggleToLightMode');
       default:
-        return '切换主题';
+        return t('toggleTheme');
     }
   };
 

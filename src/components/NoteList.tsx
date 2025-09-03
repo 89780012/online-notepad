@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, FileText, Trash2, Plus, X } from 'lucide-react';
+import { Search, FileText, Trash2, Plus, X, Share2 } from 'lucide-react';
 import { LocalNote } from '@/hooks/useLocalNotes';
 
 interface NoteListProps {
@@ -13,6 +13,7 @@ interface NoteListProps {
   onNoteSelect: (note: LocalNote) => void;
   onNewNote: () => void;
   onNoteDelete?: (noteId: string) => void;
+  onNoteUnshare?: (noteId: string) => void; // 新增：取消分享回调
   selectedNoteId?: string;
   onCloseSidebar?: () => void; // 新增：关闭侧边栏的回调
 }
@@ -22,11 +23,13 @@ export default function NoteList({
   deleteNote, 
   onNoteSelect, 
   onNewNote, 
-  onNoteDelete, 
+  onNoteDelete,
+  onNoteUnshare, 
   selectedNoteId,
   onCloseSidebar 
 }: NoteListProps) {
   const t = useTranslations();
+  const locale = useLocale();
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobile, setIsMobile] = useState(false);
 
@@ -72,6 +75,40 @@ export default function NoteList({
     }
   };
 
+  const handleUnshareNote = async (e: React.MouseEvent, note: LocalNote) => {
+    e.stopPropagation();
+    if (confirm(t('confirmUnshare'))) {
+      try {
+        // 如果笔记有云端ID，调用API取消分享
+        if (note.cloudNoteId) {
+          const response = await fetch('/api/notes', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: note.cloudNoteId,
+              title: note.title,
+              content: note.content,
+              language: locale,
+              isPublic: false // 设置为不公开
+            })
+          });
+
+          if (response.ok) {
+            // API更新成功后，删除云端记录
+            await fetch(`/api/notes?id=${note.cloudNoteId}`, {
+              method: 'DELETE'
+            });
+          }
+        }
+        
+        // 通知父组件取消分享
+        onNoteUnshare?.(note.id);
+      } catch (error) {
+        console.error('取消分享失败:', error);
+      }
+    }
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -81,9 +118,9 @@ export default function NoteList({
     if (diffDays === 0) {
       return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     } else if (diffDays === 1) {
-      return '昨天';
+      return t('yesterday');
     } else if (diffDays < 7) {
-      return `${diffDays}天前`;
+      return `${diffDays}${t('daysAgo')}`;
     } else {
       return date.toLocaleDateString();
     }
@@ -95,7 +132,7 @@ export default function NoteList({
       <div className="p-4 border-b border-sidebar-border bg-sidebar-accent/30">
         {/* 移动端关闭按钮 */}
         <div className="flex justify-between items-center mb-3 lg:hidden">
-          <h2 className="text-lg font-semibold text-sidebar-foreground font-serif">笔记列表</h2>
+          <h2 className="text-lg font-semibold text-sidebar-foreground font-serif">{t('noteList')}</h2>
           {onCloseSidebar && (
             <Button
               variant="ghost"
@@ -156,9 +193,20 @@ export default function NoteList({
                     {formatDate(note.updatedAt)}
                   </span>
                   {note.isPublic && (
-                    <span className="text-xs text-sidebar-primary bg-sidebar-primary/10 px-1.5 py-0.5 rounded-full">
-                      {t('shared')}
-                    </span>
+                    <>
+                      <span className="text-xs text-sidebar-primary bg-sidebar-primary/10 px-1.5 py-0.5 rounded-full">
+                        {t('shared')}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => handleUnshareNote(e, note)}
+                        className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 hover:bg-red-500/10 hover:text-red-600 transition-opacity"
+                        title={t('unshareNote')}
+                      >
+                        <Share2 className="w-3 h-3" />
+                      </Button>
+                    </>
                   )}
                   <Button
                     variant="ghost"

@@ -1,9 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { CardTitle } from '@/components/ui/card';
 import LanguageToggle from '@/components/LanguageToggle';
-import PaperCard from '@/components/PaperCard';
-import NoteDisplay from '@/components/NoteDisplay';
+import MarkdownPreview from '@/components/MarkdownPreview';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
@@ -56,8 +54,8 @@ export default async function SharedNotePage({
 
   return (
     <ThemeProvider defaultTheme="system">
-      <div className="min-h-screen bg-gradient-to-br from-background to-muted">
-        <div className="container mx-auto p-4">
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto p-4 max-w-4xl">
           <header className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold text-foreground">
               {t('title')}
@@ -68,29 +66,30 @@ export default async function SharedNotePage({
             </div>
           </header>
         
-        <main className="max-w-4xl mx-auto">
-          <PaperCard
-            header={
-              <CardTitle className="flex items-center justify-between text-card-foreground">
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 bg-red-400 rounded-full shadow-sm"></div>
-                  <div className="w-3 h-3 bg-yellow-400 rounded-full shadow-sm"></div>
-                  <div className="w-3 h-3 bg-green-400 rounded-full shadow-sm"></div>
-                  <span className="ml-4 font-semibold">{note.title || t('untitledNote')}</span>
-                </div>
-                <span className="text-sm font-normal text-muted-foreground">
-                  {t('lastUpdated')}: {formattedDate}
-                </span>
-              </CardTitle>
-            }
-          >
-            <NoteDisplay
-              title={note.title}
-              content={note.content}
-              showPlaceholder={false}
-            />
-          </PaperCard>
-        </main>
+          <main>
+            {/* 笔记标题 */}
+            <div className="flex items-center justify-between mb-6 p-4 border border-border rounded-lg bg-card">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-red-400 rounded-full shadow-sm"></div>
+                <div className="w-3 h-3 bg-yellow-400 rounded-full shadow-sm"></div>
+                <div className="w-3 h-3 bg-green-400 rounded-full shadow-sm"></div>
+                <h1 className="text-xl font-semibold text-card-foreground ml-4">
+                  {note.title || t('untitledNote')}
+                </h1>
+              </div>
+              <span className="text-sm text-muted-foreground">
+                {t('lastUpdated')}: {formattedDate}
+              </span>
+            </div>
+
+            {/* Markdown 内容预览 */}
+            <div className="bg-card border border-border rounded-lg p-6">
+              <MarkdownPreview 
+                content={note.content}
+                className="prose prose-slate dark:prose-invert max-w-none prose-lg"
+              />
+            </div>
+          </main>
         </div>
       </div>
     </ThemeProvider>

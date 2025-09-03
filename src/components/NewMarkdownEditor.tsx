@@ -1,13 +1,27 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import MDEditor from '@uiw/react-md-editor';
-import { Maximize2, Minimize2, Save, Share2 } from 'lucide-react';
+import { useState, useCallback, useRef, Suspense } from 'react';
+import dynamic from 'next/dynamic';
+import { Maximize2, Minimize2, Save, Share2, FolderOpen, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
-import 'katex/dist/katex.css';
+import { useTranslations } from 'next-intl';
+// import 'katex/dist/katex.css';
+
+// 动态导入 MDEditor 以避免 SSR 问题
+const MDEditor = dynamic(
+  () => import('@uiw/react-md-editor'),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-sm text-muted-foreground">加载编辑器中...</div>
+      </div>
+    )
+  }
+);
 
 interface NewMarkdownEditorProps {
   title: string;
@@ -16,8 +30,11 @@ interface NewMarkdownEditorProps {
   onContentChange: (content: string) => void;
   onSave?: () => void;
   onShare?: () => void;
+  onOpenFile?: (title: string, content: string) => void;
+  onSaveAs?: (title: string, content: string) => void;
   isFocusMode?: boolean;
   onToggleFocusMode?: () => void;
+  isAutoSaving?: boolean;
 }
 
 export default function NewMarkdownEditor({
@@ -27,11 +44,15 @@ export default function NewMarkdownEditor({
   onContentChange,
   onSave,
   onShare,
+  onOpenFile,
+  onSaveAs,
   isFocusMode = false,
   onToggleFocusMode,
+  isAutoSaving = false,
 }: NewMarkdownEditorProps) {
-  // 移除未使用的 t 变量
+  const t = useTranslations();
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleContentChange = useCallback((value?: string) => {
     onContentChange(value || '');
@@ -45,17 +66,41 @@ export default function NewMarkdownEditor({
     }
   };
 
-  // 检测标题变化，自动显示保存按钮
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  
-  useEffect(() => {
-    setHasUnsavedChanges(true);
-  }, [title, content]);
-
   const handleSave = () => {
     if (onSave) {
       onSave();
-      setHasUnsavedChanges(false);
+      // 给用户一个视觉反馈，表示保存操作已经触发
+      console.log('保存操作已触发');
+    }
+  };
+
+  // 打开本地文件
+  const handleOpenFile = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const fileContent = e.target?.result as string;
+        const fileName = file.name.replace(/\.[^/.]+$/, ''); // 移除文件扩展名
+        
+        if (onOpenFile) {
+          onOpenFile(fileName, fileContent);
+        }
+      };
+      reader.readAsText(file);
+    }
+    // 重置文件输入
+    event.target.value = '';
+  };
+
+  // 另存为功能
+  const handleSaveAs = () => {
+    if (onSaveAs) {
+      onSaveAs(title, content);
     }
   };
 
@@ -75,15 +120,20 @@ export default function NewMarkdownEditor({
           <Input
             value={title}
             onChange={(e) => onTitleChange(e.target.value)}
-            placeholder="请输入标题..."
+            placeholder={t('enterTitle')}
             className="flex-1 max-w-md border-none bg-transparent text-lg font-semibold focus:ring-0"
           />
           
-          {/* 新笔记提示 */}
-          {hasUnsavedChanges && (
-            <div className="text-sm text-amber-600 dark:text-amber-400 flex items-center gap-1">
-              <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
-              有未保存的更改
+          {/* 自动保存状态提示 */}
+          {isAutoSaving ? (
+            <div className="text-sm text-blue-600 dark:text-blue-400 flex items-center gap-1">
+              <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+              {t('autoSaving')}
+            </div>
+          ) : (
+            <div className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
+              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+              {t('allChangesSaved')}
             </div>
           )}
         </div>
@@ -91,13 +141,34 @@ export default function NewMarkdownEditor({
         {/* 工具栏按钮 */}
         <div className="flex items-center gap-2">
           <Button
+            onClick={handleOpenFile}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+            title={t('openFile')}
+          >
+            <FolderOpen className="w-4 h-4" />
+            {t('openFile')}
+          </Button>
+          
+          <Button
+            onClick={handleSaveAs}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+            title={t('saveAs')}
+          >
+            <Download className="w-4 h-4" />
+            {t('saveAs')}
+          </Button>
+          
+          <Button
             onClick={handleSave}
             size="sm"
-            disabled={!hasUnsavedChanges}
             className="flex items-center gap-2"
           >
             <Save className="w-4 h-4" />
-            保存
+            {t('save')}
           </Button>
           
           <Button
@@ -107,40 +178,54 @@ export default function NewMarkdownEditor({
             className="flex items-center gap-2"
           >
             <Share2 className="w-4 h-4" />
-            分享
+            {t('share')}
           </Button>
           
           <Button
             onClick={handleFullScreenToggle}
             variant="ghost"
             size="sm"
-            title={isFocusMode ? "退出专注模式" : "进入专注模式"}
+            title={isFocusMode ? t('exitFocusMode') : t('enterFocusMode')}
           >
             {isFocusMode ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </Button>
         </div>
       </div>
       
+      {/* 隐藏的文件输入 */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileSelect}
+        accept=".md,.txt,.markdown"
+        style={{ display: 'none' }}
+      />
+      
       {/* Markdown 编辑器 */}
       <div className="flex-1 overflow-hidden">
-        <MDEditor
-          value={content}
-          onChange={handleContentChange}
-          height="100%"
-          preview="live"
-          hideToolbar={false}
-          data-color-mode="auto"
-          previewOptions={{
-            remarkPlugins: [remarkMath],
-            rehypePlugins: [rehypeKatex],
-          }}
-          textareaProps={{
-            placeholder: '开始编写你的 Markdown 内容...\n\n支持：\n- 基本 Markdown 语法\n- 数学公式 $\\LaTeX$ 和 $$\\LaTeX$$\n- 代码高亮\n- 表格、列表等',
-            style: {
-              fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-            },
-          }}
-        />
+        <Suspense fallback={
+          <div className="flex items-center justify-center h-full">
+            <div className="text-sm text-muted-foreground">加载编辑器中...</div>
+          </div>
+        }>
+          <MDEditor
+            value={content}
+            onChange={handleContentChange}
+            height="100%"
+            preview="live"
+            hideToolbar={false}
+            previewOptions={{
+              remarkPlugins: [remarkMath],
+              rehypePlugins: [rehypeKatex],
+            }}
+            textareaProps={{
+              placeholder: t('markdownPlaceholder'),
+              style: {
+                fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+              },
+            }}
+          />
+        </Suspense>
       </div>
     </div>
   );
