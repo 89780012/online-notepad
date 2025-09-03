@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Plus, Edit } from 'lucide-react';
+import { CheckCircle2, Plus } from 'lucide-react';
 
 interface MarketingContentProps {
   onNewNote?: () => void;

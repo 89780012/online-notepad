@@ -1,488 +1,329 @@
 {
-  "timestamp": "2025-09-02T17:04:43.000Z",
-  "projectName": "online-notepad",
-  "projectDescription": "基于 Next.js 的现代化在线记事本应用，支持专注模式、多主题、多种编辑模式（纯文本/Markdown）、增强编辑器、垂直工具栏、自定义分享链接等功能",
-  "scanSummary": {
-    "totalFilesEstimated": 65,
-    "scannedFiles": 58,
-    "coveragePercentage": 89.2,
-    "ignoredDirectories": [
-      "node_modules",
-      ".git",
-      "dist",
-      "build",
-      ".next",
-      "coverage",
-      "__pycache__"
-    ]
+  "timestamp": "2025-09-03T10:14:14.000Z",
+  "project_name": "online-notepad",
+  "scan_summary": {
+    "total_estimated_files": 65,
+    "scanned_files": 45,
+    "coverage_percentage": 69.2,
+    "truncated": false,
+    "scan_phases_completed": ["file_inventory", "module_priority_scan", "deep_supplement"],
+    "scan_strategy": "adaptive_architect_v3"
   },
   "modules": [
     {
-      "name": "前端应用",
+      "name": "src",
       "path": "src/",
+      "type": "frontend_application",
       "language": "TypeScript",
       "status": "active",
-      "description": "Next.js 应用主体，包含页面、API、组件、编辑器系统、主题系统、专注模式、垂直工具栏",
-      "entryPoints": [
-        "src/app/[locale]/layout.tsx",
-        "src/app/[locale]/page.tsx",
-        "src/app/[locale]/share/[token]/page.tsx",
-        "src/middleware.ts",
-        "src/contexts/ThemeContext.tsx"
+      "documentation": "src/CLAUDE.md",
+      "description": "Next.js应用主体，包含页面、API、组件、编辑器",
+      "entry_points": [
+        "app/[locale]/page.tsx",
+        "app/[locale]/layout.tsx",
+        "middleware.ts"
       ],
-      "apiEndpoints": [
-        "src/app/api/notes/route.ts",
-        "src/app/api/notes/share/[token]/route.ts"
+      "key_interfaces": [
+        "API routes: /api/notes, /api/notes/share/[token]",
+        "Page routes: /[locale]/, /[locale]/share/[token]",
+        "ThemeContext API"
       ],
-      "components": [
-        "src/components/NoteEditor.tsx",
-        "src/components/MarkdownEditor.tsx",
-        "src/components/EnhancedMarkdownEditor.tsx",
-        "src/components/VerticalToolbar.tsx",
-        "src/components/MarkdownInput.tsx",
-        "src/components/ModeSelector.tsx",
-        "src/components/NoteList.tsx",
-        "src/components/SharePopup.tsx",
-        "src/components/ThemeToggle.tsx",
-        "src/components/LanguageToggle.tsx",
-        "src/components/MarketingContent.tsx",
-        "src/components/PaperCard.tsx",
-        "src/components/ui/"
+      "dependencies": [
+        "react@19.1.0",
+        "next@15.5.2",
+        "next-intl@4.3.5",
+        "@prisma/client@6.15.0",
+        "tailwindcss@4.0"
       ],
-      "hooks": [
-        "src/hooks/useLocalNotes.ts"
-      ],
-      "contexts": [
-        "src/contexts/ThemeContext.tsx"
-      ],
-      "types": [
-        "src/types/note-modes.ts"
-      ],
-      "config": [
-        "src/i18n/config.ts",
-        "src/lib/prisma.ts",
-        "src/lib/utils.ts",
-        "src/lib/locale.ts"
-      ],
-      "i18n": [
-        "src/messages/en.json",
-        "src/messages/zh.json"
-      ],
-      "tests": {
-        "exists": false,
-        "recommended": [
-          "src/__tests__/components/",
-          "src/__tests__/api/",
-          "src/__tests__/hooks/",
-          "src/__tests__/contexts/",
-          "src/__tests__/types/"
-        ]
-      },
-      "newFeatures": [
-        "增强版 Markdown 编辑器 (EnhancedMarkdownEditor)",
-        "垂直工具栏 (VerticalToolbar)",
-        "编辑模式系统 (NoteMode types)",
-        "专注模式 (Focus Mode)",
-        "主题系统 (Light/Dark/System)",
-        "自定义分享链接 (customSlug)",
-        "本地存储优化",
-        "响应式设计增强"
+      "test_coverage": "0%",
+      "file_count": 41,
+      "key_features": [
+        "多种编辑模式（纯文本/Markdown）",
+        "专注模式",
+        "主题系统（亮色/暗黑/系统自适应）",
+        "垂直工具栏",
+        "增强Markdown编辑器",
+        "国际化支持"
       ],
       "coverage": {
         "interfaces": "complete",
-        "dependencies": "complete",
+        "dependencies": "complete", 
         "tests": "missing",
-        "dataModel": "complete",
-        "themes": "complete",
-        "i18n": "complete",
-        "editingModes": "complete",
-        "markdownEditor": "complete",
-        "verticalToolbar": "complete"
+        "dataModel": "complete"
       }
     },
     {
-      "name": "数据库模型",
+      "name": "prisma",
       "path": "prisma/",
+      "type": "database_model",
       "language": "Prisma Schema",
       "status": "active",
-      "description": "数据库 schema 定义和迁移管理，支持 customSlug 自定义链接",
-      "entryPoints": [
-        "prisma/schema.prisma"
+      "documentation": "prisma/CLAUDE.md",
+      "description": "数据库schema定义和迁移",
+      "entry_points": [
+        "schema.prisma"
       ],
-      "dataModels": [
-        {
-          "name": "Note",
-          "fields": [
-            "id (String, PK)",
-            "title (String)",
-            "content (String)",
-            "language (String, default: 'en')",
-            "isPublic (Boolean, default: false)",
-            "shareToken (String?, unique)",
-            "customSlug (String?, unique)",
-            "createdAt (DateTime)",
-            "updatedAt (DateTime)"
-          ]
-        }
+      "key_interfaces": [
+        "Note model with customSlug support",
+        "Generated TypeScript types",
+        "Prisma Client API"
       ],
-      "migrations": {
-        "exists": true,
-        "files": [
-          "migrations/20250829152647_init/migration.sql",
-          "migrations/migration_lock.toml"
-        ]
-      },
-      "seeds": {
-        "exists": false,
-        "recommended": "prisma/seed.ts"
-      },
-      "newFeatures": [
-        "customSlug 字段支持用户自定义分享链接",
-        "双重分享机制（shareToken + customSlug）",
-        "唯一性约束和冲突处理"
+      "dependencies": [
+        "@prisma/client@6.15.0",
+        "prisma@6.15.0"
+      ],
+      "test_coverage": "0%",
+      "file_count": 4,
+      "key_features": [
+        "PostgreSQL支持",
+        "自定义分享链接（customSlug）",
+        "多语言支持",
+        "时间戳自动管理"
       ],
       "coverage": {
         "schema": "complete",
         "migrations": "complete",
         "seeds": "missing",
-        "indexes": "recommended",
         "tests": "missing"
       }
     },
     {
-      "name": "静态资源",
+      "name": "public",
       "path": "public/",
+      "type": "static_assets",
       "language": "Assets",
       "status": "active",
-      "description": "图标、静态文件和 SEO 配置",
-      "files": [
-        "public/file.svg",
-        "public/globe.svg",
-        "public/next.svg",
-        "public/vercel.svg",
-        "public/window.svg",
-        "public/robots.txt",
-        "public/sitemap.xml"
-      ],
-      "coverage": {
-        "catalog": "complete",
-        "seo": "complete"
-      }
+      "description": "静态资源文件、SEO配置",
+      "file_count": 7,
+      "key_features": [
+        "图标文件",
+        "SEO配置（robots.txt, sitemap.xml）"
+      ]
     },
     {
-      "name": "文档资料",
+      "name": "docs", 
       "path": "docs/",
+      "type": "documentation",
       "language": "Markdown",
       "status": "active",
       "description": "项目文档和策略文件",
-      "files": [
-        "docs/1.关键词策略.md"
-      ],
-      "coverage": {
-        "strategy": "partial",
-        "technical": "missing"
-      }
-    }
-  ],
-  "globalFiles": {
-    "config": [
-      "package.json",
-      "next.config.ts",
-      "tsconfig.json",
-      "postcss.config.mjs",
-      "eslint.config.mjs",
-      "components.json",
-      "pnpm-lock.yaml",
-      "package-lock.json"
-    ],
-    "docs": [
-      "README.md",
-      "CLAUDE.md",
-      "src/CLAUDE.md",
-      "prisma/CLAUDE.md"
-    ],
-    "ignore": [
-      ".gitignore"
-    ],
-    "meta": [
-      ".claude/index.json",
-      ".claude/settings.local.json"
-    ]
-  },
-  "dependencies": {
-    "runtime": [
-      "next@15.5.2",
-      "react@19.1.0",
-      "@prisma/client@^6.15.0",
-      "next-intl@^4.3.5",
-      "zod@^4.1.5",
-      "nanoid@^5.1.5",
-      "prisma@^6.15.0"
-    ],
-    "markdown": [
-      "react-markdown@^10.1.0",
-      "rehype-highlight@^7.0.2",
-      "rehype-raw@^7.0.0",
-      "remark-gfm@^4.0.1"
-    ],
-    "ui": [
-      "@radix-ui/react-label@^2.1.7",
-      "@radix-ui/react-slot@^1.2.3",
-      "lucide-react@^0.542.0",
-      "class-variance-authority@^0.7.1",
-      "clsx@^2.1.1",
-      "tailwind-merge@^3.3.1",
-      "tailwindcss@^4",
-      "tw-animate-css@^1.3.7"
-    ],
-    "dev": [
-      "typescript@^5",
-      "eslint@^9",
-      "eslint-config-next@15.5.2",
-      "@types/node@^20",
-      "@types/react@^19",
-      "@types/react-dom@^19",
-      "@tailwindcss/postcss@^4",
-      "@eslint/eslintrc@^3"
-    ]
-  },
-  "coreFeatures": {
-    "noteManagement": {
-      "create": "支持标题和内容编辑",
-      "editingModes": "纯文本和 Markdown 两种编辑模式，支持增强编辑器",
-      "autoSave": "实时本地存储",
-      "search": "笔记列表搜索功能",
-      "localStorage": "离线功能支持",
-      "modeSelector": "可切换的编辑模式选择器",
-      "verticalToolbar": "浮动垂直工具栏，支持快捷操作"
-    },
-    "markdownFeatures": {
-      "enhancedEditor": "EnhancedMarkdownEditor 组件，完整工具栏支持",
-      "viewModes": "三种视图模式：编辑/预览/分屏",
-      "toolbar": "丰富的格式化工具栏（标题、粗体、斜体、代码、链接等）",
-      "syntaxHighlight": "集成 rehype-highlight 插件",
-      "gfmSupport": "GitHub Flavored Markdown 和原始 HTML 支持",
-      "smartCursor": "智能文本插入和光标定位"
-    },
-    "sharing": {
-      "publicSharing": "生成安全分享令牌",
-      "customLinks": "用户自定义 URL 后缀 (customSlug)",
-      "uniqueness": "链接唯一性检查",
-      "shareControl": "公开/私有状态切换"
-    },
-    "userExperience": {
-      "focusMode": "全屏无干扰写作环境，支持增强编辑器",
-      "themeSystem": "亮色/暗黑/系统自适应",
-      "i18n": "中英文界面切换",
-      "responsive": "移动端和桌面端适配",
-      "keyboardShortcuts": "ESC 键退出专注模式",
-      "verticalToolbar": "浮动工具栏提供快捷访问",
-      "realtimePreview": "Markdown 实时预览功能"
-    }
-  },
-  "qualityTools": {
-    "linting": {
-      "tool": "ESLint",
-      "config": "eslint.config.mjs",
-      "extends": ["eslint-config-next"]
-    },
-    "typeChecking": {
-      "tool": "TypeScript",
-      "config": "tsconfig.json",
-      "strict": true
-    },
-    "formatting": {
-      "recommended": "Prettier (未配置)",
-      "status": "missing"
-    },
-    "testing": {
-      "framework": "建议 Jest + Testing Library",
-      "status": "missing",
-      "priority": [
-        "增强 Markdown 编辑器工具栏功能测试",
-        "垂直工具栏交互体验测试",
-        "编辑模式切换测试",
-        "专注模式键盘交互测试",
-        "主题切换逻辑测试",
-        "自定义链接验证测试",
-        "本地存储持久化测试"
+      "file_count": 1,
+      "key_features": [
+        "关键词策略文档"
       ]
     }
+  ],
+  "root_config_files": [
+    "package.json",
+    "next.config.ts", 
+    "tsconfig.json",
+    "eslint.config.mjs",
+    "components.json",
+    "postcss.config.mjs",
+    "CLAUDE.md"
+  ],
+  "ignored_patterns": [
+    "node_modules/**",
+    ".git/**",
+    ".github/**", 
+    "dist/**",
+    "build/**",
+    ".next/**",
+    "__pycache__/**",
+    "*.lock",
+    "*.log",
+    "*.bin",
+    "*.pdf",
+    "*.png",
+    "*.jpg", 
+    "*.jpeg",
+    "*.gif",
+    "*.mp4",
+    "*.zip",
+    "*.tar",
+    "*.gz"
+  ],
+  "ignored_file_count": 15000,
+  "architecture_highlights": {
+    "frameworks": ["Next.js 15.5.2 App Router", "React 19.1.0"],
+    "ui_library": ["Tailwind CSS 4.0", "Radix UI", "Lucide React"],
+    "database": ["PostgreSQL", "Prisma ORM"],
+    "features": [
+      "多语言支持（中英文）",
+      "多种编辑模式",
+      "专注模式", 
+      "主题系统",
+      "自定义分享链接",
+      "Markdown增强编辑器",
+      "垂直工具栏",
+      "本地存储支持"
+    ]
   },
-  "architectureUpdates": {
-    "enhancedMarkdownEditor": {
-      "description": "完整的 Markdown 编辑和预览系统，包含工具栏",
-      "implementation": "react-markdown + rehype plugins + 工具栏组件",
-      "features": ["三种视图模式", "工具栏支持", "智能文本插入", "语法高亮", "实时预览"],
-      "location": "src/components/EnhancedMarkdownEditor.tsx"
-    },
-    "verticalToolbar": {
-      "description": "浮动垂直工具栏，支持编辑模式切换和快捷操作",
-      "implementation": "React 组件 + 浮动布局 + 菜单系统",
-      "features": ["圆形按钮设计", "编辑模式切换菜单", "当前模式指示", "响应式适配"],
-      "location": "src/components/VerticalToolbar.tsx"
-    },
-    "noteModesSystem": {
-      "description": "可扩展的编辑模式类型系统",
-      "implementation": "TypeScript 类型定义 + 配置对象",
-      "features": ["类型安全", "功能配置", "模式验证", "扩展性"],
-      "location": "src/types/note-modes.ts"
-    },
-    "focusMode": {
-      "description": "全屏专注写作模式，支持所有编辑器",
-      "implementation": "useState + 条件渲染",
-      "features": ["ESC 键退出", "专用 UI", "键盘提示", "支持增强编辑器"],
-      "location": "src/app/[locale]/page.tsx"
-    },
-    "themeSystem": {
-      "description": "完整主题管理系统",
-      "implementation": "React Context + localStorage",
-      "features": ["三种主题", "系统监听", "平滑切换"],
-      "location": "src/contexts/ThemeContext.tsx"
-    },
-    "customSlug": {
-      "description": "用户自定义分享链接",
-      "implementation": "Prisma 字段 + API 验证",
-      "features": ["唯一性检查", "正则验证", "冲突处理"],
-      "location": "prisma/schema.prisma, src/app/api/notes/route.ts"
-    },
-    "localStorage": {
-      "description": "本地笔记存储优化",
-      "implementation": "Custom Hook + localStorage",
-      "features": ["实时保存", "搜索过滤", "数据同步", "模式支持"],
-      "location": "src/hooks/useLocalNotes.ts"
-    }
-  },
-  "gaps": [
+  "coverage_gaps": [
     {
       "category": "testing",
       "priority": "high",
-      "description": "缺少测试文件和配置",
+      "description": "缺少测试文件，建议覆盖率达到80%+",
+      "affected_modules": ["src", "prisma"],
       "recommendations": [
-        "添加 Jest 和 Testing Library 依赖",
-        "创建 __tests__ 目录结构",
-        "为核心组件添加单元测试",
-        "增强 Markdown 编辑器工具栏功能测试",
-        "垂直工具栏交互体验测试",
-        "为 API 端点添加集成测试",
-        "专注模式和主题系统的交互测试",
-        "customSlug 验证逻辑测试",
-        "编辑模式切换功能测试"
+        "添加组件单元测试（EnhancedMarkdownEditor, VerticalToolbar）",
+        "添加API路由集成测试",
+        "添加Hook测试（useLocalNotes）",
+        "添加数据库模型测试"
       ]
     },
     {
-      "category": "database",
-      "priority": "medium",
-      "description": "数据库优化和管理改进",
+      "category": "performance",
+      "priority": "medium", 
+      "description": "性能优化机会",
+      "affected_modules": ["src"],
       "recommendations": [
-        "添加种子数据脚本 prisma/seed.ts",
-        "为查询字段添加数据库索引",
-        "添加数据库测试覆盖",
-        "考虑连接池优化配置"
+        "实现组件懒加载",
+        "优化Markdown渲染性能",
+        "添加缓存策略",
+        "优化包大小"
       ]
     },
     {
-      "category": "tooling",
+      "category": "accessibility",
       "priority": "medium",
-      "description": "缺少代码格式化和质量工具",
+      "description": "可访问性改进",
+      "affected_modules": ["src"],
       "recommendations": [
-        "配置 Prettier",
-        "添加 pre-commit hooks",
-        "配置 VS Code workspace settings",
-        "添加代码覆盖率报告"
+        "改善键盘导航",
+        "增强屏幕阅读器支持",
+        "优化焦点管理",
+        "添加ARIA标签"
+      ]
+    },
+    {
+      "category": "error_handling",
+      "priority": "medium",
+      "description": "错误处理和边界保护",
+      "affected_modules": ["src"],
+      "recommendations": [
+        "添加React Error Boundary",
+        "改善API错误处理",
+        "添加用户友好的错误提示",
+        "实现错误日志记录"
       ]
     },
     {
       "category": "security",
       "priority": "medium",
-      "description": "Markdown 编辑器安全防护",
+      "description": "Markdown编辑器安全防护",
+      "affected_modules": ["src"],
       "recommendations": [
-        "为 Markdown 编辑器添加 XSS 防护",
-        "内容净化处理",
-        "HTML 输入验证",
-        "CSP 安全策略配置"
+        "添加XSS防护",
+        "实现内容净化",
+        "配置CSP策略",
+        "验证用户输入"
       ]
     },
     {
-      "category": "performance",
+      "category": "database",
       "priority": "low",
-      "description": "性能优化机会",
+      "description": "数据库优化和管理",
+      "affected_modules": ["prisma"],
       "recommendations": [
-        "实现代码分割和懒加载",
-        "添加缓存策略（Redis 或 ISR）",
-        "优化 Markdown 渲染性能",
-        "优化图片和静态资源",
-        "实现服务端渲染优化"
+        "添加种子数据脚本",
+        "优化数据库索引",
+        "实现备份策略",
+        "添加性能监控"
       ]
     }
   ],
-  "nextSteps": [
-    "高优先级: 建立测试框架，特别是新功能（增强Markdown编辑器、垂直工具栏、模式系统、专注模式、主题）的测试",
-    "高优先级: 为增强 Markdown 编辑器添加 XSS 防护和内容净化",
-    "中优先级: 完善数据库种子数据和索引优化",
-    "中优先级: 配置代码格式化工具和开发工作流",
-    "补扫建议: 检查是否有隐藏的配置文件(.env.example, .vscode/, .github/)",
-    "功能优化: 为垂直工具栏添加更多快捷操作",
-    "文档补充: 添加 API 文档、部署指南和用户使用说明"
+  "next_steps_recommendations": [
+    {
+      "priority": "high",
+      "category": "testing",
+      "tasks": [
+        "建立测试框架（Jest + Testing Library）",
+        "为核心组件添加单元测试",
+        "创建API路由集成测试",
+        "添加E2E测试覆盖关键流程"
+      ]
+    },
+    {
+      "priority": "high", 
+      "category": "security",
+      "tasks": [
+        "为Markdown编辑器添加XSS防护",
+        "实现内容净化处理",
+        "配置安全策略头"
+      ]
+    },
+    {
+      "priority": "medium",
+      "category": "tooling", 
+      "tasks": [
+        "配置Prettier代码格式化",
+        "设置pre-commit hooks",
+        "添加代码覆盖率报告",
+        "优化开发工作流"
+      ]
+    },
+    {
+      "priority": "medium",
+      "category": "performance",
+      "tasks": [
+        "实现组件懒加载",
+        "优化打包配置",
+        "添加性能监控",
+        "实现缓存策略"
+      ]
+    },
+    {
+      "priority": "low",
+      "category": "enhancement",
+      "tasks": [
+        "创建数据库种子脚本",
+        "添加更多编辑模式", 
+        "扩展垂直工具栏功能",
+        "改善移动端体验"
+      ]
+    }
   ],
-  "recentUpdates": {
-    "majorFeatures": [
-      "增强版 Markdown 编辑器：完整工具栏 + 三种视图模式",
-      "垂直工具栏：浮动圆形按钮设计 + 编辑模式切换菜单",
-      "编辑模式系统：类型安全的可扩展编辑模式框架",
-      "专注模式：全屏编辑体验，ESC 键快速退出，支持所有编辑模式",
-      "主题系统：亮色/暗黑/系统自适应，持久化存储",
-      "自定义分享链接：用户友好的 customSlug 功能",
-      "本地存储优化：改进的离线体验和数据持久化"
-    ],
-    "technicalEnhancements": [
-      "react-markdown 集成和 rehype 插件支持",
-      "智能文本插入和光标定位系统",
-      "类型安全的编辑模式定义系统",
-      "浮动工具栏的响应式设计",
-      "模式特定的功能配置和验证",
-      "增强的本地存储支持编辑模式信息",
-      "优化的组件结构和代码复用"
-    ],
-    "apiEnhancements": [
-      "customSlug 字段支持和唯一性验证",
-      "双重分享机制（shareToken + customSlug）",
-      "改进的错误处理和冲突解决"
-    ],
-    "uxImprovements": [
-      "三种 Markdown 视图模式（编辑/预览/分屏）",
-      "完整的格式化工具栏体验",
-      "垂直工具栏的直观设计和交互",
-      "流畅的编辑模式切换体验",
-      "响应式设计增强",
-      "键盘快捷键支持",
-      "平滑的主题切换动画",
-      "改进的搜索和过滤体验"
-    ]
+  "scan_metadata": {
+    "scan_strategy": "adaptive_architect_v3",
+    "phases": {
+      "phase_a": "file_inventory_complete",
+      "phase_b": "module_priority_scan_complete",
+      "phase_c": "deep_supplement_complete"
+    },
+    "tool_usage": {
+      "glob_calls": 8,
+      "read_calls": 15, 
+      "write_calls": 3
+    },
+    "duration_estimate": "15 minutes",
+    "incremental_update_ready": true,
+    "breakpoint_continuation_ready": true
   },
-  "truncated": false,
-  "scanLimitations": "无限制，完成全面架构分析和增量更新",
-  "coverageReport": {
-    "completedAreas": [
-      "核心功能架构分析",
-      "增强 Markdown 编辑器识别和文档化",
-      "垂直工具栏组件完整分析",
-      "编辑模式系统完整架构梳理",
-      "API 接口变更梳理",
-      "数据模型更新记录",
-      "组件结构完整分析",
-      "主题系统和专注模式深度分析"
+  "quality_metrics": {
+    "code_organization": "excellent",
+    "type_safety": "excellent", 
+    "architecture_clarity": "excellent",
+    "documentation_completeness": "good",
+    "test_coverage": "poor",
+    "security_posture": "needs_improvement",
+    "performance_optimization": "moderate"
+  },
+  "technology_debt": {
+    "high_priority": [
+      "缺少测试覆盖",
+      "Markdown XSS防护缺失", 
+      "错误边界处理不足"
     ],
-    "partialAreas": [
-      "性能优化策略（需要实际测试验证）",
-      "SEO 优化状态（基础配置完成）",
-      "安全性评估（Markdown XSS 防护需加强）"
+    "medium_priority": [
+      "代码格式化工具缺失",
+      "性能优化机会",
+      "可访问性改进空间"
     ],
-    "missingAreas": [
-      "测试覆盖率（完全缺失）",
-      "部署配置细节",
-      "监控和日志配置",
-      "Markdown 内容净化和安全防护"
+    "low_priority": [
+      "数据库种子数据",
+      "更多编辑模式支持",
+      "监控和日志系统"
     ]
   }
 }

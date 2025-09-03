@@ -1,6 +1,5 @@
 // 笔记编辑模式类型定义
 export const NOTE_MODES = {
-  PLAIN_TEXT: 'plain-text',
   MARKDOWN: 'markdown',
   // 未来可扩展的模式
   // RICH_TEXT: 'rich-text',
@@ -27,19 +26,6 @@ export interface NoteModeConfig {
 
 // 默认模式配置
 export const NOTE_MODE_CONFIGS: Record<NoteMode, NoteModeConfig> = {
-  [NOTE_MODES.PLAIN_TEXT]: {
-    id: NOTE_MODES.PLAIN_TEXT,
-    name: '纯文本',
-    description: '简单的文本编辑',
-    icon: 'FileText',
-    fileExtension: 'txt',
-    supportedFeatures: {
-      preview: false,
-      syntax: false,
-      formatting: false,
-      export: ['txt'],
-    },
-  },
   [NOTE_MODES.MARKDOWN]: {
     id: NOTE_MODES.MARKDOWN,
     name: 'Markdown',

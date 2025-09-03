@@ -2,17 +2,15 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { Menu, X, Plus } from 'lucide-react';
-import NoteEditor from '@/components/NoteEditor';
-import EnhancedMarkdownEditor from '@/components/EnhancedMarkdownEditor';
-import VerticalToolbar from '@/components/VerticalToolbar';
+import NewMarkdownEditor from '@/components/NewMarkdownEditor';
 import NoteList from '@/components/NoteList';
 import LanguageToggle from '@/components/LanguageToggle';
 import ThemeToggle from '@/components/ThemeToggle';
 import MarketingContent from '@/components/MarketingContent';
-import { LocalNote, useLocalNotes } from '@/hooks/useLocalNotes';
+import { useLocalNotes } from '@/hooks/useLocalNotes';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
-import { NoteMode, NOTE_MODES } from '@/types/note-modes';
+import { LocalNote, NoteMode, NOTE_MODES } from '@/types';
 
 export default function HomePage() {
   const { notes, saveNote, deleteNote, loadNotes } = useLocalNotes();
@@ -22,23 +20,17 @@ export default function HomePage() {
   const [isNewNote, setIsNewNote] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false); // 默认隐藏侧边栏
-  const [currentMode, setCurrentMode] = useState<NoteMode>(NOTE_MODES.PLAIN_TEXT); // 新增：当前编辑模式
+  const [currentMode, setCurrentMode] = useState<NoteMode>(NOTE_MODES.MARKDOWN); // 当前编辑模式
   const [currentTitle, setCurrentTitle] = useState('');
   const [currentContent, setCurrentContent] = useState('');
   const [isFocusMode, setIsFocusMode] = useState(false);
   
-  // localStorage 键名
-  const MODE_STORAGE_KEY = 'notepad_current_mode';
+  // localStorage 键名（已移除）
 
   useEffect(() => {
     loadNotes();
-    // 从localStorage恢复模式状态
-    if (typeof window !== 'undefined') {
-      const savedMode = localStorage.getItem(MODE_STORAGE_KEY) as NoteMode;
-      if (savedMode && Object.values(NOTE_MODES).includes(savedMode)) {
-        setCurrentMode(savedMode);
-      }
-    }
+    // 固定为 Markdown 模式
+    setCurrentMode(NOTE_MODES.MARKDOWN);
   }, [loadNotes]);
 
   const handleNoteSelect = (note: LocalNote) => {
@@ -47,10 +39,8 @@ export default function HomePage() {
     setShowEditor(true);
     setCurrentTitle(note.title);
     setCurrentContent(note.content);
-    // 根据笔记的模式来设置当前模式
-    if (note.mode && Object.values(NOTE_MODES).includes(note.mode)) {
-      setCurrentMode(note.mode);
-    }
+    // 根据笔记的模式来设置当前模式（固定为 Markdown）
+    setCurrentMode(NOTE_MODES.MARKDOWN);
   };
 
   const handleNewNote = () => {
@@ -62,13 +52,7 @@ export default function HomePage() {
     // 新建笔记时使用当前全局模式
   };
 
-  const handleModeChange = (mode: NoteMode) => {
-    setCurrentMode(mode);
-    // 保存模式到localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(MODE_STORAGE_KEY, mode);
-    }
-  };
+  // 移除模式切换功能，固定为 Markdown 模式
 
   const handleNoteSaved = useCallback((savedNote: LocalNote) => {
     setSelectedNote(savedNote);
@@ -155,25 +139,14 @@ export default function HomePage() {
         </div>
 
         {/* 全屏编辑器 */}
-        <div className="flex-1 p-6 max-w-none overflow-hidden h-full min-h-0">
-          {currentMode === NOTE_MODES.PLAIN_TEXT ? (
-            <NoteEditor
-              selectedNote={selectedNote}
-              isNewNote={isNewNote}
-              onNoteSaved={handleNoteSaved}
-              saveNote={saveNote}
-              isFocusMode={true}
-            />
-          ) : currentMode === NOTE_MODES.MARKDOWN ? (
-            <EnhancedMarkdownEditor
-              title={currentTitle}
-              content={currentContent}
-              onTitleChange={setCurrentTitle}
-              onContentChange={setCurrentContent}
-              isFocusMode={true}
-            />
-          ) : null}
-        </div>
+        <NewMarkdownEditor
+          title={currentTitle}
+          content={currentContent}
+          onTitleChange={setCurrentTitle}
+          onContentChange={setCurrentContent}
+          isFocusMode={true}
+          onToggleFocusMode={handleExitFocusMode}
+        />
       </div>
     );
   }
@@ -248,71 +221,17 @@ export default function HomePage() {
           {!showEditor ? (
             <MarketingContent onNewNote={handleNewNote} />
           ) : (
-            <>
-              {/* 主编辑区域 */}
-              <div className="flex">
-                {/* 笔记编辑器容器 */}
-                <div className="flex-1 h-full p-4 relative">
-                  {currentMode === NOTE_MODES.PLAIN_TEXT ? (
-                    <NoteEditor
-                      selectedNote={selectedNote}
-                      isNewNote={isNewNote}
-                      onNoteSaved={handleNoteSaved}
-                      saveNote={saveNote}
-                      onToggleFocusMode={toggleFocusMode}
-                    />
-                  ) : currentMode === NOTE_MODES.MARKDOWN ? (
-                    <div className="max-w-5xl mx-auto space-y-6">
-                      {/* 顶部功能栏 */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="w-3 h-3 bg-red-500 dark:bg-red-400 rounded-full shadow-sm"></div>
-                          <div className="w-3 h-3 bg-yellow-500 dark:bg-yellow-400 rounded-full shadow-sm"></div>
-                          <div className="w-3 h-3 bg-green-500 dark:bg-green-400 rounded-full shadow-sm"></div>
-                          <span className="ml-4 font-semibold text-foreground">
-                            {isNewNote ? t('newNote') : (currentTitle || '无标题')}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button 
-                            onClick={handleSaveNote}
-                            size="sm"
-                            className="flex items-center gap-2 shadow-sm"
-                          >
-                            保存
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            onClick={() => {/* 分享逻辑 */}}
-                            size="sm"
-                            className="flex items-center gap-2 shadow-sm"
-                          >
-                            分享
-                          </Button>
-                        </div>
-                      </div>
-                      
-                      {/* Markdown 编辑器 */}
-                      <EnhancedMarkdownEditor
-                        title={currentTitle}
-                        content={currentContent}
-                        onTitleChange={setCurrentTitle}
-                        onContentChange={setCurrentContent}
-                        onToggleFocusMode={toggleFocusMode}
-                      />
-                    </div>
-                  ) : null}
-                  
-                  {/* 垂直工具栏 - 紧挨着编辑区域右侧 */}
-                  <VerticalToolbar
-                    currentMode={currentMode}
-                    onModeChange={handleModeChange}
-                    onNewNote={handleNewNote}
-                    onExport={() => {/* 导出逻辑 */}}
-                  />
-                </div>
-              </div>
-            </>
+            <div className="max-w-7xl mx-auto w-full h-full">
+              <NewMarkdownEditor
+                title={currentTitle}
+                content={currentContent}
+                onTitleChange={setCurrentTitle}
+                onContentChange={setCurrentContent}
+                onSave={handleSaveNote}
+                onShare={() => {/* 分享逻辑 */}}
+                onToggleFocusMode={toggleFocusMode}
+              />
+            </div>
           )}
         </main>
       </div>
