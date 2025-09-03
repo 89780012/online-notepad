@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect, Suspense, useMemo } from 'react';
+import { useState, useCallback, useRef, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { Maximize2, Minimize2, Save, Share2, FolderOpen, Download, Eraser } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,6 @@ import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 import { useTranslations, useLocale } from 'next-intl';
 import { useTheme } from '@/contexts/ThemeContext';
-import { debounce } from 'lodash';
 import 'katex/dist/katex.css';
 
 // 动态导入 MDEditor 以避免 SSR 问题
@@ -131,14 +130,6 @@ export default function NewMarkdownEditor({
   const saveStatusTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 使用防抖优化性能，减少频繁的重新渲染
-  const debouncedContentChange = useMemo(
-    () => debounce((value: string) => {
-      onContentChange(value);
-    }, 300),
-    [onContentChange]
-  );
-
   // 监听自动保存状态变化
   useEffect(() => {
     if (isAutoSaving) {
@@ -166,13 +157,14 @@ export default function NewMarkdownEditor({
     };
   }, []);
 
+  // 简化的内容变化处理，直接调用父组件的回调
   const handleContentChange = useCallback((value?: string) => {
     const newValue = value || '';
 
-    // 使用防抖处理内容变化，提高性能
-    debouncedContentChange(newValue);
+    // 直接调用父组件的回调，不做防抖处理
+    onContentChange(newValue);
 
-    // 设置正在输入状态
+    // 设置正在输入状态（用于UI反馈）
     setIsTyping(true);
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
@@ -182,7 +174,7 @@ export default function NewMarkdownEditor({
     typingTimeoutRef.current = setTimeout(() => {
       setIsTyping(false);
     }, 1000);
-  }, [debouncedContentChange]);
+  }, [onContentChange]);
 
   const handleFullScreenToggle = () => {
     if (onToggleFocusMode) {
@@ -400,16 +392,16 @@ export default function NewMarkdownEditor({
               style: {
                 fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
                 // 性能优化：减少重绘
-                willChange: 'contents',
+                // willChange: 'contents',
               },
               // 性能优化：减少DOM操作
-              spellCheck: false,
-              autoComplete: 'off',
-              autoCorrect: 'off',
-              autoCapitalize: 'off',
+              // spellCheck: false,
+              // autoComplete: 'off',
+              // autoCorrect: 'off',
+              // autoCapitalize: 'off',
             }}
             // 性能优化：隐藏拖拽条
-            visibleDragbar={false}
+            // visibleDragbar={false}
             // 动态主题支持
             data-color-mode={resolvedTheme}
           />

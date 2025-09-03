@@ -118,28 +118,29 @@ export default function HomePage() {
     }
   }, [currentTitle, currentContent, currentMode, selectedNote, saveNote, t]);
 
-  // 防抖自动保存
-  const debouncedAutoSave = useCallback(() => {
-    if (autoSaveTimeoutRef.current) {
-      clearTimeout(autoSaveTimeoutRef.current);
-    }
-    
-    autoSaveTimeoutRef.current = setTimeout(() => {
-      autoSaveNote();
-    }, 2000); // 2秒后自动保存
-  }, [autoSaveNote]);
+  // 定时检测内容变化并自动保存
+  useEffect(() => {
+    const checkAndSave = () => {
+      if (!currentTitle && !currentContent) return;
+
+      const currentContentKey = `${currentTitle}:${currentContent}`;
+      if (currentContentKey !== lastAutoSaveRef.current) {
+        autoSaveNote();
+      }
+    };
+
+    // 每3秒检测一次内容变化
+    const intervalId = setInterval(checkAndSave, 3000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [currentTitle, currentContent, autoSaveNote]);
 
   useEffect(() => {
     loadNotes();
     setCurrentMode(NOTE_MODES.MARKDOWN);
   }, [loadNotes]);
-
-  // 监听内容变化，触发自动保存
-  useEffect(() => {
-    if (currentTitle || currentContent) {
-      debouncedAutoSave();
-    }
-  }, [currentTitle, currentContent, debouncedAutoSave]);
 
   // 清理自动保存定时器
   useEffect(() => {
