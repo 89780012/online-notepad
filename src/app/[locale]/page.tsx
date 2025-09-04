@@ -251,12 +251,6 @@ ${t('useLatexSyntax')} $E = mc^2$
     console.log('已应用笔记模板');
   };
 
-  const handleNoteSaved = useCallback((savedNote: LocalNote) => {
-    setSelectedNote(savedNote);
-    setShowEditor(true);
-    setCurrentTitle(savedNote.title);
-    setCurrentContent(savedNote.content);
-  }, []);
 
   const handleSaveNote = async () => {
     try {
@@ -269,59 +263,59 @@ ${t('useLatexSyntax')} $E = mc^2$
       }, selectedNote?.id);
 
       if (savedNote) {
-        handleNoteSaved(savedNote);
+        setSelectedNote(savedNote);
+        setShowEditor(true);
+        setCurrentTitle(savedNote.title);
+        setCurrentContent(savedNote.content);
         lastAutoSaveRef.current = `${savedNote.title}:${savedNote.content}`;
         console.log('笔记保存成功');
+        return savedNote;
       }
+      return null;
     } catch (error) {
       console.error(t('saveNoteFailed'), error);
     }
+    return null;
   };
 
   const handleShare = async () => {
     if (!selectedNote || !currentTitle || !currentContent) {
       // 先保存笔记
-      await handleSaveNote();
-      // 等待状态更新
-      setTimeout(() => {
+      const savedNote = await handleSaveNote();
+      if (savedNote) {
+        // 直接使用保存后返回的笔记对象，而不是依赖状态更新
         setShowSharePopup(true);
-        handleShareNote();
-      }, 100);
+        // 直接调用分享逻辑，传入保存的笔记
+        await handleShareNoteWithNote(savedNote);
+      }
+
       return;
     }
-    
     setShowSharePopup(true);
     handleShareNote();
   };
 
-  const handleShareNote = useCallback(async () => {
-    if (!selectedNote) return;
-    
+  // 公共的分享逻辑函数
+  const shareNoteLogic = useCallback(async (noteToShare: LocalNote) => {
     setIsGenerating(true);
 
     try {
-      // 生成随机后缀
+      // 生成随机slug
       const randomSlug = generateRandomSlug();
-      
+
       const noteData = {
-        title: currentTitle,
-        content: currentContent,
+        title: noteToShare.title,
+        content: noteToShare.content,
         language: locale,
         isPublic: true,
-        customSlug: randomSlug
+        customSlug: noteToShare.customSlug || randomSlug
       };
 
-      const response = selectedNote.cloudNoteId
-        ? await fetch('/api/notes', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...noteData, id: selectedNote.cloudNoteId })
-          })
-        : await fetch('/api/notes', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(noteData)
-          });
+      const response = await fetch('/api/notes', {
+        method: noteToShare.cloudNoteId ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...noteData, ...(noteToShare.cloudNoteId ? { id: noteToShare.cloudNoteId } : {}) })
+      });
 
       const result = await response.json();
 
@@ -330,11 +324,11 @@ ${t('useLatexSyntax')} $E = mc^2$
         if (result.error === 'Custom URL is already taken') {
           const newSlug = `${randomSlug}`;
           const retryResponse = await fetch('/api/notes', {
-            method: selectedNote.cloudNoteId ? 'PUT' : 'POST',
+            method: noteToShare.cloudNoteId ? 'PUT' : 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...noteData, customSlug: newSlug, ...(selectedNote.cloudNoteId ? { id: selectedNote.cloudNoteId } : {}) })
+            body: JSON.stringify({ ...noteData, customSlug: newSlug, ...(noteToShare.cloudNoteId ? { id: noteToShare.cloudNoteId } : {}) })
           });
-          
+
           if (retryResponse.ok) {
             const retryResult = await retryResponse.json();
             result.shareToken = retryResult.shareToken;
@@ -350,12 +344,12 @@ ${t('useLatexSyntax')} $E = mc^2$
 
       // 更新本地笔记的分享信息
       const updatedNote = saveNote({
-        ...selectedNote,
+        ...noteToShare,
         isPublic: true,
         shareToken: result.shareToken,
         customSlug: result.customSlug,
         cloudNoteId: result.id
-      }, selectedNote.id);
+      }, noteToShare.id);
 
       if (updatedNote) {
         setSelectedNote(updatedNote);
@@ -365,14 +359,26 @@ ${t('useLatexSyntax')} $E = mc^2$
       const shareUrl = result.customSlug
         ? `${window.location.origin}/${locale}/share/${result.customSlug}`
         : `${window.location.origin}/${locale}/share/${result.shareToken}`;
-        
+
       setShareUrl(shareUrl);
     } catch (error) {
       console.error('分享失败:', error);
     } finally {
       setIsGenerating(false);
     }
-  }, [selectedNote, currentTitle, currentContent, locale, saveNote, generateRandomSlug]);
+  }, [locale, saveNote, generateRandomSlug]);
+
+  // 使用保存的笔记对象进行分享
+  const handleShareNoteWithNote = useCallback(async (noteToShare: LocalNote) => {
+    await shareNoteLogic(noteToShare);
+  }, [shareNoteLogic]);
+
+  const handleShareNote = useCallback(async () => {
+
+    if (!selectedNote) return;
+
+    await shareNoteLogic(selectedNote);
+  }, [selectedNote, shareNoteLogic]);
 
   const handleCopyUrl = async () => {
     try {

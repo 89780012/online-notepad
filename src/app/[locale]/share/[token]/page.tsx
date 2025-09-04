@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, getLocale } from 'next-intl/server';
 import LanguageToggle from '@/components/LanguageToggle';
 import MarkdownPreview from '@/components/MarkdownPreview';
 import { ThemeProvider } from '@/contexts/ThemeContext';
@@ -34,9 +34,10 @@ async function getSharedNote(token: string): Promise<SharedNote | null> {
 export default async function SharedNotePage({
   params
 }: {
-  params: Promise<{ token: string; locale: string }>;
+  params: Promise<{ token: string }>;
 }) {
-  const {token, locale} = await params;
+  const locale = await getLocale();
+  const {token} = await params;
   const t = await getTranslations();
   const note = await getSharedNote(token);
   
