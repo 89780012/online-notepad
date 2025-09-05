@@ -392,7 +392,7 @@ ${t('useLatexSyntax')} $E = mc^2$
     } finally {
       setIsGenerating(false);
     }
-  }, [locale, saveNote, generateRandomSlug]);
+  }, [locale, saveNote, generateRandomSlug, currentTitle, currentContent]);
 
   // 使用保存的笔记对象进行分享
   const handleShareNoteWithNote = useCallback(async (noteToShare: LocalNote) => {
