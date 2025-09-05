@@ -80,12 +80,7 @@ export default function HomePage() {
   
   // 生成随机分享后缀
   const generateRandomSlug = useCallback(() => {
-    const adjectives = ['swift', 'bright', 'clever', 'quick', 'wise', 'bold', 'calm', 'cool', 'kind', 'smart'];
-    const nouns = ['note', 'idea', 'memo', 'text', 'doc', 'page', 'file', 'draft', 'post', 'word'];
-    const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-    const noun = nouns[Math.floor(Math.random() * nouns.length)];
-    const number = Math.floor(Math.random() * 1000);
-    return `${adjective}-${noun}-${number}`;
+      return crypto.randomUUID();
   }, []);
 
   // 自动保存函数
@@ -195,14 +190,33 @@ ${t('useLatexSyntax')} $E = mc^2$
 *${t('createdAt')} ${new Date().toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US')}*
 `;
 
-  const handleNewNote = () => {
+  const handleNewNote = async () => {
     setSelectedNote(null);
     setShowEditor(true);
-    setCurrentTitle('');
-    setCurrentContent(createNoteTemplate(t, locale));
+    const newTitle = t('newNoteTitle');
+    const newContent = createNoteTemplate(t, locale);
+    setCurrentTitle(newTitle);
+    setCurrentContent(newContent);
 
-    // 重置自动保存状态
-    lastAutoSaveRef.current = '';
+    // 自动保存新笔记
+    try {
+      const savedNote = saveNote({
+        title: newTitle,
+        content: newContent,
+        mode: currentMode,
+        customSlug: '',
+        isPublic: false
+      });
+
+      if (savedNote) {
+        setSelectedNote(savedNote);
+        lastAutoSaveRef.current = `${newTitle}:${newContent}`;
+      }
+    } catch (error) {
+      console.error('新建笔记自动保存失败:', error);
+      // 即使保存失败也重置自动保存状态
+      lastAutoSaveRef.current = '';
+    }
   };
 
   // 清除 Markdown 格式的函数
@@ -295,6 +309,18 @@ ${t('useLatexSyntax')} $E = mc^2$
     handleShareNote();
   };
 
+  const handleCurrentTitle = (title: string) => {
+    setCurrentTitle(title);
+    lastAutoSaveRef.current = `${title}:${currentContent}`;
+    autoSaveNote();
+  };
+
+  const handleCurrentContent = (content: string) => {
+    setCurrentContent(content);
+    lastAutoSaveRef.current = `${currentTitle}:${content}`;
+    autoSaveNote();
+  };
+
   // 公共的分享逻辑函数
   const shareNoteLogic = useCallback(async (noteToShare: LocalNote) => {
     setIsGenerating(true);
@@ -304,8 +330,8 @@ ${t('useLatexSyntax')} $E = mc^2$
       const randomSlug = generateRandomSlug();
 
       const noteData = {
-        title: noteToShare.title,
-        content: noteToShare.content,
+        title: currentTitle,
+        content: currentContent,
         language: locale,
         isPublic: true,
         customSlug: noteToShare.customSlug || randomSlug
@@ -563,8 +589,8 @@ ${t('useLatexSyntax')} $E = mc^2$
               <NewMarkdownEditor
                 title={currentTitle}
                 content={currentContent}
-                onTitleChange={setCurrentTitle}
-                onContentChange={setCurrentContent}
+                onTitleChange={handleCurrentTitle}
+                onContentChange={handleCurrentContent}
                 onSave={handleSaveNote}
                 onShare={handleShare}
                 onOpenFile={handleOpenFile}
