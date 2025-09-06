@@ -115,7 +115,6 @@ export default function HomePage() {
       customSlug: selectedNote?.customSlug || '',
       isPublic: selectedNote?.isPublic || false
     }, selectedNote?.id);
-
   }, [currentTitle, currentContent, selectedNote, saveNote, t]);
 
   useEffect(() => {
@@ -181,7 +180,6 @@ ${t('useLatexSyntax')} $E = mc^2$
         customSlug: '',
         isPublic: false
       });
-
       if (savedNote) {
         setSelectedNote(savedNote);
       }

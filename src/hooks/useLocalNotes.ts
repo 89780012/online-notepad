@@ -50,47 +50,70 @@ export function useLocalNotes() {
   // 添加或更新笔记
   const saveNote = useCallback((noteData: Omit<LocalNote, 'id' | 'createdAt' | 'updatedAt'>, existingId?: string) => {
     const now = new Date().toISOString();
-    let resultNote: LocalNote | undefined;
-    
+    let resultNote: LocalNote;
+
+    // 先创建或更新笔记对象
+    if (existingId) {
+      // 更新现有笔记 - 需要先获取当前笔记
+      const currentNotes = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      const index = currentNotes.findIndex((note: LocalNote) => note.id === existingId);
+      if (index !== -1) {
+        resultNote = {
+          ...currentNotes[index],
+          ...noteData,
+          updatedAt: now
+        };
+      } else {
+        // 如果找不到现有笔记，创建新笔记
+        resultNote = {
+          id: generateNoteId(),
+          ...noteData,
+          mode: noteData.mode || NOTE_MODES.MARKDOWN,
+          createdAt: now,
+          updatedAt: now
+        };
+      }
+    } else {
+      // 创建新笔记
+      resultNote = {
+        id: generateNoteId(),
+        ...noteData,
+        mode: noteData.mode || NOTE_MODES.MARKDOWN,
+        createdAt: now,
+        updatedAt: now
+      };
+    }
+
+    // 更新状态
     setNotes(prevNotes => {
       const currentNotes = [...prevNotes];
-      
+
       if (existingId) {
         // 更新现有笔记
         const index = currentNotes.findIndex(note => note.id === existingId);
         if (index !== -1) {
-          currentNotes[index] = {
-            ...currentNotes[index],
-            ...noteData,
-            updatedAt: now
-          };
-          resultNote = currentNotes[index];
+          currentNotes[index] = resultNote;
+        } else {
+          // 如果找不到，添加为新笔记
+          currentNotes.unshift(resultNote);
         }
       } else {
-        // 创建新笔记
-        const newNote: LocalNote = {
-          id: generateNoteId(),
-          ...noteData,
-          mode: noteData.mode || NOTE_MODES.MARKDOWN, // 默认使用 Markdown 模式
-          createdAt: now,
-          updatedAt: now
-        };
-        currentNotes.unshift(newNote);
-        resultNote = newNote;
+        // 添加新笔记
+        currentNotes.unshift(resultNote);
       }
 
       const sortedNotes = currentNotes.sort((a, b) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
       );
-      
+
       // 同步保存到 localStorage
       if (typeof window !== 'undefined') {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(sortedNotes));
       }
-      
+
       return sortedNotes;
     });
-    
+
     return resultNote;
   }, []); // 移除所有依赖，使用函数式更新
 
