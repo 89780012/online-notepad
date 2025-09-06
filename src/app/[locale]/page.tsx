@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Menu, X, Plus } from 'lucide-react';
 import NewMarkdownEditor from '@/components/NewMarkdownEditor';
 import NoteList from '@/components/NoteList';
@@ -13,6 +13,7 @@ import { useLocalNotes, LocalNote } from '@/hooks/useLocalNotes';
 import { Button } from '@/components/ui/button';
 import { useTranslations, useLocale } from 'next-intl';
 import { NoteMode, NOTE_MODES } from '@/types';
+import { generateShareSlug } from '@/lib/id-utils';
 
 export default function HomePage() {
   const { notes, saveNote, deleteNote, loadNotes } = useLocalNotes();
@@ -36,10 +37,6 @@ export default function HomePage() {
   // 另存为相关状态
   const [showSaveAsDialog, setShowSaveAsDialog] = useState(false);
 
-  // 自动保存相关状态
-  const [isAutoSaving, setIsAutoSaving] = useState(false);
-  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const lastAutoSaveRef = useRef<string>(''); // 记录最后一次自动保存的内容
 
   // 处理打开本地文件
   const handleOpenFile = (title: string, content: string) => {
@@ -53,6 +50,31 @@ export default function HomePage() {
   // 处理另存为
   const handleSaveAs = () => {
     setShowSaveAsDialog(true);
+  };
+
+ const handleSaveNote = async () => {
+    try {
+      const savedNote = saveNote({
+        title: currentTitle || t('untitled'),
+        content: currentContent,
+        mode: NOTE_MODES.MARKDOWN,
+        customSlug: selectedNote?.customSlug || '',
+        isPublic: selectedNote?.isPublic || false
+      }, selectedNote?.id);
+
+      if (savedNote) {
+        setSelectedNote(savedNote);
+        setShowEditor(true);
+        setCurrentTitle(savedNote.title);
+        setCurrentContent(savedNote.content);
+        console.log('笔记保存成功');
+        return savedNote;
+      }
+      return null;
+    } catch (error) {
+      console.error(t('saveNoteFailed'), error);
+    }
+    return null;
   };
 
   // 处理文件下载
@@ -80,72 +102,26 @@ export default function HomePage() {
   
   // 生成随机分享后缀
   const generateRandomSlug = useCallback(() => {
-      return crypto.randomUUID();
+      return generateShareSlug();
   }, []);
-
-  // 自动保存函数
-  const autoSaveNote = useCallback(async () => {
-    if (!currentTitle && !currentContent) return;
-
-    const currentContentKey = `${currentTitle}:${currentContent}`;
-    if (currentContentKey === lastAutoSaveRef.current) {
-      return; // 内容没有变化，不需要保存
-    }
-
-    setIsAutoSaving(true);
-    try {
-      const savedNote = saveNote({
-        title: currentTitle || t('untitled'),
-        content: currentContent,
-        mode: currentMode,
-        customSlug: selectedNote?.customSlug || '',
-        isPublic: selectedNote?.isPublic || false
-      }, selectedNote?.id);
-
-      if (savedNote) {
-        setSelectedNote(savedNote);
-        lastAutoSaveRef.current = currentContentKey;
-      }
-    } catch (error) {
-      console.error('自动保存失败:', error);
-    } finally {
-      setIsAutoSaving(false);
-    }
-  }, [currentTitle, currentContent, currentMode, selectedNote, saveNote, t]);
 
   // 定时检测内容变化并自动保存
   useEffect(() => {
-    const checkAndSave = () => {
-      if (!currentTitle && !currentContent) return;
+    if(!currentTitle && !currentContent) return;
+    saveNote({
+      title: currentTitle || t('untitled'),
+      content: currentContent,
+      mode: NOTE_MODES.MARKDOWN,
+      customSlug: selectedNote?.customSlug || '',
+      isPublic: selectedNote?.isPublic || false
+    }, selectedNote?.id);
 
-      const currentContentKey = `${currentTitle}:${currentContent}`;
-      if (currentContentKey !== lastAutoSaveRef.current) {
-        autoSaveNote();
-      }
-    };
-
-    // 每3秒检测一次内容变化
-    const intervalId = setInterval(checkAndSave, 3000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [currentTitle, currentContent, autoSaveNote]);
+  }, [currentTitle, currentContent, selectedNote, saveNote, t]);
 
   useEffect(() => {
     loadNotes();
     setCurrentMode(NOTE_MODES.MARKDOWN);
   }, [loadNotes]);
-
-  // 清理自动保存定时器
-  useEffect(() => {
-    const timeoutId = autoSaveTimeoutRef.current;
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    };
-  }, []);
 
   const handleNoteSelect = (note: LocalNote) => {
     setSelectedNote(note);
@@ -154,8 +130,6 @@ export default function HomePage() {
     setCurrentContent(note.content);
     setCurrentMode(NOTE_MODES.MARKDOWN);
     
-    // 重置自动保存状态
-    lastAutoSaveRef.current = `${note.title}:${note.content}`;
   };
 
   // 创建多语言模板的函数
@@ -210,12 +184,9 @@ ${t('useLatexSyntax')} $E = mc^2$
 
       if (savedNote) {
         setSelectedNote(savedNote);
-        lastAutoSaveRef.current = `${newTitle}:${newContent}`;
       }
     } catch (error) {
       console.error('新建笔记自动保存失败:', error);
-      // 即使保存失败也重置自动保存状态
-      lastAutoSaveRef.current = '';
     }
   };
 
@@ -265,33 +236,6 @@ ${t('useLatexSyntax')} $E = mc^2$
     console.log('已应用笔记模板');
   };
 
-
-  const handleSaveNote = async () => {
-    try {
-      const savedNote = saveNote({
-        title: currentTitle || t('untitled'),
-        content: currentContent,
-        mode: currentMode,
-        customSlug: selectedNote?.customSlug || '',
-        isPublic: selectedNote?.isPublic || false
-      }, selectedNote?.id);
-
-      if (savedNote) {
-        setSelectedNote(savedNote);
-        setShowEditor(true);
-        setCurrentTitle(savedNote.title);
-        setCurrentContent(savedNote.content);
-        lastAutoSaveRef.current = `${savedNote.title}:${savedNote.content}`;
-        console.log('笔记保存成功');
-        return savedNote;
-      }
-      return null;
-    } catch (error) {
-      console.error(t('saveNoteFailed'), error);
-    }
-    return null;
-  };
-
   const handleShare = async () => {
     if (!selectedNote || !currentTitle || !currentContent) {
       // 先保存笔记
@@ -307,18 +251,6 @@ ${t('useLatexSyntax')} $E = mc^2$
     }
     setShowSharePopup(true);
     handleShareNote();
-  };
-
-  const handleCurrentTitle = (title: string) => {
-    setCurrentTitle(title);
-    lastAutoSaveRef.current = `${title}:${currentContent}`;
-    autoSaveNote();
-  };
-
-  const handleCurrentContent = (content: string) => {
-    setCurrentContent(content);
-    lastAutoSaveRef.current = `${currentTitle}:${content}`;
-    autoSaveNote();
   };
 
   // 公共的分享逻辑函数
@@ -490,7 +422,7 @@ ${t('useLatexSyntax')} $E = mc^2$
   // 专注模式渲染
   if (isFocusMode) {
     return (
-      <div className="fixed inset-0 bg-card flex flex-col relative paper-texture z-50 h-screen">
+      <div className="fixed inset-0 bg-card flex flex-col paper-texture z-50 h-screen">
         {/* 专注模式退出按钮 */}
         <Button
           variant="ghost"
@@ -519,7 +451,6 @@ ${t('useLatexSyntax')} $E = mc^2$
           onSaveAs={handleSaveAs}
           isFocusMode={true}
           onToggleFocusMode={handleExitFocusMode}
-          isAutoSaving={isAutoSaving}
           onClearMarkdown={handleClearMarkdown}
           onUseTemplate={handleUseTemplate}
         />
@@ -589,14 +520,13 @@ ${t('useLatexSyntax')} $E = mc^2$
               <NewMarkdownEditor
                 title={currentTitle}
                 content={currentContent}
-                onTitleChange={handleCurrentTitle}
-                onContentChange={handleCurrentContent}
+                onTitleChange={setCurrentTitle}
+                onContentChange={setCurrentContent}
                 onSave={handleSaveNote}
                 onShare={handleShare}
                 onOpenFile={handleOpenFile}
                 onSaveAs={handleSaveAs}
                 onToggleFocusMode={toggleFocusMode}
-                isAutoSaving={isAutoSaving}
                 onClearMarkdown={handleClearMarkdown}
                 onUseTemplate={handleUseTemplate}
               />

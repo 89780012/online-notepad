@@ -17,12 +17,13 @@ interface ThemeProviderProps {
   defaultTheme?: Theme;
 }
 
-export function ThemeProvider({ 
-  children, 
-  defaultTheme = 'system' 
+export function ThemeProvider({
+  children,
+  defaultTheme = 'system'
 }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(defaultTheme);
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
+  const [isMounted, setIsMounted] = useState(false);
 
   // 获取系统主题偏好
   const getSystemTheme = (): 'light' | 'dark' => {
@@ -32,14 +33,16 @@ export function ThemeProvider({
 
   // 应用主题到DOM
   const applyTheme = (newTheme: 'light' | 'dark') => {
+    if (typeof window === 'undefined') return;
+
     const root = document.documentElement;
-    
+
     if (newTheme === 'dark') {
       root.classList.add('dark');
     } else {
       root.classList.remove('dark');
     }
-    
+
     setResolvedTheme(newTheme);
   };
 
@@ -59,14 +62,16 @@ export function ThemeProvider({
 
   // 初始化主题
   useEffect(() => {
+    setIsMounted(true);
+
     // 从 localStorage 读取主题偏好
-    const savedTheme = typeof window !== 'undefined' 
-      ? localStorage.getItem('notepad-theme') as Theme 
+    const savedTheme = typeof window !== 'undefined'
+      ? localStorage.getItem('notepad-theme') as Theme
       : null;
-    
+
     const initialTheme = savedTheme || defaultTheme;
     setThemeState(initialTheme);
-    
+
     // 计算实际应用的主题
     const actualTheme = initialTheme === 'system' ? getSystemTheme() : initialTheme;
     applyTheme(actualTheme);
@@ -74,10 +79,10 @@ export function ThemeProvider({
 
   // 监听系统主题变化
   useEffect(() => {
-    if (theme !== 'system') return;
+    if (!isMounted || theme !== 'system' || typeof window === 'undefined') return;
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
+
     const handleSystemThemeChange = () => {
       const systemTheme = getSystemTheme();
       applyTheme(systemTheme);
@@ -85,11 +90,11 @@ export function ThemeProvider({
 
     // 监听系统主题变化
     mediaQuery.addEventListener('change', handleSystemThemeChange);
-    
+
     return () => {
       mediaQuery.removeEventListener('change', handleSystemThemeChange);
     };
-  }, [theme]);
+  }, [theme, isMounted]);
 
   return (
     <ThemeContext.Provider 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { NOTE_MODES } from '@/types';
+import { generateNoteId } from '@/lib/id-utils';
 
 // 定义 LocalNote 接口
 export interface LocalNote {
@@ -77,7 +78,7 @@ export function useLocalNotes() {
     } else {
       // 创建新笔记
       const newNote: LocalNote = {
-        id: crypto.randomUUID(),
+        id: generateNoteId(),
         ...noteData,
         mode: noteData.mode || NOTE_MODES.MARKDOWN, // 默认使用 Markdown 模式
         createdAt: now,

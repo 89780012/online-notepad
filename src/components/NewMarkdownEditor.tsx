@@ -9,6 +9,7 @@ import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 import { useTranslations, useLocale } from 'next-intl';
 import { useTheme } from '@/contexts/ThemeContext';
+import EditorErrorBoundary from './EditorErrorBoundary';
 import 'katex/dist/katex.css';
 
 // 动态导入 MDEditor 以避免 SSR 问题
@@ -17,8 +18,11 @@ const MDEditor = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-sm text-muted-foreground">加载编辑器中...</div>
+      <div className="flex items-center justify-center h-full min-h-[400px]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div className="text-sm text-muted-foreground">Loading Markdown Editor...</div>
+        </div>
       </div>
     )
   }
@@ -370,42 +374,44 @@ export default function NewMarkdownEditor({
       
       {/* Markdown 编辑器 */}
       <div className="flex-1 overflow-hidden">
-        <Suspense fallback={
-          <div className="flex items-center justify-center h-full">
-            <div className="text-sm text-muted-foreground">加载编辑器中...</div>
-          </div>
-        }>
-          <MDEditor
-            value={content}
-            onChange={handleContentChange}
-            height="100%"
-            preview="live"
-            hideToolbar={false}
-            previewOptions={{
-              remarkPlugins: [remarkMath],
-              rehypePlugins: [rehypeKatex],
-              // 性能优化：限制预览更新频率
-              skipHtml: false,
-            }}
-            textareaProps={{
-              placeholder: t('markdownPlaceholder'),
-              style: {
-                fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-                // 性能优化：减少重绘
-                // willChange: 'contents',
-              },
-              // 性能优化：减少DOM操作
-              // spellCheck: false,
-              // autoComplete: 'off',
-              // autoCorrect: 'off',
-              // autoCapitalize: 'off',
-            }}
-            // 性能优化：隐藏拖拽条
-            // visibleDragbar={false}
-            // 动态主题支持
-            data-color-mode={resolvedTheme}
-          />
-        </Suspense>
+        <EditorErrorBoundary>
+          <Suspense fallback={
+            <div className="flex items-center justify-center h-full">
+              <div className="text-sm text-muted-foreground">加载编辑器中...</div>
+            </div>
+          }>
+            <MDEditor
+              value={content}
+              onChange={handleContentChange}
+              height="100%"
+              preview="live"
+              hideToolbar={false}
+              previewOptions={{
+                remarkPlugins: [remarkMath],
+                rehypePlugins: [rehypeKatex],
+                // 性能优化：限制预览更新频率
+                skipHtml: false,
+              }}
+              textareaProps={{
+                placeholder: t('markdownPlaceholder'),
+                style: {
+                  fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+                  // 性能优化：减少重绘
+                  // willChange: 'contents',
+                },
+                // 性能优化：减少DOM操作
+                // spellCheck: false,
+                // autoComplete: 'off',
+                // autoCorrect: 'off',
+                // autoCapitalize: 'off',
+              }}
+              // 性能优化：隐藏拖拽条
+              // visibleDragbar={false}
+              // 动态主题支持
+              data-color-mode={resolvedTheme}
+            />
+          </Suspense>
+        </EditorErrorBoundary>
       </div>
       </div>
     </div>

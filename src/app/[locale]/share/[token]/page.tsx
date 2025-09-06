@@ -1,7 +1,7 @@
-import { notFound } from 'next/navigation';
-import { getTranslations, getLocale } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import LanguageToggle from '@/components/LanguageToggle';
 import MarkdownPreview from '@/components/MarkdownPreview';
+import ClientDateFormatter from '@/components/ClientDateFormatter';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
@@ -36,22 +36,13 @@ export default async function SharedNotePage({
 }: {
   params: Promise<{ token: string }>;
 }) {
-  const locale = await getLocale();
   const {token} = await params;
   const t = await getTranslations();
   const note = await getSharedNote(token);
-  
-  if (!note) {
-    notFound();
+
+  if(note == null) {
+    return <div>Not Found</div>;
   }
-  
-  const formattedDate = new Date(note.updatedAt).toLocaleDateString(locale, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
 
   return (
     <ThemeProvider defaultTheme="system">
@@ -78,9 +69,10 @@ export default async function SharedNotePage({
                   {note.title || t('untitledNote')}
                 </h1>
               </div>
-              <span className="text-sm text-muted-foreground">
-                {t('lastUpdated')}: {formattedDate}
-              </span>
+              <ClientDateFormatter
+                dateString={note.updatedAt}
+                className="text-sm text-muted-foreground"
+              />
             </div>
 
             {/* Markdown 内容预览 */}

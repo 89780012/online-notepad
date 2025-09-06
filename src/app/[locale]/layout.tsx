@@ -3,6 +3,7 @@ import {getLocale,getMessages} from 'next-intl/server';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import "../globals.css";
 
 const geistSans = Geist({
@@ -100,55 +101,12 @@ export default async function LocaleLayout({
       >
         <ThemeProvider defaultTheme="system">
           <NextIntlClientProvider messages={messages}>
-            {children}
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
           </NextIntlClientProvider>
         </ThemeProvider>
 
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'WebApplication',
-              name: messages.title,
-              alternateName: 'Mini Notepad',
-              description: messages.metaDescription,
-              url: `https://mininotepad.com/${locale}`,
-              applicationCategory: 'ProductivityApplication',
-              operatingSystem: 'Any',
-              browserRequirements: 'Requires JavaScript. Requires HTML5.',
-              permissions: 'LocalStorage',
-              featureList: [
-                'Offline note taking',
-                'Dark mode support',
-                'Markdown editing',
-                'Cloud sharing',
-                'Auto-save',
-                'Cross-device compatibility',
-                'Ad-free experience'
-              ],
-              offers: {
-                '@type': 'Offer',
-                price: '0',
-                priceCurrency: 'USD',
-                availability: 'https://schema.org/InStock'
-              },
-              author: {
-                '@type': 'Organization',
-                name: 'Mini Notepad Team'
-              },
-              publisher: {
-                '@type': 'Organization',
-                name: 'Mini Notepad'
-              },
-              inLanguage: locale === 'zh' ? 'zh-CN' : 'en-US',
-              isAccessibleForFree: true,
-              softwareVersion: '1.0.0',
-              datePublished: '2025-09-01',
-              dateModified: new Date().toISOString().split('T')[0]
-            }),
-          }}
-        />
       </body>
     </html>
   );

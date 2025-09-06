@@ -110,6 +110,12 @@ export default function NoteList({
   };
 
   const formatDate = (dateString: string) => {
+    // 使用客户端安全的日期格式化
+    if (typeof window === 'undefined') {
+      // 服务端渲染时返回简单格式
+      return new Date(dateString).toISOString().split('T')[0];
+    }
+
     const date = new Date(dateString);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
