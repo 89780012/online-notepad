@@ -41,19 +41,6 @@ export function useLocalNotes() {
     }
   }, []);
 
-  // 保存笔记到 localStorage
-  const saveNotes = useCallback((notesToSave: LocalNote[]) => {
-    if (typeof window !== 'undefined') {
-      const sortedNotes = notesToSave.sort((a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      );
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(sortedNotes));
-      setNotes(sortedNotes);
-      return sortedNotes; // 返回已排序的笔记
-    }
-    return [];
-  }, [setNotes]);
-
   const getNodeById = useCallback((existingId: string) => {
       const currentNotes = [...notes];
       const index = currentNotes.findIndex(note => note.id === existingId);
@@ -63,42 +50,63 @@ export function useLocalNotes() {
   // 添加或更新笔记
   const saveNote = useCallback((noteData: Omit<LocalNote, 'id' | 'createdAt' | 'updatedAt'>, existingId?: string) => {
     const now = new Date().toISOString();
-    const currentNotes = [...notes];
+    let resultNote: LocalNote | undefined;
     
-    if (existingId) {
-      // 更新现有笔记
-      const index = currentNotes.findIndex(note => note.id === existingId);
-      if (index !== -1) {
-        currentNotes[index] = {
-          ...currentNotes[index],
+    setNotes(prevNotes => {
+      const currentNotes = [...prevNotes];
+      
+      if (existingId) {
+        // 更新现有笔记
+        const index = currentNotes.findIndex(note => note.id === existingId);
+        if (index !== -1) {
+          currentNotes[index] = {
+            ...currentNotes[index],
+            ...noteData,
+            updatedAt: now
+          };
+          resultNote = currentNotes[index];
+        }
+      } else {
+        // 创建新笔记
+        const newNote: LocalNote = {
+          id: generateNoteId(),
           ...noteData,
+          mode: noteData.mode || NOTE_MODES.MARKDOWN, // 默认使用 Markdown 模式
+          createdAt: now,
           updatedAt: now
         };
+        currentNotes.unshift(newNote);
+        resultNote = newNote;
       }
-    } else {
-      // 创建新笔记
-      const newNote: LocalNote = {
-        id: generateNoteId(),
-        ...noteData,
-        mode: noteData.mode || NOTE_MODES.MARKDOWN, // 默认使用 Markdown 模式
-        createdAt: now,
-        updatedAt: now
-      };
-      currentNotes.unshift(newNote);
-    }
 
-    const updatedNotes = saveNotes(currentNotes);
-    const newOrUpdatedNote = updatedNotes.find(note =>
-      existingId ? note.id === existingId : note.createdAt === now
-    );
-    return newOrUpdatedNote;
-  }, [notes, saveNotes]);
+      const sortedNotes = currentNotes.sort((a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+      
+      // 同步保存到 localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(sortedNotes));
+      }
+      
+      return sortedNotes;
+    });
+    
+    return resultNote;
+  }, []); // 移除所有依赖，使用函数式更新
 
   // 删除笔记
   const deleteNote = useCallback((id: string) => {
-    const filteredNotes = notes.filter(note => note.id !== id);
-    saveNotes(filteredNotes);
-  }, [notes, saveNotes]);
+    setNotes(prevNotes => {
+      const filteredNotes = prevNotes.filter(note => note.id !== id);
+      
+      // 同步保存到 localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredNotes));
+      }
+      
+      return filteredNotes;
+    });
+  }, []); // 移除依赖，使用函数式更新
 
   // 搜索笔记
   const searchNotes = useCallback((query: string) => {
