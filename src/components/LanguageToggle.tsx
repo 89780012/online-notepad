@@ -13,7 +13,8 @@ import { Languages, Check } from 'lucide-react';
 
 const LANGUAGES = [
   { code: 'zh', name: '中文' },
-  { code: 'en', name: 'English' }
+  { code: 'en', name: 'English' },
+  { code: 'hi', name: 'हिंदी' }
 ] as const;
 
 export default function LanguageToggle() {

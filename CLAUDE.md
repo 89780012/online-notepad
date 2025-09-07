@@ -4,6 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 变更记录 (Changelog)
 
+### 2025-09-07 18:39:21
+- **📄 模板系统架构扫描**: 发现并整合新增的 Markdown 模板市场功能
+- **🎨 模板市场功能**: 新增 7 类模板（商务、个人、教育、技术、创意、生产力）
+- **🌐 国际化扩展**: 模板相关翻译条目完整集成到 i18n 系统
+- **🔄 路由扩展**: 新增 `/templates` 路由页面，支持双语访问
+- **📊 覆盖率更新**: 项目文件总数增至 ~75+ 文件，模板系统完整扫描
+- **⚡ 增量式更新**: 基于现有架构索引进行精准补充，无重复扫描
+
 ### 2025-09-07 12:29:38
 - **架构文档增量更新**: 基于项目最新状态进行全面检查和优化
 - **模块扫描验证**: 验证所有模块完整性，确认核心功能稳定性
@@ -56,10 +64,12 @@ graph TD
     A --> H["🔷 src/types<br/>TypeScript 类型"];
     A --> I["🗃 prisma<br/>数据库模块"];
     A --> J["🌍 public<br/>静态资源"];
+    A --> K["📄 src/data<br/>模板数据系统"];
 
     B --> B1["[locale]/page.tsx<br/>主应用页面"];
     B --> B2["api/notes/<br/>RESTful API"];
     B --> B3["middleware.ts<br/>国际化中间件"];
+    B --> B4["[locale]/templates/<br/>模板市场页面"];
 
     C --> C1["NewMarkdownEditor.tsx<br/>编辑器核心"];
     C --> C2["NoteList.tsx<br/>笔记列表"];
@@ -82,6 +92,10 @@ graph TD
     I --> I1["schema.prisma<br/>数据模型"];
     I --> I2["migrations/<br/>数据库版本"];
 
+    K --> K1["templates/index.ts<br/>模板汇总"];
+    K --> K2["templates/types.ts<br/>类型定义"];
+    K --> K3["templates/categories.ts<br/>分类配置"];
+
     click B "./src/app/CLAUDE.md" "查看 App Router 模块文档"
     click C "./src/components/CLAUDE.md" "查看组件库模块文档"
     click D "./src/lib/CLAUDE.md" "查看工具库模块文档"
@@ -90,20 +104,22 @@ graph TD
     click G "./src/contexts/CLAUDE.md" "查看 Context 模块文档"
     click H "./src/types/CLAUDE.md" "查看类型定义模块文档"
     click I "./prisma/CLAUDE.md" "查看数据库模块文档"
+    click K "./src/data/CLAUDE.md" "查看模板数据系统文档"
 ```
 
 ## 模块索引
 
 | 模块 | 路径 | 类型 | 责任描述 | 入口文件 | 状态 |
 |------|------|------|----------|----------|------|
-| **App Router 层** | `src/app/` | Next.js 路由 | 页面路由、API 端点、中间件 | `[locale]/page.tsx` | ✅ 完整 |
+| **App Router 层** | `src/app/` | Next.js 路由 | 页面路由、API 端点、中间件、模板市场 | `[locale]/page.tsx` | ✅ 完整 |
 | **React 组件库** | `src/components/` | UI 组件 | 编辑器、列表、对话框、工具栏 | `NewMarkdownEditor.tsx` | ✅ 完整 |
 | **核心工具库** | `src/lib/` | 工具函数 | 数据库连接、通用工具、ID 生成 | `prisma.ts` | ✅ 完整 |
-| **国际化模块** | `src/i18n/` | i18n 配置 | 多语言路由、消息管理 | `config.ts` | ✅ 完整 |
+| **国际化模块** | `src/i18n/` | i18n 配置 | 多语言路由、消息管理、模板国际化 | `config.ts` | ✅ 完整 |
 | **React Hooks** | `src/hooks/` | 自定义 Hook | 本地存储、状态管理 | `useLocalNotes.ts` | ✅ 完整 |
 | **Context 管理** | `src/contexts/` | React Context | 主题状态、全局状态 | `ThemeContext.tsx` | ✅ 完整 |
 | **类型定义** | `src/types/` | TypeScript | 接口、类型、模式配置 | `note-modes.ts` | ✅ 完整 |
 | **数据库模块** | `prisma/` | 数据库 ORM | 模式定义、迁移管理 | `schema.prisma` | ✅ 完整 |
+| **📄 模板数据系统** | `src/data/` | 数据模型 | Markdown 模板定义、分类管理、类型系统 | `templates/index.ts` | ✅ 完整 |
 | **静态资源** | `public/` | 静态文件 | 图标、SEO、PWA 配置 | - | ⚠️ 基础 |
 
 ## 运行与开发
@@ -159,17 +175,19 @@ npx prisma migrate dev --name <migration-name>
 - [ ] **核心组件**: `NewMarkdownEditor`, `NoteList`, `ThemeProvider`
 - [ ] **业务逻辑**: `useLocalNotes` Hook, 数据转换函数
 - [ ] **工具函数**: `src/lib/utils.ts`, 类型验证函数
+- [ ] **模板系统**: `src/data/templates` 模板数据完整性验证
 
 #### 集成测试
 - [ ] **API 路由**: `/api/notes` CRUD 操作
 - [ ] **数据库操作**: Prisma 模型测试
-- [ ] **国际化**: 路由切换、文本翻译
+- [ ] **国际化**: 路由切换、文本翻译、模板翻译
 
 #### E2E 测试 (Playwright)  
 - [ ] **核心流程**: 创建笔记 → 编辑 → 保存 → 分享
 - [ ] **专注模式**: 全屏切换、ESC 退出
 - [ ] **主题切换**: 亮色/暗黑/系统模式
 - [ ] **多语言**: 中英文切换流程
+- [ ] **模板市场**: 模板浏览 → 应用 → 编辑流程
 
 ## 编码规范
 
@@ -257,8 +275,18 @@ pnpm lint                   # 最终检查
 - **添加国际化**: 同时更新 `en.json` 和 `zh.json` 消息文件
 - **修改 API**: 确保 Zod 验证和错误处理完整
 - **样式调整**: 优先使用 Tailwind，保持暗色主题兼容性
+- **添加模板**: 在 `src/data/templates/` 下创建新模板并更新索引
 
 ## 变更记录 (Changelog)
+
+### v0.2.0 - 模板市场功能 (NEW)
+- ✅ Markdown 模板市场完整实现
+- ✅ 7 大类模板系统（商务、个人、教育、技术、创意、生产力）
+- ✅ 模板预览与一键应用功能
+- ✅ 动态内容替换（日期、翻译键）
+- ✅ 多语言模板支持与完整国际化
+- ✅ 响应式模板市场 UI 设计
+- ✅ SessionStorage 跨页面模板传递
 
 ### v0.1.0 - 初始版本特性
 - ✅ Next.js 15 + React 19 现代化技术栈
@@ -286,6 +314,7 @@ pnpm lint                   # 最终检查
 - **编辑模式扩展**: 富文本、代码、绘图模式
 - **导出功能**: PDF、Word、HTML 格式
 - **协作功能**: 实时多人编辑、评论系统
+- **模板扩展**: 用户自定义模板、模板分享社区
 
 ---
 

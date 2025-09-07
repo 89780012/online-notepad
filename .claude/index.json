@@ -1,26 +1,26 @@
 {
-  "timestamp": "2025-09-07T12:29:38.000Z",
-  "generator": "初始化架构师 v2.1 (增量更新版)",
+  "timestamp": "2025-09-07T18:39:21.000Z",
+  "generator": "初始化架构师 v2.2 (增量增强版)",
   "project": {
     "name": "online-notepad",
     "type": "Next.js应用",
-    "version": "0.1.0",
-    "description": "基于 Next.js 15 + React 19 的现代化在线记事本应用，支持多语言、Markdown 编辑、专注模式、主题切换和自定义分享链接"
+    "version": "0.2.0",
+    "description": "基于 Next.js 15 + React 19 的现代化在线记事本应用，支持多语言、Markdown 编辑、专注模式、主题切换、自定义分享链接和模板市场功能"
   },
   "statistics": {
-    "totalFilesScanned": 55,
-    "totalFilesInRepo": "~70-80",
-    "coverageEstimate": "85%",
+    "totalFilesScanned": 65,
+    "totalFilesInRepo": "~75-80",
+    "coverageEstimate": "88%",
     "languages": {
-      "TypeScript": 80,
-      "JSON": 12,
+      "TypeScript": 82,
+      "JSON": 10,
       "SQL": 3,
       "CSS": 3,
       "JavaScript": 2
     },
     "ignoredPatterns": [
       "node_modules/**", ".next/**", "/out/", "/build", "*.db", "*.tsbuildinfo", 
-      "next-env.d.ts", ".env*", ".vercel", "/src/generated/prisma"
+      "next-env.d.ts", ".env*", ".vercel", "/src/generated/prisma", "memory-bank/**", "docs/**"
     ]
   },
   "architecture": {
@@ -39,16 +39,18 @@
       "path": "src/app",
       "name": "App Router 层",
       "type": "nextjs-app-router",
-      "responsibilities": "路由管理、页面布局、API 端点、国际化中间件",
+      "responsibilities": "路由管理、页面布局、API 端点、国际化中间件、模板市场页面",
       "entryPoints": [
         "src/app/[locale]/page.tsx",
         "src/app/[locale]/layout.tsx",
+        "src/app/[locale]/templates/page.tsx",
         "src/app/api/notes/route.ts",
         "src/middleware.ts"
       ],
       "keyFiles": [
         "src/app/[locale]/page.tsx",
         "src/app/[locale]/layout.tsx", 
+        "src/app/[locale]/templates/page.tsx",
         "src/app/[locale]/share/[token]/page.tsx",
         "src/app/api/notes/route.ts",
         "src/app/api/notes/share/[token]/route.ts",
@@ -60,7 +62,8 @@
       "hasTests": false,
       "hasDocumentation": true,
       "codeIntegrity": "excellent",
-      "technicalDebt": ["缺少 API 速率限制", "需要优化错误处理"]
+      "technicalDebt": ["缺少 API 速率限制", "需要优化错误处理"],
+      "newFeatures": ["模板市场页面", "模板应用逻辑", "SessionStorage 跨页面传递"]
     },
     {
       "path": "src/components",
@@ -130,7 +133,7 @@
       "path": "src/i18n",
       "name": "国际化模块",
       "type": "i18n-config",
-      "responsibilities": "多语言支持、路由配置、消息管理",
+      "responsibilities": "多语言支持、路由配置、消息管理、模板国际化",
       "entryPoints": [
         "src/i18n/config.ts",
         "src/i18n/index.ts"
@@ -146,7 +149,8 @@
       "hasTests": false,
       "hasDocumentation": true,
       "codeIntegrity": "excellent",
-      "technicalDebt": ["可添加更多语言支持", "消息文件格式可优化"]
+      "technicalDebt": ["可添加更多语言支持", "消息文件格式可优化"],
+      "newFeatures": ["模板相关国际化条目", "模板市场翻译支持"]
     },
     {
       "path": "src/hooks",
@@ -200,6 +204,42 @@
       "hasDocumentation": true,
       "codeIntegrity": "excellent",
       "technicalDebt": ["可扩展更多编辑模式类型"]
+    },
+    {
+      "path": "src/data",
+      "name": "模板数据系统",
+      "type": "data-templates",
+      "responsibilities": "Markdown 模板定义、分类管理、类型系统、动态内容支持",
+      "entryPoints": [
+        "src/data/templates/index.ts",
+        "src/data/templates/types.ts",
+        "src/data/templates/categories.ts"
+      ],
+      "keyFiles": [
+        "src/data/templates/index.ts",
+        "src/data/templates/types.ts",
+        "src/data/templates/categories.ts",
+        "src/data/templates/meeting-notes.ts",
+        "src/data/templates/project-planning.ts",
+        "src/data/templates/daily-journal.ts",
+        "src/data/templates/study-notes.ts",
+        "src/data/templates/code-documentation.ts",
+        "src/data/templates/brainstorming.ts",
+        "src/data/templates/task-list.ts"
+      ],
+      "coverage": "完整",
+      "hasTests": false,
+      "hasDocumentation": false,
+      "codeIntegrity": "excellent",
+      "technicalDebt": ["需要添加模块级文档", "可扩展用户自定义模板"],
+      "templateCategories": [
+        { "id": "business", "name": "商务类", "count": 2 },
+        { "id": "personal", "name": "个人类", "count": 1 },
+        { "id": "education", "name": "教育类", "count": 1 },
+        { "id": "technical", "name": "技术类", "count": 1 },
+        { "id": "creative", "name": "创意类", "count": 1 },
+        { "id": "productivity", "name": "生产力", "count": 1 }
+      ]
     },
     {
       "path": "prisma",
@@ -283,6 +323,63 @@
       "relationships": []
     }
   ],
+  "templates": {
+    "totalCount": 7,
+    "categories": [
+      {
+        "id": "business",
+        "name": "商务类",
+        "templates": ["meeting-notes", "project-planning"],
+        "i18nSupport": true
+      },
+      {
+        "id": "personal",
+        "name": "个人类", 
+        "templates": ["daily-journal"],
+        "i18nSupport": true
+      },
+      {
+        "id": "education",
+        "name": "教育类",
+        "templates": ["study-notes"],
+        "i18nSupport": true
+      },
+      {
+        "id": "technical", 
+        "name": "技术类",
+        "templates": ["code-documentation"],
+        "i18nSupport": true
+      },
+      {
+        "id": "creative",
+        "name": "创意类",
+        "templates": ["brainstorming"],
+        "i18nSupport": true
+      },
+      {
+        "id": "productivity",
+        "name": "生产力",
+        "templates": ["task-list"],
+        "i18nSupport": true
+      }
+    ],
+    "features": [
+      "动态内容替换（日期、翻译键）",
+      "预览功能",
+      "一键应用到编辑器",
+      "完整的国际化支持",
+      "响应式分类筛选",
+      "标签系统",
+      "图标化分类展示"
+    ],
+    "implementation": {
+      "typeSystem": "TypeScript 严格类型定义",
+      "dataStructure": "函数式内容生成支持",
+      "routing": "Next.js App Router 双语路由",
+      "stateManagement": "SessionStorage 跨页面传递",
+      "ui": "Radix UI + Tailwind CSS 响应式设计"
+    }
+  },
   "criticalGaps": [
     {
       "category": "security",
@@ -296,7 +393,7 @@
       "category": "testing",
       "priority": "critical", 
       "issue": "零测试覆盖",
-      "description": "项目完全缺少自动化测试体系",
+      "description": "项目完全缺少自动化测试体系，包括新增的模板系统",
       "impact": "代码质量和稳定性无保障",
       "solution": "建立 Jest + Testing Library + Playwright 测试框架"
     },
@@ -310,6 +407,12 @@
     }
   ],
   "highPriorityGaps": [
+    {
+      "category": "documentation",
+      "issue": "模板系统文档缺失",
+      "description": "新增的模板数据系统缺少模块级 CLAUDE.md 文档",
+      "solution": "创建 src/data/CLAUDE.md 模块文档"
+    },
     {
       "category": "error_handling",
       "issue": "错误边界已实现但可优化",
@@ -327,6 +430,12 @@
       "issue": "可访问性待提升",
       "description": "键盘导航和屏幕阅读器支持需要改进",
       "solution": "添加 ARIA 标签，优化键盘导航逻辑"
+    },
+    {
+      "category": "template_extensibility",
+      "issue": "模板系统可扩展性",
+      "description": "当前模板系统为静态定义，缺少用户自定义模板功能",
+      "solution": "设计用户模板存储方案，支持模板导入导出"
     }
   ],
   "nextSteps": [
@@ -337,10 +446,11 @@
         "安装测试框架依赖 (Jest, Testing Library, Playwright)",
         "配置测试环境和 CI/CD 管道",
         "为核心组件编写单元测试",
+        "为模板系统编写专项测试",
         "添加 API 集成测试",
-        "实现 E2E 测试覆盖关键流程"
+        "实现 E2E 测试覆盖关键流程（包括模板市场）"
       ],
-      "estimatedTime": "3-5 days"
+      "estimatedTime": "4-6 days"
     },
     {
       "priority": "critical",
@@ -352,6 +462,17 @@
         "实现 CSRF token 验证"
       ],
       "estimatedTime": "2-3 days"
+    },
+    {
+      "priority": "high",
+      "phase": "模板系统文档完善",
+      "tasks": [
+        "创建 src/data/CLAUDE.md 模块文档",
+        "补充模板数据结构说明",
+        "添加模板开发指南",
+        "完善 API 使用示例"
+      ],
+      "estimatedTime": "1-2 days"
     },
     {
       "priority": "high",
@@ -371,13 +492,26 @@
         "提升可访问性支持",
         "优化移动端体验",
         "添加键盘快捷键",
-        "完善错误提示 UI"
+        "完善错误提示 UI",
+        "增强模板预览功能"
       ],
-      "estimatedTime": "2-3 days"
+      "estimatedTime": "3-4 days"
     }
   ],
   "truncated": false,
   "scanCompletion": "100%",
+  "incrementalUpdate": {
+    "previousScan": "2025-09-07T12:29:38.000Z",
+    "newFeaturesDetected": [
+      "模板数据系统 (src/data/templates/)",
+      "模板市场页面 (/templates)",
+      "模板国际化支持",
+      "SessionStorage 模板传递机制"
+    ],
+    "changedModules": ["src/app", "src/i18n", "src/messages"],
+    "addedFiles": 10,
+    "strategy": "基于现有索引的增量扫描，避免重复工作"
+  },
   "qualityMetrics": {
     "codeOrganization": "excellent",
     "typeSafety": "excellent",
@@ -386,9 +520,10 @@
     "securityPosture": "good",
     "performance": "good",
     "maintainability": "excellent",
-    "documentation": "excellent",
+    "documentation": "good",
     "i18nSupport": "excellent",
-    "userExperience": "good"
+    "userExperience": "excellent",
+    "templateSystem": "excellent"
   },
   "competitiveAdvantages": [
     "现代化技术栈 (Next.js 15, React 19)",
@@ -400,11 +535,22 @@
     "代码架构清晰可扩展",
     "离线优先的数据存储策略",
     "丰富的 Markdown 编辑功能",
-    "主题系统设计优雅"
+    "主题系统设计优雅",
+    "完整的模板市场生态系统",
+    "多语言模板支持",
+    "一键模板应用体验"
   ],
   "recentChanges": [
     {
-      "date": "2025-09-07",
+      "date": "2025-09-07T18:39:21.000Z",
+      "type": "feature_discovery",
+      "description": "发现并整合模板系统架构，新增模板市场功能完整扫描",
+      "impact": "major_enhancement",
+      "newModules": ["src/data"],
+      "affectedModules": ["src/app", "src/i18n"]
+    },
+    {
+      "date": "2025-09-07T12:29:38.000Z",
       "type": "architectural_update",
       "description": "架构文档增量更新，验证所有模块完整性",
       "impact": "documentation_improvement"
