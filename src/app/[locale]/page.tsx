@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { Menu, X, Plus } from 'lucide-react';
+import { Menu, X, Plus, BookOpen } from 'lucide-react';
 import NewMarkdownEditor from '@/components/NewMarkdownEditor';
 import NoteList from '@/components/NoteList';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { useTranslations, useLocale } from 'next-intl';
 import { NoteMode, NOTE_MODES } from '@/types';
 import { generateShareSlug } from '@/lib/id-utils';
+import Link from 'next/link';
 
 export default function HomePage() {
   const { notes, saveNote, deleteNote, loadNotes } = useLocalNotes();
@@ -119,10 +120,57 @@ export default function HomePage() {
     }, selectedNote?.id);
   }, [currentTitle, currentContent, selectedNote, showEditor, saveNote, t]);
 
+  // 应用模板的函数
+  const handleApplyTemplate = useCallback(async (template: { name: string; content: string }) => {
+    const templateContent = template.content
+      .replace(/\$\{new Date\(\)\.toLocaleDateString\(\)\}/g, new Date().toLocaleDateString())
+      .replace(/\$\{t\('([^']+)'\)\}/g, (match, key) => {
+        try {
+          return t(key);
+        } catch {
+          return match;
+        }
+      });
+
+    setSelectedNote(null);
+    setShowEditor(true);
+    setCurrentTitle(t(template.name));
+    setCurrentContent(templateContent);
+
+    // 自动保存模板笔记
+    try {
+      const savedNote = saveNote({
+        title: t(template.name),
+        content: templateContent,
+        mode: NOTE_MODES.MARKDOWN,
+        customSlug: '',
+        isPublic: false
+      });
+      if (savedNote) {
+        setSelectedNote(savedNote);
+      }
+    } catch (error) {
+      console.error('模板笔记保存失败:', error);
+    }
+  }, [t, saveNote]);
+
   useEffect(() => {
     loadNotes();
     setCurrentMode(NOTE_MODES.MARKDOWN);
-  }, [loadNotes]);
+    
+    // 检查是否有待应用的模板
+    const selectedTemplate = sessionStorage.getItem('selectedTemplate');
+    if (selectedTemplate) {
+      try {
+        const template = JSON.parse(selectedTemplate);
+        handleApplyTemplate(template);
+        sessionStorage.removeItem('selectedTemplate');
+      } catch (error) {
+        console.error('应用模板失败:', error);
+      }
+    }
+  }, [loadNotes, handleApplyTemplate]);
+
 
   const handleNoteSelect = (note: LocalNote) => {
     setSelectedNote(note);
@@ -133,43 +181,11 @@ export default function HomePage() {
     
   };
 
-  // 创建多语言模板的函数
-  const createNoteTemplate = (t: (key: string) => string, locale: string) => `# ${t('newNoteTitle')}
-
-## ${t('overview')}
-${t('writeYourThoughts')}
-
-## ${t('keyPoints')}
-- ${t('firstPoint')}
-- ${t('secondPoint')}
-- ${t('thirdPoint')}
-
-## ${t('codeExample')}
-\`\`\`javascript
-${t('addCodeHere')}
-console.log('Hello, World!');
-\`\`\`
-
-## ${t('mathFormula')}
-${t('useLatexSyntax')} $E = mc^2$
-
-## ${t('taskList')}
-- [ ] ${t('pendingTask1')}
-- [ ] ${t('pendingTask2')}
-- [x] ${t('completedTask')}
-
-## ${t('linkText')}
-[${t('linkText')}](https://example.com)
-
----
-*${t('createdAt')} ${new Date().toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US')}*
-`;
-
   const handleNewNote = async () => {
     setSelectedNote(null);
     setShowEditor(true);
     const newTitle = t('newNoteTitle');
-    const newContent = createNoteTemplate(t, locale);
+    const newContent = ''; // 简单的空内容，用户可以选择模板
     setCurrentTitle(newTitle);
     setCurrentContent(newContent);
 
@@ -228,12 +244,6 @@ ${t('useLatexSyntax')} $E = mc^2$
     const plainText = stripMarkdown(currentContent);
     setCurrentContent(plainText);
     console.log('Markdown格式已清除');
-  };
-
-  // 处理使用模板
-  const handleUseTemplate = () => {
-    setCurrentContent(createNoteTemplate(t, locale));
-    console.log('已应用笔记模板');
   };
 
   const handleShare = async () => {
@@ -465,7 +475,6 @@ ${t('useLatexSyntax')} $E = mc^2$
           isFocusMode={true}
           onToggleFocusMode={handleExitFocusMode}
           onClearMarkdown={handleClearMarkdown}
-          onUseTemplate={handleUseTemplate}
         />
       </div>
     );
@@ -497,6 +506,18 @@ ${t('useLatexSyntax')} $E = mc^2$
             <Plus className="h-4 w-4 mr-1" />
             <span className="hidden sm:inline">{t('newNote')}</span>
           </Button>
+          
+          {/* 模板市场按钮 */}
+          <Link href={locale === 'en' ? '/templates' : `/${locale}/templates`}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-sm font-medium"
+            >
+              <BookOpen className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">{t('browseTemplates')}</span>
+            </Button>
+          </Link>
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
@@ -547,7 +568,6 @@ ${t('useLatexSyntax')} $E = mc^2$
                     onSaveAs={handleSaveAs}
                     onToggleFocusMode={toggleFocusMode}
                     onClearMarkdown={handleClearMarkdown}
-                    onUseTemplate={handleUseTemplate}
                   />
                 </div>
               )}

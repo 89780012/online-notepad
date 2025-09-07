@@ -1,17 +1,71 @@
-  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
-    <url>
-      <loc>https://mininotepad.com</loc>
-      <changefreq>weekly</changefreq>
-      <priority>1.0</priority>
-      <xhtml:link rel="alternate" hreflang="zh" href="https://mininotepad.com" />
-      <xhtml:link rel="alternate" hreflang="en" href="https://mininotepad.com/en" />
-    </url>
-    <url>
-      <loc>https://mininotepad.com/en</loc>
-      <changefreq>weekly</changefreq>
-      <priority>0.9</priority>
-      <xhtml:link rel="alternate" hreflang="zh" href="https://mininotepad.com" />
-      <xhtml:link rel="alternate" hreflang="en" href="https://mininotepad.com/en" />
-    </url>
-  </urlset>
+  
+  <!-- 根路径 (默认英文) -->
+  <url>
+    <loc>https://mininotepad.com</loc>
+    <lastmod>2025-09-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mininotepad.com" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mininotepad.com/zh" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mininotepad.com" />
+  </url>
+  
+  <!-- 首页 - 英文 -->
+  <url>
+    <loc>https://mininotepad.com/en</loc>
+    <lastmod>2025-09-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mininotepad.com/en" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mininotepad.com/zh" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mininotepad.com" />
+  </url>
+
+  <!-- 首页 - 中文 -->
+  <url>
+    <loc>https://mininotepad.com/zh</loc>
+    <lastmod>2025-09-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mininotepad.com" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mininotepad.com/zh" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mininotepad.com" />
+  </url>
+
+  <!-- 模板市场 - 英文 (默认) -->
+  <url>
+    <loc>https://mininotepad.com/templates</loc>
+    <lastmod>2025-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mininotepad.com/templates" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mininotepad.com/zh/templates" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mininotepad.com/templates" />
+  </url>
+  
+  <!-- 模板市场 - 英文 (显式路径) -->
+  <url>
+    <loc>https://mininotepad.com/en/templates</loc>
+    <lastmod>2025-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mininotepad.com/en/templates" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mininotepad.com/zh/templates" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mininotepad.com/templates" />
+  </url>
+
+  <!-- 模板市场 - 中文 -->
+  <url>
+    <loc>https://mininotepad.com/zh/templates</loc>
+    <lastmod>2025-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mininotepad.com/templates" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://mininotepad.com/zh/templates" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mininotepad.com/templates" />
+  </url>
+
+</urlset>

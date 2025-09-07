@@ -2,14 +2,23 @@
 
 import { useState, useCallback, useRef, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
-import { Maximize2, Minimize2, Save, Share2, FolderOpen, Download, Eraser } from 'lucide-react';
+import { Maximize2, Minimize2, Save, Share2, FolderOpen, Download, Eraser, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from '@/components/ui/dropdown-menu';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { useTheme } from '@/contexts/ThemeContext';
 import EditorErrorBoundary from './EditorErrorBoundary';
+import { getTemplates, categories } from '@/data/templates';
 import 'katex/dist/katex.css';
 
 // 动态导入 MDEditor 以避免 SSR 问题
@@ -27,38 +36,6 @@ const MDEditor = dynamic(
     )
   }
 );
-
-// 创建多语言模板的函数
-const createNoteTemplate = (t: (key: string) => string, locale: string) => `# ${t('newNoteTitle')}
-
-## ${t('overview')}
-${t('writeYourThoughts')}
-
-## ${t('keyPoints')}
-- ${t('firstPoint')}
-- ${t('secondPoint')}
-- ${t('thirdPoint')}
-
-## ${t('codeExample')}
-\`\`\`javascript
-${t('addCodeHere')}
-console.log('Hello, World!');
-\`\`\`
-
-## ${t('mathFormula')}
-${t('useLatexSyntax')} $E = mc^2$
-
-## ${t('taskList')}
-- [ ] ${t('pendingTask1')}
-- [ ] ${t('pendingTask2')}
-- [x] ${t('completedTask')}
-
-## ${t('linkText')}
-[${t('linkText')}](https://example.com)
-
----
-*${t('createdAt')} ${new Date().toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US')}*
-`;
 
 // 清除 Markdown 格式的函数
 const stripMarkdown = (text: string): string => {
@@ -106,7 +83,6 @@ interface NewMarkdownEditorProps {
   onToggleFocusMode?: () => void;
   isAutoSaving?: boolean;
   onClearMarkdown?: () => void;
-  onUseTemplate?: () => void;
 }
 
 export default function NewMarkdownEditor({
@@ -122,10 +98,8 @@ export default function NewMarkdownEditor({
   onToggleFocusMode,
   isAutoSaving = false,
   onClearMarkdown,
-  onUseTemplate,
 }: NewMarkdownEditorProps) {
   const t = useTranslations();
-  const locale = useLocale();
   const { resolvedTheme } = useTheme();
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showSaveStatus, setShowSaveStatus] = useState(false);
@@ -235,14 +209,22 @@ export default function NewMarkdownEditor({
     }
   };
 
-  // 使用模板
-  const handleUseTemplate = () => {
-    if (onUseTemplate) {
-      const template = createNoteTemplate(t, locale);
-      onContentChange(template);
-      onUseTemplate();
-    }
+  // 应用模板
+  const handleApplyTemplate = (templateContent: string) => {
+    onContentChange(templateContent);
   };
+
+  // 获取模板数据
+  const templates = getTemplates(t);
+  
+  // 按分类分组模板
+  const templatesByCategory = templates.reduce((acc, template) => {
+    if (!acc[template.category]) {
+      acc[template.category] = [];
+    }
+    acc[template.category].push(template);
+    return acc;
+  }, {} as Record<string, typeof templates>);
 
   return (
     <div className={`flex flex-col h-full ${isFocusMode ? 'h-screen' : ''}`}>
@@ -290,15 +272,62 @@ export default function NewMarkdownEditor({
         
         {/* 工具栏按钮 */}
         <div className="flex items-center gap-2">
-          <Button
-            onClick={handleUseTemplate}
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
-            title={t('useTemplateTitle')}
-          >
-            📝 {t('useTemplate')}
-          </Button>
+          {/* 模板选择下拉菜单 */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                📝 {t('useTemplate')}
+                <ChevronDown className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-64 max-h-96 overflow-y-auto">
+              <DropdownMenuLabel>{t('selectTemplate')}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              
+              {categories
+                .filter(category => category.id !== 'all')
+                .map((category) => {
+                  const categoryTemplates = templatesByCategory[category.id];
+                  if (!categoryTemplates || categoryTemplates.length === 0) return null;
+
+                  const Icon = category.icon;
+                  return (
+                    <div key={category.id}>
+                      <DropdownMenuLabel className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                        <Icon className="w-3 h-3" />
+                        {t(category.name)}
+                      </DropdownMenuLabel>
+                      {categoryTemplates.map((template) => {
+                        const TemplateIcon = template.icon;
+                        return (
+                          <DropdownMenuItem
+                            key={template.id}
+                            onClick={() => handleApplyTemplate(template.content)}
+                            className="cursor-pointer"
+                          >
+                            <div className="flex items-center gap-2">
+                              <TemplateIcon className="w-4 h-4" />
+                              <div>
+                                <div className="font-medium">{t(template.name)}</div>
+                                <div className="text-xs text-muted-foreground truncate">
+                                  {t(template.description)}
+                                </div>
+                              </div>
+                            </div>
+                          </DropdownMenuItem>
+                        );
+                      })}
+                      <DropdownMenuSeparator />
+                    </div>
+                  );
+                })
+              }
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <Button
             onClick={handleClearMarkdown}
