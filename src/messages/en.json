@@ -316,5 +316,13 @@
   "limitation": "Limitation of Liability",
   "limitationText": "To the maximum extent permitted by law, Mini Notepad is not liable for any losses caused by the use or inability to use this service.",
   "changes": "Terms Changes",
-  "changesText": "We reserve the right to modify these terms of service at any time. Significant changes will be notified to users through website announcements."
+  "changesText": "We reserve the right to modify these terms of service at any time. Significant changes will be notified to users through website announcements.",
+  "multiSelect": "Multi-select",
+  "selectAll": "Select All",
+  "deselectAll": "Deselect All",
+  "selectedNotes": "{count} notes selected",
+  "deleteSelected": "Delete Selected",
+  "confirmDeleteMultiple": "Are you sure you want to delete these {count} notes?",
+  "exitMultiSelect": "Exit Multi-select",
+  "noNotesSelected": "Please select notes to delete"
 }

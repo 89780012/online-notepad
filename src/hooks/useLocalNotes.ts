@@ -103,7 +103,7 @@ export function useLocalNotes() {
       }
 
       const sortedNotes = currentNotes.sort((a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
 
       // 同步保存到 localStorage

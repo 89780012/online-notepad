@@ -316,5 +316,13 @@
   "limitation": "责任限制",
   "limitationText": "在法律允许的最大范围内，Mini Notepad 不对因使用或无法使用本服务而造成的任何损失承担责任。",
   "changes": "条款变更",
-  "changesText": "我们保留随时修改这些服务条款的权利。重大变更将通过网站公告的方式通知用户。"
+  "changesText": "我们保留随时修改这些服务条款的权利。重大变更将通过网站公告的方式通知用户。",
+  "multiSelect": "多选",
+  "selectAll": "全选",
+  "deselectAll": "取消全选",
+  "selectedNotes": "已选择 {count} 条笔记",
+  "deleteSelected": "删除所选",
+  "confirmDeleteMultiple": "确定要删除这 {count} 条笔记吗？",
+  "exitMultiSelect": "退出多选",
+  "noNotesSelected": "请选择要删除的笔记"
 }

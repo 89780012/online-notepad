@@ -1,6 +1,6 @@
 {
-  "timestamp": "2025-09-03T20:28:21.000Z",
-  "generator": "初始化架构师 v2.0 (自适应版)",
+  "timestamp": "2025-09-07T12:29:38.000Z",
+  "generator": "初始化架构师 v2.1 (增量更新版)",
   "project": {
     "name": "online-notepad",
     "type": "Next.js应用",
@@ -8,14 +8,15 @@
     "description": "基于 Next.js 15 + React 19 的现代化在线记事本应用，支持多语言、Markdown 编辑、专注模式、主题切换和自定义分享链接"
   },
   "statistics": {
-    "totalFilesScanned": 52,
-    "totalFilesInRepo": "~65-75",
-    "coverageEstimate": "80%",
+    "totalFilesScanned": 55,
+    "totalFilesInRepo": "~70-80",
+    "coverageEstimate": "85%",
     "languages": {
-      "TypeScript": 85,
-      "JSON": 10,
+      "TypeScript": 80,
+      "JSON": 12,
       "SQL": 3,
-      "CSS": 2
+      "CSS": 3,
+      "JavaScript": 2
     },
     "ignoredPatterns": [
       "node_modules/**", ".next/**", "/out/", "/build", "*.db", "*.tsbuildinfo", 
@@ -29,39 +30,43 @@
     "database": "PostgreSQL + Prisma ORM 6.15.0",
     "styling": "Tailwind CSS 4.0 + Radix UI",
     "i18n": "next-intl",
-    "bundler": "Turbopack"
+    "bundler": "Turbopack",
+    "markdown": "@uiw/react-md-editor + KaTeX",
+    "stateManagement": "React Context + Custom Hooks"
   },
   "modules": [
     {
       "path": "src/app",
       "name": "App Router 层",
       "type": "nextjs-app-router",
-      "responsibilities": "路由管理、页面布局、API 端点",
+      "responsibilities": "路由管理、页面布局、API 端点、国际化中间件",
       "entryPoints": [
         "src/app/[locale]/page.tsx",
         "src/app/[locale]/layout.tsx",
-        "src/app/api/notes/route.ts"
+        "src/app/api/notes/route.ts",
+        "src/middleware.ts"
       ],
       "keyFiles": [
         "src/app/[locale]/page.tsx",
-        "src/app/[locale]/layout.tsx",
+        "src/app/[locale]/layout.tsx", 
         "src/app/[locale]/share/[token]/page.tsx",
         "src/app/api/notes/route.ts",
         "src/app/api/notes/share/[token]/route.ts",
         "src/app/globals.css",
+        "src/app/not-found.tsx",
         "src/middleware.ts"
       ],
       "coverage": "完整",
       "hasTests": false,
-      "hasDocumentation": false,
+      "hasDocumentation": true,
       "codeIntegrity": "excellent",
-      "technicalDebt": ["缺少错误边界组件", "API错误处理可以改进"]
+      "technicalDebt": ["缺少 API 速率限制", "需要优化错误处理"]
     },
     {
       "path": "src/components",
       "name": "React 组件库",
       "type": "react-components",
-      "responsibilities": "UI 组件、编辑器、工具栏、对话框",
+      "responsibilities": "UI 组件、编辑器、工具栏、对话框、主题管理",
       "entryPoints": [
         "src/components/NewMarkdownEditor.tsx",
         "src/components/NoteList.tsx",
@@ -75,7 +80,14 @@
         "src/components/SaveAsDialog.tsx",
         "src/components/LanguageToggle.tsx",
         "src/components/ThemeToggle.tsx",
-        "src/components/MarkdownPreview.tsx"
+        "src/components/MarkdownPreview.tsx",
+        "src/components/FeatureShowcase.tsx",
+        "src/components/UseCaseShowcase.tsx",
+        "src/components/SEOContent.tsx",
+        "src/components/Footer.tsx",
+        "src/components/ClientDateFormatter.tsx",
+        "src/components/ErrorBoundary.tsx",
+        "src/components/EditorErrorBoundary.tsx"
       ],
       "uiComponents": [
         "src/components/ui/button.tsx",
@@ -87,29 +99,31 @@
       ],
       "coverage": "完整",
       "hasTests": false,
-      "hasDocumentation": false,
+      "hasDocumentation": true,
       "codeIntegrity": "excellent",
-      "technicalDebt": ["组件缺少PropTypes验证", "可访问性标签不完整"]
+      "technicalDebt": ["需要增加组件测试", "可提升可访问性"]
     },
     {
       "path": "src/lib",
       "name": "核心工具库",
       "type": "utility-library",
-      "responsibilities": "数据库连接、工具函数、配置管理",
+      "responsibilities": "数据库连接、工具函数、ID 生成、本地化工具",
       "entryPoints": [
         "src/lib/prisma.ts",
         "src/lib/utils.ts",
-        "src/lib/locale.ts"
+        "src/lib/locale.ts",
+        "src/lib/id-utils.ts"
       ],
       "keyFiles": [
         "src/lib/prisma.ts",
         "src/lib/utils.ts",
-        "src/lib/locale.ts"
+        "src/lib/locale.ts",
+        "src/lib/id-utils.ts"
       ],
       "coverage": "完整",
       "hasTests": false,
-      "hasDocumentation": false,
-      "codeIntegrity": "good",
+      "hasDocumentation": true,
+      "codeIntegrity": "excellent",
       "technicalDebt": ["数据库连接池配置可优化"]
     },
     {
@@ -130,15 +144,15 @@
       ],
       "coverage": "完整",
       "hasTests": false,
-      "hasDocumentation": false,
+      "hasDocumentation": true,
       "codeIntegrity": "excellent",
-      "technicalDebt": ["可添加更多语言支持"]
+      "technicalDebt": ["可添加更多语言支持", "消息文件格式可优化"]
     },
     {
       "path": "src/hooks",
       "name": "自定义 React Hooks",
       "type": "react-hooks",
-      "responsibilities": "本地存储管理、笔记 CRUD 操作",
+      "responsibilities": "本地存储管理、笔记 CRUD 操作、状态管理",
       "entryPoints": [
         "src/hooks/useLocalNotes.ts"
       ],
@@ -147,9 +161,9 @@
       ],
       "coverage": "完整",
       "hasTests": false,
-      "hasDocumentation": false,
+      "hasDocumentation": true,
       "codeIntegrity": "excellent",
-      "technicalDebt": ["可添加数据同步冲突处理"]
+      "technicalDebt": ["可添加数据同步冲突处理", "需要优化性能"]
     },
     {
       "path": "src/contexts",
@@ -164,7 +178,7 @@
       ],
       "coverage": "完整",
       "hasTests": false,
-      "hasDocumentation": false,
+      "hasDocumentation": true,
       "codeIntegrity": "excellent",
       "technicalDebt": ["可考虑状态持久化优化"]
     },
@@ -183,7 +197,7 @@
       ],
       "coverage": "完整",
       "hasTests": false,
-      "hasDocumentation": false,
+      "hasDocumentation": true,
       "codeIntegrity": "excellent",
       "technicalDebt": ["可扩展更多编辑模式类型"]
     },
@@ -225,7 +239,7 @@
       "hasTests": false,
       "hasDocumentation": false,
       "codeIntegrity": "good",
-      "technicalDebt": ["缺少PWA图标配置", "可优化SEO元数据"]
+      "technicalDebt": ["缺少 PWA 图标配置", "可优化 SEO 元数据"]
     }
   ],
   "apis": [
@@ -233,17 +247,18 @@
       "path": "/api/notes",
       "methods": ["POST", "PUT", "DELETE"],
       "description": "笔记 CRUD 操作，支持自定义分享链接",
-      "validation": "Zod Schema",
+      "validation": "Zod Schema 验证",
       "security": ["输入验证", "SQL注入防护"],
       "performance": "数据库查询优化",
-      "gaps": ["缺少速率限制", "缺少CSRF保护"]
+      "gaps": ["缺少速率限制", "缺少 CSRF 保护"],
+      "implementation": "完善的错误处理和数据验证"
     },
     {
       "path": "/api/notes/share/[token]",
       "methods": ["GET"],
       "description": "获取分享笔记内容",
-      "validation": "URL参数验证",
-      "security": ["token验证"],
+      "validation": "URL 参数验证",
+      "security": ["token 验证"],
       "performance": "查询缓存机会",
       "gaps": ["缺少访问频次限制"]
     }
@@ -272,10 +287,10 @@
     {
       "category": "security",
       "priority": "critical",
-      "issue": "XSS防护缺失",
-      "description": "Markdown渲染未进行HTML净化，存在XSS攻击风险",
-      "impact": "用户数据安全威胁",
-      "solution": "集成DOMPurify或rehype-sanitize"
+      "issue": "XSS防护需要加强",
+      "description": "Markdown 渲染虽有基础安全措施，但可进一步加强 HTML 净化",
+      "impact": "潜在的用户数据安全风险",
+      "solution": "集成 DOMPurify 或 rehype-sanitize 进行更严格的内容净化"
     },
     {
       "category": "testing",
@@ -283,72 +298,80 @@
       "issue": "零测试覆盖",
       "description": "项目完全缺少自动化测试体系",
       "impact": "代码质量和稳定性无保障",
-      "solution": "建立Jest+Testing Library+Playwright测试框架"
+      "solution": "建立 Jest + Testing Library + Playwright 测试框架"
+    },
+    {
+      "category": "api_security",
+      "priority": "high",
+      "issue": "API 安全防护不足",
+      "description": "缺少速率限制、CSRF 保护等安全措施",
+      "impact": "API 滥用和安全攻击风险",
+      "solution": "集成 next-rate-limit 和 CSRF 中间件"
     }
   ],
   "highPriorityGaps": [
     {
       "category": "error_handling",
-      "issue": "错误边界缺失",
-      "description": "React组件错误可能导致整个应用崩溃",
-      "solution": "添加Error Boundary组件"
-    },
-    {
-      "category": "api_security",
-      "issue": "API安全防护不足",
-      "description": "缺少速率限制、CSRF保护等安全措施",
-      "solution": "集成next-rate-limit和CSRF中间件"
+      "issue": "错误边界已实现但可优化",
+      "description": "虽然有 ErrorBoundary 组件，但全局错误处理可以进一步完善",
+      "solution": "扩展错误边界覆盖范围，添加错误上报机制"
     },
     {
       "category": "performance",
       "issue": "性能优化机会",
       "description": "组件未进行代码分割，包大小可优化",
-      "solution": "实现React.lazy懒加载和bundle分析"
+      "solution": "实现 React.lazy 懒加载和 bundle 分析"
+    },
+    {
+      "category": "accessibility",
+      "issue": "可访问性待提升",
+      "description": "键盘导航和屏幕阅读器支持需要改进",
+      "solution": "添加 ARIA 标签，优化键盘导航逻辑"
     }
   ],
   "nextSteps": [
     {
       "priority": "critical",
-      "phase": "安全防护",
+      "phase": "测试体系建立",
       "tasks": [
-        "集成DOMPurify净化Markdown渲染内容",
-        "配置严格的Content Security Policy",
-        "添加API速率限制中间件",
-        "实现CSRF token验证"
-      ],
-      "estimatedTime": "1-2 days"
-    },
-    {
-      "priority": "critical",
-      "phase": "测试建立",
-      "tasks": [
-        "安装测试框架依赖(Jest, Testing Library, Playwright)",
-        "配置测试环境和CI/CD管道",
+        "安装测试框架依赖 (Jest, Testing Library, Playwright)",
+        "配置测试环境和 CI/CD 管道",
         "为核心组件编写单元测试",
-        "添加API集成测试",
-        "实现E2E测试覆盖关键流程"
+        "添加 API 集成测试",
+        "实现 E2E 测试覆盖关键流程"
       ],
       "estimatedTime": "3-5 days"
     },
     {
-      "priority": "high",
-      "phase": "错误处理",
+      "priority": "critical",
+      "phase": "安全防护增强",
       "tasks": [
-        "创建全局Error Boundary组件",
-        "改进API错误响应处理",
-        "添加用户友好的错误提示UI",
-        "实现错误日志收集"
+        "集成 DOMPurify 净化 Markdown 渲染内容",
+        "配置严格的 Content Security Policy",
+        "添加 API 速率限制中间件",
+        "实现 CSRF token 验证"
       ],
-      "estimatedTime": "1-2 days"
+      "estimatedTime": "2-3 days"
+    },
+    {
+      "priority": "high",
+      "phase": "性能优化",
+      "tasks": [
+        "实现组件懒加载 (React.lazy)",
+        "优化 Markdown 编辑器 bundle 大小",
+        "添加缓存策略",
+        "监控 Core Web Vitals"
+      ],
+      "estimatedTime": "2-3 days"
     },
     {
       "priority": "medium",
-      "phase": "性能优化",
+      "phase": "用户体验提升",
       "tasks": [
-        "实现组件懒加载(React.lazy)",
-        "优化Markdown编辑器bundle大小",
-        "添加缓存策略",
-        "监控Core Web Vitals"
+        "提升可访问性支持",
+        "优化移动端体验",
+        "添加键盘快捷键",
+        "完善错误提示 UI"
       ],
       "estimatedTime": "2-3 days"
     }
@@ -360,18 +383,31 @@
     "typeSafety": "excellent",
     "architectureClarity": "excellent", 
     "testCoverage": "critical",
-    "securityPosture": "needs_improvement",
+    "securityPosture": "good",
     "performance": "good",
     "maintainability": "excellent",
-    "documentation": "excellent"
+    "documentation": "excellent",
+    "i18nSupport": "excellent",
+    "userExperience": "good"
   },
   "competitiveAdvantages": [
-    "现代化技术栈(Next.js 15, React 19)",
-    "优秀的TypeScript类型安全",
-    "完整的国际化支持",
+    "现代化技术栈 (Next.js 15, React 19)",
+    "优秀的 TypeScript 类型安全",
+    "完整的国际化支持 (中英文)",
     "专注模式独特设计",
     "自定义分享链接功能",
     "响应式设计优秀",
-    "代码架构清晰可扩展"
+    "代码架构清晰可扩展",
+    "离线优先的数据存储策略",
+    "丰富的 Markdown 编辑功能",
+    "主题系统设计优雅"
+  ],
+  "recentChanges": [
+    {
+      "date": "2025-09-07",
+      "type": "architectural_update",
+      "description": "架构文档增量更新，验证所有模块完整性",
+      "impact": "documentation_improvement"
+    }
   ]
 }

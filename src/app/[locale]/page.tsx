@@ -107,7 +107,9 @@ export default function HomePage() {
 
   // 定时检测内容变化并自动保存
   useEffect(() => {
-    if(!currentTitle && !currentContent) return;
+    // 只有在有选中笔记且编辑器显示时才自动保存
+    if (!selectedNote || !showEditor || (!currentTitle && !currentContent)) return;
+    
     saveNote({
       title: currentTitle || t('untitled'),
       content: currentContent,
@@ -115,7 +117,7 @@ export default function HomePage() {
       customSlug: selectedNote?.customSlug || '',
       isPublic: selectedNote?.isPublic || false
     }, selectedNote?.id);
-  }, [currentTitle, currentContent, selectedNote, saveNote, t]);
+  }, [currentTitle, currentContent, selectedNote, showEditor, saveNote, t]);
 
   useEffect(() => {
     loadNotes();
@@ -411,6 +413,19 @@ ${t('useLatexSyntax')} $E = mc^2$
     }
   };
 
+  const handleMultipleNotesDelete = (noteIds: string[]) => {
+    // 检查是否有正在编辑的笔记被删除
+    const currentNoteDeleted = selectedNote && noteIds.includes(selectedNote.id);
+    
+    if (currentNoteDeleted) {
+      setSelectedNote(null);
+      setShowEditor(false);
+      // 清空编辑器内容，避免自动保存触发
+      setCurrentTitle('');
+      setCurrentContent('');
+    }
+  };
+
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
   };
@@ -491,45 +506,53 @@ ${t('useLatexSyntax')} $E = mc^2$
 
       {/* 主要内容区域 */}
       <div className="flex flex-1 overflow-hidden relative">
-        {/* 左侧笔记列表 - 默认隐藏，可通过工具栏按钮打开 */}
-        <div className={`
-          w-64 border-r border-border bg-card/30 z-20
-          ${showSidebar ? 'block' : 'hidden'}
-          ${showSidebar ? 'absolute left-0 top-0 h-full' : ''}
-        `}>
-          <NoteList
-            notes={notes}
-            deleteNote={deleteNote}
-            onNoteSelect={handleNoteSelect}
-            onNewNote={handleNewNote}
-            onNoteDelete={handleNoteDelete}
-            onNoteUnshare={handleNoteUnshare}
-            selectedNoteId={selectedNote?.id}
-            onCloseSidebar={() => setShowSidebar(false)}
-          />
-        </div>
-
         {/* 右侧编辑器或营销内容 */}
-        <main className="flex-1 overflow-auto bg-background">
-          {!showEditor ? (
-            <MarketingContent onNewNote={handleNewNote} />
-          ) : (
-            <div className="max-w-7xl mx-auto w-full h-full p-4">
-              <NewMarkdownEditor
-                title={currentTitle}
-                content={currentContent}
-                onTitleChange={setCurrentTitle}
-                onContentChange={setCurrentContent}
-                onSave={handleSaveNote}
-                onShare={handleShare}
-                onOpenFile={handleOpenFile}
-                onSaveAs={handleSaveAs}
-                onToggleFocusMode={toggleFocusMode}
-                onClearMarkdown={handleClearMarkdown}
-                onUseTemplate={handleUseTemplate}
-              />
+        <main className="flex flex-1 overflow-hidden bg-background">
+          {/* 内容区域 - 包含笔记列表和编辑器 */}
+          <div className="flex w-full h-full">
+            {/* 左侧笔记列表 - 可伸缩 */}
+            <div className={`
+              transition-all duration-300 ease-in-out overflow-hidden border-r border-border bg-card/30
+              ${showSidebar ? 'w-64' : 'w-0'}
+            `}>
+              {showSidebar && (
+                <NoteList
+                  notes={notes}
+                  deleteNote={deleteNote}
+                  onNoteSelect={handleNoteSelect}
+                  onNewNote={handleNewNote}
+                  onNoteDelete={handleNoteDelete}
+                  onNoteUnshare={handleNoteUnshare}
+                  onMultipleNotesDelete={handleMultipleNotesDelete}
+                  selectedNoteId={selectedNote?.id}
+                  onCloseSidebar={() => setShowSidebar(false)}
+                />
+              )}
             </div>
-          )}
+
+            {/* 右侧编辑器区域 - 自适应剩余空间 */}
+            <div className="flex-1 overflow-auto">
+              {!showEditor ? (
+                <MarketingContent onNewNote={handleNewNote} />
+              ) : (
+                <div className="max-w-7xl mx-auto w-full h-full p-4">
+                  <NewMarkdownEditor
+                    title={currentTitle}
+                    content={currentContent}
+                    onTitleChange={setCurrentTitle}
+                    onContentChange={setCurrentContent}
+                    onSave={handleSaveNote}
+                    onShare={handleShare}
+                    onOpenFile={handleOpenFile}
+                    onSaveAs={handleSaveAs}
+                    onToggleFocusMode={toggleFocusMode}
+                    onClearMarkdown={handleClearMarkdown}
+                    onUseTemplate={handleUseTemplate}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
         </main>
       </div>
       
