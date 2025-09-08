@@ -14,6 +14,6 @@ export const config = {
     // 匹配根路径
     '/',
     // 匹配所有路径，包括无前缀的share路径和有前缀的语言路径
-    '/((?!api|_next|_vercel|.*\\..*).*)'
+    "/(en|zh|hi)/:path*",
   ]
 };
