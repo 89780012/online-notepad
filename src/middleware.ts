@@ -9,11 +9,11 @@ export default createMiddleware({
 });
 
 export const config = {
-  // 修复as-needed模式的匹配规则，确保正确处理分享路由
+  // 修复as-needed模式的匹配规则，确保正确处理所有路由
   matcher: [
     // 匹配根路径
     '/',
-    // 匹配所有路径，包括无前缀的share路径和有前缀的语言路径
-    "/(en|zh|hi)/:path*",
+    // 匹配所有路径，包括无前缀的默认语言路径和有前缀的其他语言路径
+    '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)'
   ]
 };
