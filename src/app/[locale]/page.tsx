@@ -134,6 +134,7 @@ export default function HomePage() {
 
     setSelectedNote(null);
     setShowEditor(true);
+    setShowSidebar(true);
     setCurrentTitle(t(template.name));
     setCurrentContent(templateContent);
 
@@ -184,6 +185,7 @@ export default function HomePage() {
   const handleNewNote = async () => {
     setSelectedNote(null);
     setShowEditor(true);
+    setShowSidebar(true);
     const newTitle = t('newNoteTitle');
     const newContent = ''; // 简单的空内容，用户可以选择模板
     setCurrentTitle(newTitle);

@@ -20,6 +20,8 @@ import { useTheme } from '@/contexts/ThemeContext';
 import EditorErrorBoundary from './EditorErrorBoundary';
 import { getTemplates, categories } from '@/data/templates';
 import 'katex/dist/katex.css';
+import { getCommands } from '@uiw/react-md-editor/commands-cn';
+import {  codeEdit, codeLive, codePreview } from '@uiw/react-md-editor';
 
 // 动态导入 MDEditor 以避免 SSR 问题
 const MDEditor = dynamic(
@@ -421,6 +423,8 @@ export default function NewMarkdownEditor({
                 // 性能优化：限制预览更新频率
                 skipHtml: false,
               }}
+              commands={[...getCommands()]} // 基础命令（加粗、斜体等）
+              extraCommands={[codeEdit, codeLive, codePreview ]} // 扩展命令（表格、任务列表等）
               textareaProps={{
                 placeholder: t('markdownPlaceholder'),
                 style: {
