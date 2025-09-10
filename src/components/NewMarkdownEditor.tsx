@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
-import { Maximize2, Minimize2, Save, Share2, FolderOpen, Download, Eraser, ChevronDown } from 'lucide-react';
+import { Maximize2, Minimize2, Save, Share2, FolderOpen, Download, Eraser, ChevronDown, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -87,6 +87,8 @@ interface NewMarkdownEditorProps {
   onToggleFocusMode?: () => void;
   isAutoSaving?: boolean;
   onClearMarkdown?: () => void;
+  showSidebar?: boolean;
+  onToggleSidebar?: () => void;
 }
 
 export default function NewMarkdownEditor({
@@ -102,6 +104,8 @@ export default function NewMarkdownEditor({
   onToggleFocusMode,
   isAutoSaving = false,
   onClearMarkdown,
+  showSidebar = false,
+  onToggleSidebar,
 }: NewMarkdownEditorProps) {
   const t = useTranslations();
   const { resolvedTheme } = useTheme();
@@ -270,6 +274,19 @@ export default function NewMarkdownEditor({
         {/* Header 工具栏 */}
         <div className="flex items-center justify-between p-4 bg-card border-b border-border">
         <div className="flex items-center gap-4 flex-1">
+          {/* 侧边栏切换按钮 - 放在最左侧 */}
+          {onToggleSidebar && (
+            <Button
+              onClick={onToggleSidebar}
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground hover:bg-accent/80"
+              title={showSidebar ? t('hideSidebar') : t('showSidebar')}
+            >
+              {showSidebar ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </Button>
+          )}
+          
           {/* 装饰性指示器 */}
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-red-500 dark:bg-red-400 rounded-full"></div>

@@ -477,6 +477,8 @@ export default function HomePage() {
           isFocusMode={true}
           onToggleFocusMode={handleExitFocusMode}
           onClearMarkdown={handleClearMarkdown}
+          showSidebar={showSidebar}
+          onToggleSidebar={toggleSidebar}
         />
       </div>
     );
@@ -555,24 +557,23 @@ export default function HomePage() {
 
             {/* 右侧编辑器区域 - 自适应剩余空间 */}
             <div className="flex-1 overflow-auto">
-              {!showEditor ? (
+              <div className="max-w-7xl mx-auto w-full h-full p-4">
+                <NewMarkdownEditor
+                  title={currentTitle}
+                  content={currentContent}
+                  onTitleChange={setCurrentTitle}
+                  onContentChange={setCurrentContent}
+                  onSave={handleSaveNote}
+                  onShare={handleShare}
+                  onOpenFile={handleOpenFile}
+                  onSaveAs={handleSaveAs}
+                  onToggleFocusMode={toggleFocusMode}
+                  onClearMarkdown={handleClearMarkdown}
+                  showSidebar={showSidebar}
+                  onToggleSidebar={toggleSidebar}
+                />
                 <MarketingContent onNewNote={handleNewNote} />
-              ) : (
-                <div className="max-w-7xl mx-auto w-full h-full p-4">
-                  <NewMarkdownEditor
-                    title={currentTitle}
-                    content={currentContent}
-                    onTitleChange={setCurrentTitle}
-                    onContentChange={setCurrentContent}
-                    onSave={handleSaveNote}
-                    onShare={handleShare}
-                    onOpenFile={handleOpenFile}
-                    onSaveAs={handleSaveAs}
-                    onToggleFocusMode={toggleFocusMode}
-                    onClearMarkdown={handleClearMarkdown}
-                  />
-                </div>
-              )}
+              </div>
             </div>
           </div>
         </main>
