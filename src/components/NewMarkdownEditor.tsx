@@ -18,10 +18,12 @@ import remarkMath from 'remark-math';
 import { useTranslations } from 'next-intl';
 import { useTheme } from '@/contexts/ThemeContext';
 import EditorErrorBoundary from './EditorErrorBoundary';
+import ImageInsertDialog from './ImageInsertDialog';
 import { getTemplates, categories } from '@/data/templates';
 import 'katex/dist/katex.css';
 import { getCommands } from '@uiw/react-md-editor/commands-cn';
-import {  codeEdit, codeLive, codePreview } from '@uiw/react-md-editor';
+import { codeEdit, codeLive, codePreview, ICommand } from '@uiw/react-md-editor';
+import { createAdvancedImageCommand } from './commands/customImageCommand';
 
 // 动态导入 MDEditor 以避免 SSR 问题
 const MDEditor = dynamic(
@@ -106,6 +108,7 @@ export default function NewMarkdownEditor({
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showSaveStatus, setShowSaveStatus] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [showImageDialog, setShowImageDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const saveStatusTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -215,6 +218,39 @@ export default function NewMarkdownEditor({
   const handleApplyTemplate = (templateContent: string) => {
     onContentChange(templateContent);
   };
+
+  // 自定义图片处理函数
+  const handleImageDialogOpen = useCallback(() => {
+    // 打开专业的图片插入对话框
+    setShowImageDialog(true);
+  }, []);
+
+  // 处理图片插入
+  const handleImageInsert = useCallback((markdown: string) => {
+    // 在光标位置插入图片 markdown
+    const newContent = content + '\n' + markdown + '\n';
+    onContentChange(newContent);
+    setShowImageDialog(false);
+  }, [content, onContentChange]);
+
+  // 构建自定义命令集合，移除默认图片命令
+  const customCommands = useCallback(() => {
+    const baseCommands = getCommands();
+    // 移除默认的图片命令（通常 keyCommand 为 'image'）
+    const filteredCommands = baseCommands.filter((cmd: ICommand) => 
+      cmd.keyCommand !== 'image' && cmd.name !== 'image' &&
+      cmd.keyCommand !== 'help' && cmd.name !== 'help' 
+    );
+    
+    // 添加自定义图片命令
+    const customImageCmd = createAdvancedImageCommand({
+      enableUpload: false,
+      enableUrlInput: true,
+      enableStyleControls: true,
+    }, handleImageDialogOpen);
+    
+    return [...filteredCommands, customImageCmd];
+  }, [handleImageDialogOpen]);
 
   // 获取模板数据
   const templates = getTemplates(t);
@@ -423,8 +459,8 @@ export default function NewMarkdownEditor({
                 // 性能优化：限制预览更新频率
                 skipHtml: false,
               }}
-              commands={[...getCommands()]} // 基础命令（加粗、斜体等）
-              extraCommands={[codeEdit, codeLive, codePreview ]} // 扩展命令（表格、任务列表等）
+              commands={customCommands()} // 自定义命令集合（包含自定义图片命令）
+              extraCommands={[codeEdit, codeLive, codePreview]} // 扩展命令（表格、任务列表等）
               textareaProps={{
                 placeholder: t('markdownPlaceholder'),
                 style: {
@@ -446,6 +482,13 @@ export default function NewMarkdownEditor({
           </Suspense>
         </EditorErrorBoundary>
       </div>
+
+      {/* 图片插入对话框 */}
+      <ImageInsertDialog
+        isOpen={showImageDialog}
+        onClose={() => setShowImageDialog(false)}
+        onInsert={handleImageInsert}
+      />
       </div>
     </div>
   );

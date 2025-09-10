@@ -252,11 +252,11 @@ export function createAdvancedImageCommand(
   onImageDialogOpen?: (selection: { start: number; end: number }, selectedText: string) => void
 ): ICommand {
   const {
-    enableUpload,
-    enableUrlInput,
-    enableStyleControls,
-    defaultAlignment,
-    defaultSize,
+    enableUpload = true,
+    enableUrlInput = true,
+    enableStyleControls = true,
+    defaultAlignment = 'center',
+    defaultSize = 'medium',
   } = config;
 
   // 这些配置变量预留给未来功能扩展使用
@@ -275,12 +275,23 @@ export function createAdvancedImageCommand(
     icon: <ImageIcon className="w-3 h-3" />,
     execute: (state: ExecuteState, api: TextAreaTextApi) => {
       if (onImageDialogOpen) {
+        // 使用专业的图片插入对话框
         onImageDialogOpen(state.selection, state.selectedText);
       } else {
         // 回退到基本插入
         const alt = state.selectedText || '图片描述';
-        const markdown = ImageMarkdownGenerator.generateBasic('图片链接', alt);
+        const markdown = ImageMarkdownGenerator.generateBasic('请输入图片链接', alt);
         api.replaceSelection(markdown);
+        
+        // 选中链接部分方便用户编辑
+        setTimeout(() => {
+          const linkStart = state.selection.start + alt.length + 3;
+          const linkEnd = linkStart + '请输入图片链接'.length;
+          api.setSelectionRange({
+            start: linkStart,
+            end: linkEnd,
+          });
+        }, 0);
       }
     },
   };
