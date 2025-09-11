@@ -29,9 +29,7 @@ export default function TemplatesPage() {
       content: template.content
     }));
     
-    // 导航回主页，使用语言感知路由
-    const homePath = locale === 'en' ? '/' : `/${locale}`;
-    router.push(homePath);
+    router.back();
   };
 
   return (
