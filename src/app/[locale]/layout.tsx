@@ -26,15 +26,13 @@ export async function generateMetadata({
   const locale = await getLocale();
 
   return {
-    metadataBase: new URL('https://mininotepad.com'),
+    metadataBase: new URL('https://www.mininotepad.com'),
     title: {
       template: "%s | Mini Notepad",
-      default: messages.title as string,
+      default: messages.seoTitle as string || messages.title as string,
     },
-    description: messages.metaDescription as string,
-    keywords: locale === 'zh'
-      ? "在线记事本,免费记事本,离线记事本,深色模式记事本,Markdown编辑器,云端分享,无广告记事本,简洁记事本,快速记事本,跨设备记事本"
-      : "online notepad,free notepad,offline notepad,dark mode notepad,markdown editor,cloud sharing,ad-free notepad,simple notepad,quick notepad,cross-device notepad",
+    description: messages.seoDescription as string || messages.metaDescription as string,
+    keywords: messages.seoKeywords as string,
     authors: [{ name: "Mini Notepad Team" }],
     creator: "Mini Notepad",
     publisher: "Mini Notepad",
@@ -52,23 +50,23 @@ export async function generateMetadata({
     openGraph: {
       type: 'website',
       locale: locale === 'zh' ? 'zh_CN' : 'en_US',
-      url: `https://mininotepad.com/${locale}`,
-      title: messages.title as string,
-      description: messages.metaDescription as string,
+      url: locale === 'en' ? 'https://www.mininotepad.com' : `https://www.mininotepad.com/${locale}`,
+      title: messages.seoTitle as string || messages.title as string,
+      description: messages.seoDescription as string || messages.metaDescription as string,
       siteName: 'Mini Notepad',
       images: [
         {
           url: '/og-image.png',
           width: 1200,
           height: 630,
-          alt: messages.title as string,
+          alt: messages.seoTitle as string || messages.title as string,
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: messages.title as string,
-      description: messages.metaDescription as string,
+      title: messages.seoTitle as string || messages.title as string,
+      description: messages.seoDescription as string || messages.metaDescription as string,
       images: ['/og-image.png'],
     },
     verification: {
@@ -76,11 +74,12 @@ export async function generateMetadata({
     },
     alternates: {
       languages: {
-        en: "https://mininotepad.com/en",
-        zh: "https://mininotepad.com/zh",
-        'x-default': 'https://mininotepad.com/zh',
+        en: "https://www.mininotepad.com",
+        zh: "https://www.mininotepad.com/zh",
+        hi: "https://www.mininotepad.com/hi",
+        'x-default': 'https://www.mininotepad.com',
       },
-      canonical: `https://mininotepad.com/${locale}`,
+      canonical: locale === 'en' ? 'https://www.mininotepad.com' : `https://www.mininotepad.com/${locale}`,
     },
     category: 'productivity',
   };

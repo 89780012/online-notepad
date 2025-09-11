@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mininotepad.com/sitemap.xml
+Sitemap: https://www.mininotepad.com/sitemap.xml

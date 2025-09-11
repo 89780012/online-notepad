@@ -6,13 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, Download, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useLocale } from 'next-intl';
 import { getTemplates, categories, TemplateCategoryId, ProcessedTemplate } from '@/data/templates';
 
 export default function TemplatesPage() {
   const t = useTranslations();
   const router = useRouter();
-  const locale = useLocale();
   const [selectedCategory, setSelectedCategory] = useState<TemplateCategoryId>('all');
 
   // 获取模板数据，传入翻译函数
