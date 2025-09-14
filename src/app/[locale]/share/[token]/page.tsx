@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import LanguageToggle from '@/components/LanguageToggle';
-import MarkdownPreview from '@/components/MarkdownPreview';
+import TUIMarkdownViewer from '@/components/TUIMarkdownViewer';
 import ClientDateFormatter from '@/components/ClientDateFormatter';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -77,7 +77,7 @@ export default async function SharedNotePage({
 
             {/* Markdown 内容预览 */}
             <div className="bg-card border border-border rounded-lg p-6">
-              <MarkdownPreview 
+              <TUIMarkdownViewer
                 content={note.content}
                 className="prose prose-slate dark:prose-invert max-w-none prose-lg"
               />

@@ -1,0 +1,18 @@
+/**
+ * TUI Editor 样式导入
+ * 使用 TOAST UI Editor 内置主题，不进行自定义覆盖
+ */
+
+/* TUI Editor 核心样式 */
+@import '@toast-ui/editor/dist/toastui-editor.css';
+
+/* TUI Editor 暗色主题 */
+@import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
+
+/* 代码语法高亮插件样式 */
+@import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight.css';
+
+/* 专注模式下隐藏工具栏 */
+.focus-mode .toastui-editor-defaultUI .toastui-editor-toolbar {
+  display: none;
+}

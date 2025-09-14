@@ -484,5 +484,6 @@
   "fileSize": "File size",
   "selectOtherFile": "Select another file",
   "optional": "optional",
-  "width": "Width"
+  "width": "Width",
+  "loading": "Loading..."
 }

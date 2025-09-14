@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { Menu, X, Plus, BookOpen } from 'lucide-react';
-import NewMarkdownEditor from '@/components/NewMarkdownEditor';
+import TUIMarkdownEditor from '@/components/TUIMarkdownEditor';
 import NoteList from '@/components/NoteList';
 import LanguageToggle from '@/components/LanguageToggle';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -465,7 +465,7 @@ export default function HomePage() {
         </div>
 
         {/* 全屏编辑器 */}
-        <NewMarkdownEditor
+        <TUIMarkdownEditor
           title={currentTitle}
           content={currentContent}
           onTitleChange={setCurrentTitle}
@@ -558,7 +558,7 @@ export default function HomePage() {
             {/* 右侧编辑器区域 - 自适应剩余空间 */}
             <div className="flex-1 overflow-auto">
               <div className="max-w-7xl mx-auto w-full h-full p-4">
-                <NewMarkdownEditor
+                <TUIMarkdownEditor
                   title={currentTitle}
                   content={currentContent}
                   onTitleChange={setCurrentTitle}

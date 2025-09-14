@@ -484,5 +484,6 @@
   "invalidImageUrl": "कृपया एक वैध छवि URL दर्ज करें",
   "orClickToSelect": "या फ़ाइल चुनने के लिए क्लिक करें",
   "supportedFormats": "JPG, PNG, WebP, GIF प्रारूप समर्थित, अधिकतम 5MB",
-  "optional": "वैकल्पिक"
+  "optional": "वैकल्पिक",
+  "loading": "लोड हो रहा है..."
 }

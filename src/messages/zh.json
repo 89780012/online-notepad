@@ -484,5 +484,6 @@
   "fileSize": "文件大小",
   "selectOtherFile": "选择其他文件",
   "optional": "可选",
-  "width": "宽度"
+  "width": "宽度",
+  "loading": "加载中..."
 }
