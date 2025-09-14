@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -80,7 +81,7 @@ export default function Footer({ onNewNote }: FooterProps) {
                 {t('madeWith')} <Heart className="w-3 h-3 inline text-red-500" /> {t('forEveryone')}
               </p>
             </div>
-            
+
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
                 <Shield className="w-3 h-3" />
@@ -93,8 +94,23 @@ export default function Footer({ onNewNote }: FooterProps) {
             </div>
           </div>
 
-          {/* 额外的法律声明 */}
+          {/* 法律链接 */}
           <div className="mt-4 pt-4 border-t border-border/50">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
+              <Link
+                href="/privacy"
+                className="text-xs text-muted-foreground hover:text-primary underline-offset-4 hover:underline transition-colors"
+              >
+                {t('privacyPolicy')}
+              </Link>
+              <span className="hidden sm:inline text-muted-foreground">•</span>
+              <Link
+                href="/terms"
+                className="text-xs text-muted-foreground hover:text-primary underline-offset-4 hover:underline transition-colors"
+              >
+                {t('termsOfService')}
+              </Link>
+            </div>
             <p className="text-xs text-muted-foreground text-center leading-relaxed">
               {t('legalDisclaimer')}
             </p>
