@@ -521,5 +521,91 @@
   "saveFailedDescription": "无法保存笔记，请重试",
   "saveErrorDescription": "保存时发生错误，请稍后重试",
   "shareErrorDescription": "无法创建分享链接，请重试",
-  "shareInvalidDataError": "笔记数据无效，请检查内容"
+  "shareInvalidDataError": "笔记数据无效，请检查内容",
+  "changelog": {
+    "title": "更新日志",
+    "description": "查看迷你记事本的所有功能更新和改进历史，见证产品从初始版本到现在的完整发展历程。",
+    "footer": "感谢您关注我们的产品发展历程！",
+    "labels": {
+      "feature": "新功能",
+      "bugfix": "修复",
+      "refactor": "重构"
+    },
+    "v030": {
+      "title": "专注体验增强",
+      "description": "提升专注模式用户体验，增强法律合规性，升级 Markdown 编辑器功能。",
+      "focusModeSidebar": {
+        "title": "专注模式侧边栏增强",
+        "description": "在专注模式中增加可切换的侧边栏功能，方便用户在专注编辑时快速访问笔记列表。"
+      },
+      "legalCompliance": {
+        "title": "法律合规文档",
+        "description": "新增隐私协议和服务条款页面，确保用户了解数据处理政策和使用规范。"
+      },
+      "markdownPlugin": {
+        "title": "Markdown 编辑器升级",
+        "description": "使用全新的 Markdown 插件，提供更好的编辑体验和更丰富的格式支持。"
+      }
+    },
+    "v020": {
+      "title": "模板市场与国际化",
+      "description": "推出完整的模板市场系统，扩展多语言支持，增加图片上传和侧边栏功能。",
+      "templateMarket": {
+        "title": "模板市场系统",
+        "description": "全新的模板市场功能，提供商务、教育、技术等7大类专业模板，一键应用到笔记中。"
+      },
+      "hindiSupport": {
+        "title": "印地语支持",
+        "description": "新增印地语界面支持，扩展产品的全球化覆盖，更好地服务印地语用户群体。"
+      },
+      "imageUpload": {
+        "title": "图片上传功能",
+        "description": "支持在笔记中直接上传和插入图片，增强 Markdown 编辑器的多媒体处理能力。"
+      },
+      "sidebarFeatures": {
+        "title": "侧边栏功能增强",
+        "description": "增加侧边栏开关功能和批量删除笔记功能，提升笔记管理的便利性和效率。"
+      },
+      "bugFixes": {
+        "title": "问题修复与优化",
+        "description": "修复模板页面导航、笔记列表保存和引用缺陷等多个用户反馈的问题。"
+      }
+    },
+    "v010": {
+      "title": "核心功能建立",
+      "description": "项目初始化，建立核心的在线记事本功能，包括 Markdown 支持、分享功能和多主题系统。",
+      "projectInit": {
+        "title": "项目初始化",
+        "description": "建立基于 Next.js 15 和 React 19 的现代化在线记事本应用框架。"
+      },
+      "shareFeature": {
+        "title": "笔记分享功能",
+        "description": "实现笔记分享功能，用户可以生成分享链接，让他人查看自己的笔记内容。"
+      },
+      "noteHistory": {
+        "title": "笔记历史管理",
+        "description": "添加笔记历史记录功能，用户可以查看和管理之前创建的所有笔记。"
+      },
+      "darkMode": {
+        "title": "深色模式支持",
+        "description": "实现完整的深色主题系统，保护用户视力，提供舒适的夜间使用体验。"
+      },
+      "focusMode": {
+        "title": "专注编辑模式",
+        "description": "推出专注模式功能，提供无干扰的全屏编辑环境，提升写作专注度。"
+      },
+      "markdownSupport": {
+        "title": "Markdown 编辑支持",
+        "description": "集成完整的 Markdown 编辑器，支持实时预览、语法高亮和格式化功能。"
+      },
+      "i18nSupport": {
+        "title": "国际化支持",
+        "description": "建立多语言支持系统，初步支持中文和英文双语界面切换。"
+      },
+      "seoOptimization": {
+        "title": "SEO 优化",
+        "description": "完善网站 SEO 配置，包括关键词优化、站点地图生成和搜索引擎优化。"
+      }
+    }
+  }
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { Menu, X, Plus, BookOpen } from 'lucide-react';
+import { Menu, X, Plus, BookOpen, History } from 'lucide-react';
 import TUIMarkdownEditor from '@/components/TUIMarkdownEditor';
 import NoteList from '@/components/NoteList';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -605,6 +605,18 @@ export default function HomePage() {
             >
               <BookOpen className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">{t('browseTemplates')}</span>
+            </Button>
+          </Link>
+
+          {/* 更新日志按钮 */}
+          <Link href={locale === 'en' ? '/changelog' : `/${locale}/changelog`}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-sm font-medium"
+            >
+              <History className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">{t('changelog.title')}</span>
             </Button>
           </Link>
         </div>

@@ -521,5 +521,91 @@
   "saveFailedDescription": "Unable to save note, please try again",
   "saveErrorDescription": "An error occurred while saving, please try again later",
   "shareErrorDescription": "Unable to create share link, please try again",
-  "shareInvalidDataError": "Invalid note data, please check your content"
+  "shareInvalidDataError": "Invalid note data, please check your content",
+  "changelog": {
+    "title": "Changelog",
+    "description": "View all feature updates and improvement history of Mini Notepad, witness the complete development journey from initial release to present.",
+    "footer": "Thank you for following our product development journey!",
+    "labels": {
+      "feature": "Feature",
+      "bugfix": "Bugfix",
+      "refactor": "Refactor"
+    },
+    "v030": {
+      "title": "Focus Experience Enhancement",
+      "description": "Enhance focus mode user experience, strengthen legal compliance, and upgrade Markdown editor functionality.",
+      "focusModeSidebar": {
+        "title": "Focus Mode Sidebar Enhancement",
+        "description": "Added toggleable sidebar functionality in focus mode, allowing users to quickly access note lists while focused editing."
+      },
+      "legalCompliance": {
+        "title": "Legal Compliance Documentation",
+        "description": "Added privacy policy and terms of service pages to ensure users understand data processing policies and usage guidelines."
+      },
+      "markdownPlugin": {
+        "title": "Markdown Editor Upgrade",
+        "description": "Using a new Markdown plugin providing better editing experience and richer format support."
+      }
+    },
+    "v020": {
+      "title": "Template Market & Internationalization",
+      "description": "Launch complete template market system, expand multi-language support, add image upload and sidebar features.",
+      "templateMarket": {
+        "title": "Template Market System",
+        "description": "Brand new template market feature providing 7 categories of professional templates including business, education, and technical, with one-click application to notes."
+      },
+      "hindiSupport": {
+        "title": "Hindi Language Support",
+        "description": "Added Hindi interface support, expanding global coverage to better serve Hindi-speaking user communities."
+      },
+      "imageUpload": {
+        "title": "Image Upload Feature",
+        "description": "Support for directly uploading and inserting images in notes, enhancing the multimedia processing capabilities of the Markdown editor."
+      },
+      "sidebarFeatures": {
+        "title": "Sidebar Feature Enhancement",
+        "description": "Added sidebar toggle functionality and batch note deletion feature, improving the convenience and efficiency of note management."
+      },
+      "bugFixes": {
+        "title": "Bug Fixes & Optimizations",
+        "description": "Fixed multiple user-reported issues including template page navigation, note list saving, and reference defects."
+      }
+    },
+    "v010": {
+      "title": "Core Functionality Establishment",
+      "description": "Project initialization, establishing core online notepad functionality including Markdown support, sharing features, and multi-theme system.",
+      "projectInit": {
+        "title": "Project Initialization",
+        "description": "Established a modern online notepad application framework based on Next.js 15 and React 19."
+      },
+      "shareFeature": {
+        "title": "Note Sharing Feature",
+        "description": "Implemented note sharing functionality, allowing users to generate share links for others to view their note content."
+      },
+      "noteHistory": {
+        "title": "Note History Management",
+        "description": "Added note history functionality, allowing users to view and manage all previously created notes."
+      },
+      "darkMode": {
+        "title": "Dark Mode Support",
+        "description": "Implemented complete dark theme system to protect user vision and provide comfortable nighttime usage experience."
+      },
+      "focusMode": {
+        "title": "Focus Editing Mode",
+        "description": "Launched focus mode feature providing distraction-free full-screen editing environment to enhance writing concentration."
+      },
+      "markdownSupport": {
+        "title": "Markdown Editing Support",
+        "description": "Integrated complete Markdown editor with real-time preview, syntax highlighting, and formatting features."
+      },
+      "i18nSupport": {
+        "title": "Internationalization Support",
+        "description": "Established multi-language support system with initial support for Chinese and English bilingual interface switching."
+      },
+      "seoOptimization": {
+        "title": "SEO Optimization",
+        "description": "Improved website SEO configuration including keyword optimization, sitemap generation, and search engine optimization."
+      }
+    }
+  }
 }

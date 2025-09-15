@@ -67,7 +67,7 @@ const result = functionName('example');
 console.log(result);
 \`\`\`
 
-## ${t('changelog')}
+## ${t('changelog.title')}
 ### v1.0.0
 - ${t('initialRelease')}
 
