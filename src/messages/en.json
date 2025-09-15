@@ -514,5 +514,12 @@
   "termsSection4Title": "Dispute Resolution",
   "termsSection4Content": "<p>If you have any disputes or opinions about our service:</p><ul><li><strong>Amicable negotiation</strong>: We recommend first resolving disputes through amicable negotiation</li><li><strong>Contact methods</strong>: You can contact us through GitHub or email</li><li><strong>Applicable law</strong>: The interpretation and dispute resolution of these terms are subject to relevant local laws and regulations</li><li><strong>Terms changes</strong>: We reserve the right to modify these terms, and significant changes will be notified in advance</li></ul>",
   "agreeToTerms": "I agree to the Terms of Service",
-  "agreeToPrivacy": "I agree to the Privacy Policy"
+  "agreeToPrivacy": "I agree to the Privacy Policy",
+  "saveSuccess": "Saved successfully",
+  "saveSuccessDescription": "Your note has been saved",
+  "saveFailed": "Save failed",
+  "saveFailedDescription": "Unable to save note, please try again",
+  "saveErrorDescription": "An error occurred while saving, please try again later",
+  "shareErrorDescription": "Unable to create share link, please try again",
+  "shareInvalidDataError": "Invalid note data, please check your content"
 }

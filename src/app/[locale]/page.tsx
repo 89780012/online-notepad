@@ -14,12 +14,14 @@ import { Button } from '@/components/ui/button';
 import { useTranslations, useLocale } from 'next-intl';
 import { NoteMode, NOTE_MODES } from '@/types';
 import { generateShareSlug } from '@/lib/id-utils';
+import { useToast } from '@/components/ui/use-toast';
 import Link from 'next/link';
 
 export default function HomePage() {
   const { notes, saveNote, deleteNote, loadNotes } = useLocalNotes();
   const t = useTranslations();
   const locale = useLocale();
+  const { toast } = useToast();
 
   const [selectedNote, setSelectedNote] = useState<LocalNote | null>(null);
   const [showEditor, setShowEditor] = useState(false);
@@ -68,12 +70,36 @@ export default function HomePage() {
         setShowEditor(true);
         setCurrentTitle(savedNote.title);
         setCurrentContent(savedNote.content);
-        console.log('笔记保存成功');
+        
+        // 显示保存成功提示
+        toast({
+          variant: "success",
+          title: t('saveSuccess'),
+          description: t('saveSuccessDescription'),
+          duration: 3000
+        });
+        
         return savedNote;
+      } else {
+        // 保存失败的情况
+        toast({
+          variant: "destructive",
+          title: t('saveFailed'),
+          description: t('saveFailedDescription'),
+          duration: 4000
+        });
       }
       return null;
     } catch (error) {
       console.error(t('saveNoteFailed'), error);
+      
+      // 显示保存错误提示
+      toast({
+        variant: "destructive",
+        title: t('saveFailed'),
+        description: t('saveErrorDescription'),
+        duration: 4000
+      });
     }
     return null;
   };
@@ -305,10 +331,24 @@ export default function HomePage() {
             result.customSlug = retryResult.customSlug;
             result.id = retryResult.id;
           } else {
-            throw new Error('Failed to create share link');
+            console.error('分享失败:', 'Failed to create share link');
+            toast({
+              variant: "destructive",
+              title: t('shareError'),
+              description: t('shareErrorDescription') || 'Failed to create share link',
+              duration: 4000
+            });
+            return;
           }
         } else {
-          throw new Error(result.error);
+          console.error('分享失败:', result.error);
+          toast({
+            variant: "destructive",
+            title: t('shareError'),
+            description: result.error === 'Invalid data' ? t('shareInvalidDataError') || 'Invalid note data' : result.error,
+            duration: 4000
+          });
+          return;
         }
       }
 
@@ -336,7 +376,7 @@ export default function HomePage() {
     } finally {
       setIsGenerating(false);
     }
-  }, [locale, saveNote, generateRandomSlug, currentTitle, currentContent]);
+  }, [locale, saveNote, generateRandomSlug, currentTitle, currentContent,t,toast]);
 
   // 使用保存的笔记对象进行分享
   const handleShareNoteWithNote = useCallback(async (noteToShare: LocalNote) => {
@@ -447,40 +487,85 @@ export default function HomePage() {
   // 专注模式渲染
   if (isFocusMode) {
     return (
-      <div className="fixed inset-0 bg-card flex flex-col paper-texture z-50 h-screen">
-        {/* 专注模式退出按钮 */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleExitFocusMode}
-          className="absolute top-4 right-4 z-50 opacity-50 hover:opacity-100 transition-opacity hover:bg-accent/80"
-          title={t('exitFocusMode')}
-        >
-          <X className="h-4 w-4" />
-        </Button>
-        
-        {/* 专注模式快捷键提示 */}
-        <div className="absolute bottom-4 left-4 z-50 opacity-30 hover:opacity-80 transition-opacity text-sm text-muted-foreground flex items-center gap-1">
-          <span>按 ESC 键退出专注模式</span>
-        </div>
+      <>
+        <div className="fixed inset-0 bg-card flex flex-col paper-texture z-50 h-screen">
+          {/* 专注模式退出按钮 */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleExitFocusMode}
+            className="absolute top-4 right-4 z-50 opacity-50 hover:opacity-100 transition-opacity hover:bg-accent/80"
+            title={t('exitFocusMode')}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+          
+          {/* 专注模式快捷键提示 */}
+          <div className="absolute bottom-4 left-4 z-50 opacity-30 hover:opacity-80 transition-opacity text-sm text-muted-foreground flex items-center gap-1">
+            <span>按 ESC 键退出专注模式</span>
+          </div>
 
-        {/* 全屏编辑器 */}
-        <TUIMarkdownEditor
-          title={currentTitle}
-          content={currentContent}
-          onTitleChange={setCurrentTitle}
-          onContentChange={setCurrentContent}
-          onSave={handleSaveNote}
-          onShare={handleShare}
-          onOpenFile={handleOpenFile}
-          onSaveAs={handleSaveAs}
-          isFocusMode={true}
-          onToggleFocusMode={handleExitFocusMode}
-          onClearMarkdown={handleClearMarkdown}
-          showSidebar={showSidebar}
-          onToggleSidebar={toggleSidebar}
+          {/* 专注模式主内容区域 */}
+          <div className="flex flex-1 overflow-hidden">
+            {/* 左侧笔记列表 - 专注模式下的侧边栏 */}
+            <div className={`
+              transition-all duration-300 ease-in-out overflow-hidden border-r border-border bg-card/30
+              ${showSidebar ? 'w-64' : 'w-0'}
+            `}>
+              {showSidebar && (
+                <NoteList
+                  notes={notes}
+                  deleteNote={deleteNote}
+                  onNoteSelect={handleNoteSelect}
+                  onNewNote={handleNewNote}
+                  onNoteDelete={handleNoteDelete}
+                  onNoteUnshare={handleNoteUnshare}
+                  onMultipleNotesDelete={handleMultipleNotesDelete}
+                  selectedNoteId={selectedNote?.id}
+                  onCloseSidebar={() => setShowSidebar(false)}
+                />
+              )}
+            </div>
+
+            {/* 右侧编辑器区域 - 自适应剩余空间 */}
+            <div className="flex-1 overflow-hidden">
+              <TUIMarkdownEditor
+                title={currentTitle}
+                content={currentContent}
+                onTitleChange={setCurrentTitle}
+                onContentChange={setCurrentContent}
+                onSave={handleSaveNote}
+                onShare={handleShare}
+                onOpenFile={handleOpenFile}
+                onSaveAs={handleSaveAs}
+                isFocusMode={true}
+                onToggleFocusMode={handleExitFocusMode}
+                onClearMarkdown={handleClearMarkdown}
+                showSidebar={showSidebar}
+                onToggleSidebar={toggleSidebar}
+              />
+            </div>
+          </div>
+        </div>
+        
+        {/* 分享弹窗 - 专注模式也需要 */}
+        <SharePopup
+          isOpen={showSharePopup}
+          onClose={() => setShowSharePopup(false)}
+          shareUrl={shareUrl}
+          onCopyUrl={handleCopyUrl}
+          copied={copied}
+          isGenerating={isGenerating}
         />
-      </div>
+
+        {/* 另存为对话框 - 专注模式也需要 */}
+        <SaveAsDialog
+          isOpen={showSaveAsDialog}
+          onClose={() => setShowSaveAsDialog(false)}
+          onSave={handleDownload}
+          defaultFilename={currentTitle || t('untitled')}
+        />
+      </>
     );
   }
 

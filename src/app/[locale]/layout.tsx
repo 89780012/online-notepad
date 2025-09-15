@@ -3,6 +3,7 @@ import {getLocale,getMessages} from 'next-intl/server';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { ToastProvider } from '@/components/ui/use-toast';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import "../globals.css";
 
@@ -100,9 +101,11 @@ export default async function LocaleLayout({
       >
         <ThemeProvider defaultTheme="system">
           <NextIntlClientProvider messages={messages}>
-            <ErrorBoundary>
-              {children}
-            </ErrorBoundary>
+            <ToastProvider>
+              <ErrorBoundary>
+                {children}
+              </ErrorBoundary>
+            </ToastProvider>
           </NextIntlClientProvider>
         </ThemeProvider>
 

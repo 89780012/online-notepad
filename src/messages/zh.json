@@ -514,5 +514,12 @@
   "termsSection4Title": "争议解决",
   "termsSection4Content": "<p>如果您对我们的服务有任何争议或意见：</p><ul><li><strong>友好协商</strong>：我们建议首先通过友好协商解决争议</li><li><strong>联系方式</strong>：您可以通过GitHub或邮箱与我们联系</li><li><strong>适用法律</strong>：本条款的解释和争议解决适用当地相关法律法规</li><li><strong>条款变更</strong>：我们保留修改这些条款的权利，重大变更将提前通知</li></ul>",
   "agreeToTerms": "我同意服务条款",
-  "agreeToPrivacy": "我同意隐私政策"
+  "agreeToPrivacy": "我同意隐私政策",
+  "saveSuccess": "保存成功",
+  "saveSuccessDescription": "您的笔记已保存",
+  "saveFailed": "保存失败",
+  "saveFailedDescription": "无法保存笔记，请重试",
+  "saveErrorDescription": "保存时发生错误，请稍后重试",
+  "shareErrorDescription": "无法创建分享链接，请重试",
+  "shareInvalidDataError": "笔记数据无效，请检查内容"
 }
