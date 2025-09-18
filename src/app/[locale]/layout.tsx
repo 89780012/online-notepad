@@ -7,6 +7,7 @@ import { ToastProvider } from '@/components/ui/use-toast';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import Script from 'next/script';
 import "../globals.css";
+import { Analytics } from "@vercel/analytics/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -123,7 +124,7 @@ export default async function LocaleLayout({
             </ToastProvider>
           </NextIntlClientProvider>
         </ThemeProvider>
-
+        <Analytics />
       </body>
     </html>
   );
