@@ -14,6 +14,6 @@ export const config = {
     // 匹配根路径
     '/',
     // 匹配所有路径，包括无前缀的默认语言路径和有前缀的其他语言路径
-    '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)'
+    '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|llms.txt).*)'
   ]
 };
