@@ -5,12 +5,14 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, Download, FileText } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { getTemplates, categories, TemplateCategoryId, ProcessedTemplate } from '@/data/templates';
 
 export default function TemplatesPage() {
   const t = useTranslations();
   const router = useRouter();
+  const params = useParams();
+  const locale = params.locale as string;
   const [selectedCategory, setSelectedCategory] = useState<TemplateCategoryId>('all');
 
   // 获取模板数据，传入翻译函数
@@ -26,8 +28,10 @@ export default function TemplatesPage() {
       name: template.name,
       content: template.content
     }));
-    
-    router.back();
+
+    // 返回到对应语言的首页，英文时返回根路径
+    const homePath = locale === 'en' ? '/' : `/${locale}`;
+    router.push(homePath);
   };
 
   return (

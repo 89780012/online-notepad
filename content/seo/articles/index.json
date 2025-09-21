@@ -1,0 +1,68 @@
+{
+  "articles": [
+    {
+      "id": "best-memo-notebook",
+      "title": {
+        "zh": "It might be the best memo notebook",
+        "en": "It might be the best memo notebook",
+        "hi": "यह सबसे अच्छा मेमो नोटबुक हो सकता है"
+      },
+      "description": {
+        "zh": "发现最佳在线记事本：免费的数字化memo notepad，支持Markdown编辑、多语言界面、模板市场。无需下载，跨设备同步，专注模式让写作更高效。立即体验现代化笔记工具的强大功能。",
+        "en": "Discover the best online memo notepad: Free digital notebook with Markdown editing, multilingual support, and template marketplace. No download required, cross-device sync, focus mode for efficient writing. Experience the power of modern note-taking.",
+        "hi": "सर्वश्रेष्ठ ऑनलाइन मेमो नोटपैड खोजें: Markdown संपादन, बहुभाषी समर्थन और टेम्प्लेट मार्केटप्लेस के साथ मुफ्त डिजिटल नोटबुक। डाउनलोड की आवश्यकता नहीं, क्रॉस-डिवाइस सिंक, कुशल लेखन के लिए फोकस मोड।"
+      },
+      "keywords": {
+        "zh": ["memo notepad", "记事本", "在线笔记", "Markdown编辑器", "免费记事本", "数字化笔记"],
+        "en": ["memo notepad", "online notebook", "free notepad", "markdown editor", "digital notes", "note taking app"],
+        "hi": ["मेमो नोटपैड", "ऑनलाइन नोटबुक", "मुफ्त नोटपैड", "मार्कडाउन एडिटर", "डिजिटल नोट्स", "नोट लेने वाला ऐप"]
+      },
+      "targetKeywords": [
+        "What is a memo notepad?",
+        "Is Memo Notepad free?",
+        "What does memo mean in notebooks?",
+        "What is the difference between a notepad and a memo pad?",
+        "Are memo pads the same as sticky notes?",
+        "Do people still use notepads?"
+      ],
+      "files": {
+        "zh": "content/seo/articles/best-memo-notebook-zh.md",
+        "en": "content/seo/articles/best-memo-notebook-en.md",
+        "hi": "content/seo/articles/best-memo-notebook-hi.md"
+      },
+      "meta": {
+        "author": "Online Notepad Team",
+        "created": "2025-09-21",
+        "lastModified": "2025-09-21",
+        "wordCount": {
+          "zh": 4500,
+          "en": 4200,
+          "hi": 4300
+        },
+        "readingTime": {
+          "zh": "约15分钟",
+          "en": "About 15 minutes",
+          "hi": "लगभग 15 मिनट"
+        },
+        "seoScore": {
+          "keywordDensity": "1.8%",
+          "targetKeywords": "6/6 integrated",
+          "structure": "H1-H3 optimized",
+          "metaDescription": "optimized"
+        }
+      },
+      "usage": {
+        "purpose": "SEO optimization for website ranking improvement",
+        "deployment": "Blog article or standalone page",
+        "targetAudience": "Global users searching for online notepad solutions"
+      }
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "generated": "2025-09-21T00:00:00Z",
+    "generator": "Claude Code Workflow",
+    "totalArticles": 1,
+    "languages": ["zh", "en", "hi"]
+  }
+}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { Menu, X, Plus, BookOpen, History } from 'lucide-react';
+import { Menu, X, Plus, BookOpen, History, FileText } from 'lucide-react';
 import TUIMarkdownEditor from '@/components/TUIMarkdownEditor';
 import NoteList from '@/components/NoteList';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -147,7 +147,7 @@ export default function HomePage() {
   }, [currentTitle, currentContent, selectedNote, showEditor, saveNote, t]);
 
   // 应用模板的函数
-  const handleApplyTemplate = useCallback(async (template: { name: string; content: string }) => {
+  const handleApplyTemplate = useCallback(async (template: { nameKey?: string; name?: string; content: string }) => {
     const templateContent = template.content
       .replace(/\$\{new Date\(\)\.toLocaleDateString\(\)\}/g, new Date().toLocaleDateString())
       .replace(/\$\{t\('([^']+)'\)\}/g, (match, key) => {
@@ -158,44 +158,57 @@ export default function HomePage() {
         }
       });
 
+    // 使用 nameKey（新格式）或 name（旧格式）
+    const templateName = template.nameKey ? t(template.nameKey) : (template.name || t('untitled'));
+
+    // 先设置基本状态
     setSelectedNote(null);
     setShowEditor(true);
     setShowSidebar(true);
-    setCurrentTitle(t(template.name));
-    setCurrentContent(templateContent);
 
-    // 自动保存模板笔记
-    try {
-      const savedNote = saveNote({
-        title: t(template.name),
-        content: templateContent,
-        mode: NOTE_MODES.MARKDOWN,
-        customSlug: '',
-        isPublic: false
-      });
-      if (savedNote) {
-        setSelectedNote(savedNote);
-      }
-    } catch (error) {
-      console.error('模板笔记保存失败:', error);
-    }
+    // 延迟设置内容，确保编辑器已完全初始化
+    setTimeout(() => {
+      setCurrentTitle(templateName);
+      setCurrentContent(templateContent);
+
+      // 延迟保存模板笔记，确保状态已更新
+      setTimeout(() => {
+        try {
+          const savedNote = saveNote({
+            title: templateName,
+            content: templateContent,
+            mode: NOTE_MODES.MARKDOWN,
+            customSlug: '',
+            isPublic: false
+          });
+          if (savedNote) {
+            setSelectedNote(savedNote);
+          }
+        } catch (error) {
+          console.error('模板笔记保存失败:', error);
+        }
+      }, 100);
+    }, 100);
   }, [t, saveNote]);
 
   useEffect(() => {
     loadNotes();
     setCurrentMode(NOTE_MODES.MARKDOWN);
-    
-    // 检查是否有待应用的模板
-    const selectedTemplate = sessionStorage.getItem('selectedTemplate');
-    if (selectedTemplate) {
-      try {
-        const template = JSON.parse(selectedTemplate);
-        handleApplyTemplate(template);
-        sessionStorage.removeItem('selectedTemplate');
-      } catch (error) {
-        console.error('应用模板失败:', error);
+    // 延迟检查模板，确保组件完全初始化
+    setTimeout(() => {
+      // 检查是否有待应用的模板
+      const selectedTemplate = sessionStorage.getItem('selectedTemplate');
+      console.log("selelctdTemplate", selectedTemplate)
+      if (selectedTemplate) {
+        try {
+          const template = JSON.parse(selectedTemplate);
+          handleApplyTemplate(template);
+          sessionStorage.removeItem('selectedTemplate');
+        } catch (error) {
+          console.error('应用模板失败:', error);
+        }
       }
-    }
+    }, 200); // 增加延迟时间确保组件完全加载
   }, [loadNotes, handleApplyTemplate]);
 
 
@@ -608,6 +621,18 @@ export default function HomePage() {
             </Button>
           </Link>
 
+          {/* SEO文章按钮 */}
+          <Link href={locale === 'en' ? '/articles' : `/${locale}/articles`}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-sm font-medium"
+            >
+              <FileText className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">{locale === 'zh' ? '文章' : 'Articles'}</span>
+            </Button>
+          </Link>
+          
           {/* 更新日志按钮 */}
           <Link href={locale === 'en' ? '/changelog' : `/${locale}/changelog`}>
             <Button
