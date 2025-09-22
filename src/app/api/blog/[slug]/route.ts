@@ -3,12 +3,6 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import type { BlogDetailResponse, BlogPostArgument } from '@/types/blog';
 
-interface RouteParams {
-  params: {
-    slug: string;
-  };
-}
-
 // 验证更新博客的输入数据
 const UpdateBlogSchema = z.object({
   title: z.string().min(1).optional(),
@@ -25,7 +19,7 @@ const UpdateBlogSchema = z.object({
 // GET /api/blog/[slug] - 获取单个博客
 export async function GET(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const { slug } = await params;
@@ -77,7 +71,7 @@ export async function GET(
 // PUT /api/blog/[slug] - 更新博客
 export async function PUT(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const { slug } = await params;
@@ -160,7 +154,7 @@ export async function PUT(
 // DELETE /api/blog/[slug] - 删除博客
 export async function DELETE(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const { slug } = await params;
