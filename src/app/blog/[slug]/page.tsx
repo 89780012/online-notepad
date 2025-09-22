@@ -6,9 +6,9 @@ import BlogContent from '@/components/BlogContent';
 import type { BlogDetailResponse } from '@/types/blog';
 
 interface BlogDetailPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 // 获取博客数据
