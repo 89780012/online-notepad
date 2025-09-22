@@ -143,16 +143,21 @@ export default function BlogContent({ content }: BlogContentProps) {
                 ),
 
                 // 自定义图片
-                img: ({ src, alt, ...props }) => (
-                  <Image
-                    src={src || ''}
-                    alt={alt || ''}
-                    width={800}
-                    height={600}
-                    className="rounded-lg shadow-md max-w-full h-auto my-6"
-                    {...props}
-                  />
-                ),
+                img: ({ src, alt, ...props }) => {
+                  // 排除可能冲突的 width 和 height 属性
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  const { width: _width, height: _height, ...restProps } = props;
+                  return (
+                    <Image
+                      src={src as string || ''}
+                      alt={alt || ''}
+                      width={800}
+                      height={600}
+                      className="rounded-lg shadow-md max-w-full h-auto my-6"
+                      {...restProps}
+                    />
+                  );
+                },
 
                 // 自定义分割线
                 hr: ({ ...props }) => (

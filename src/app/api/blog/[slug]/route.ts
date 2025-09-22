@@ -50,7 +50,7 @@ export async function GET(
         description: blogPost.description,
         keywords: blogPost.keywords,
         slug: blogPost.slug,
-        content: blogPost.content as BlogPostArgument[], // JSON 转换为 BlogPostArgument[]
+        content: blogPost.content as unknown as BlogPostArgument[], // JSON 转换为 BlogPostArgument[]
         status: blogPost.status,
         publishedAt: blogPost.publishedAt?.toISOString() || null,
         createdAt: blogPost.createdAt.toISOString(),
@@ -93,25 +93,18 @@ export async function PUT(
     }
 
     // 准备更新数据
-    const updateData: {
-      title?: string;
-      description?: string;
-      keywords?: string;
-      content?: BlogPostArgument[];
-      status?: 'draft' | 'published';
-      publishedAt?: Date;
-    } = {
-      ...validatedData,
-      content: validatedData.argument || existingBlog.content
+    const baseUpdateData = {
+      title: validatedData.title,
+      description: validatedData.description,
+      keywords: validatedData.keywords,
+      status: validatedData.status,
+      ...(validatedData.argument && { content: validatedData.argument }),
     };
 
     // 如果状态改为 published 且之前不是，设置 publishedAt
-    if (validatedData.status === 'published' && existingBlog.status !== 'published') {
-      updateData.publishedAt = new Date();
-    }
-
-    // 移除 argument 字段，因为我们已经把它放到 content 中了
-    delete updateData.argument;
+    const updateData = validatedData.status === 'published' && existingBlog.status !== 'published'
+      ? { ...baseUpdateData, publishedAt: new Date() }
+      : baseUpdateData;
 
     const updatedBlog = await prisma.blogPost.update({
       where: { slug },
@@ -139,7 +132,7 @@ export async function PUT(
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid input data', details: error.errors },
+        { error: 'Invalid input data', details: error.issues },
         { status: 400 }
       );
     }
