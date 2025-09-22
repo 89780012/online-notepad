@@ -621,6 +621,18 @@ export default function HomePage() {
             </Button>
           </Link>
 
+          {/* 博客按钮 */}
+          <Link href="/blog">
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-sm font-medium"
+            >
+              <FileText className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Blog</span>
+            </Button>
+          </Link>
+
           {/* SEO文章按钮 */}
           <Link href={locale === 'en' ? '/articles' : `/${locale}/articles`}>
             <Button

@@ -10,10 +10,11 @@ export default createMiddleware({
 
 export const config = {
   // 修复as-needed模式的匹配规则，确保正确处理所有路由
+  // 排除 /blog 路径，因为博客功能不需要国际化
   matcher: [
     // 匹配根路径
     '/',
-    // 匹配所有路径，包括无前缀的默认语言路径和有前缀的其他语言路径
-    '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|llms.txt|og-image.png).*)'
+    // 匹配所有路径，但排除博客路径和其他静态资源
+    '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|llms.txt|og-image.png|blog).*)'
   ]
 };

@@ -23,6 +23,21 @@ model Note {
   customSlug   String?  @unique // 用户自定义的分享URL后缀
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  
+
   @@map("notes")
+}
+
+model BlogPost {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  keywords    String
+  slug        String    @unique // SEO友好的URL
+  content     Json      // 存储argument数组，每个content都是markdown
+  status      String    @default("draft") // draft, published
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("blog_posts")
 }
