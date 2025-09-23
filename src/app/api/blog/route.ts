@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
         description: validatedData.description,
         keywords: validatedData.keywords,
         slug,
-        content: validatedData.argument,
+        content: JSON.stringify(validatedData.argument),
         status: validatedData.status,
         publishedAt: validatedData.status === 'published' ? new Date() : null
       }

@@ -634,7 +634,7 @@ export default function HomePage() {
           </Link>
 
           {/* SEO文章按钮 */}
-          <Link href={locale === 'en' ? '/articles' : `/${locale}/articles`}>
+          {/* <Link href={locale === 'en' ? '/articles' : `/${locale}/articles`}>
             <Button
               variant="outline"
               size="sm"
@@ -644,7 +644,7 @@ export default function HomePage() {
               <span className="hidden sm:inline">{locale === 'zh' ? '文章' : 'Articles'}</span>
             </Button>
           </Link>
-          
+           */}
           {/* 更新日志按钮 */}
           <Link href={locale === 'en' ? '/changelog' : `/${locale}/changelog`}>
             <Button

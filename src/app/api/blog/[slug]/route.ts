@@ -50,7 +50,7 @@ export async function GET(
         description: blogPost.description,
         keywords: blogPost.keywords,
         slug: blogPost.slug,
-        content: blogPost.content as unknown as BlogPostArgument[], // JSON 转换为 BlogPostArgument[]
+        content: JSON.parse(blogPost.content) as BlogPostArgument[], // JSON 字符串解析为 BlogPostArgument[]
         status: blogPost.status,
         publishedAt: blogPost.publishedAt?.toISOString() || null,
         createdAt: blogPost.createdAt.toISOString(),
@@ -93,13 +93,23 @@ export async function PUT(
     }
 
     // 准备更新数据
-    const baseUpdateData = {
+    const baseUpdateData: {
+      title?: string;
+      description?: string;
+      keywords?: string;
+      status?: string;
+      content?: string;
+    } = {
       title: validatedData.title,
       description: validatedData.description,
       keywords: validatedData.keywords,
       status: validatedData.status,
-      ...(validatedData.argument && { content: validatedData.argument }),
     };
+
+    // 只有当 argument 存在时才更新 content 字段
+    if (validatedData.argument) {
+      baseUpdateData.content = JSON.stringify(validatedData.argument);
+    }
 
     // 如果状态改为 published 且之前不是，设置 publishedAt
     const updateData = validatedData.status === 'published' && existingBlog.status !== 'published'
