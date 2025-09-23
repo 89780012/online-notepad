@@ -11,12 +11,43 @@ import {
   Layout,
   Search,
   Code,
-  Users
+  Users,
+  BookOpen,
+  LogOut
 } from 'lucide-react';
 import { ChangelogData } from './types';
 
 export const changelogData: ChangelogData = {
   entries: [
+    {
+      version: 'v0.4.0',
+      date: '2025-09-23',
+      titleKey: 'changelog.v040.title',
+      descriptionKey: 'changelog.v040.description',
+      features: [
+        {
+          type: 'feat',
+          icon: BookOpen,
+          titleKey: 'changelog.v040.blogSystem.title',
+          descriptionKey: 'changelog.v040.blogSystem.description',
+          commits: ['b8f2d1a']
+        },
+        {
+          type: 'feat',
+          icon: Zap,
+          titleKey: 'changelog.v040.quickFocusStart.title',
+          descriptionKey: 'changelog.v040.quickFocusStart.description',
+          commits: ['c4e9f2b']
+        },
+        {
+          type: 'feat',
+          icon: LogOut,
+          titleKey: 'changelog.v040.quickExitFocus.title',
+          descriptionKey: 'changelog.v040.quickExitFocus.description',
+          commits: ['d7a3e8c']
+        }
+      ]
+    },
     {
       version: 'v0.3.0',
       date: '2025-09-15',

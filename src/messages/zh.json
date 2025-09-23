@@ -54,6 +54,8 @@
   "yesterday": "昨天",
   "enterTitle": "请输入标题...",
   "enterFocusMode": "进入专注模式",
+  "quickFocusStart": "一键专注启动",
+  "quickExitFocus": "快速退出",
   "markdownPlaceholder": "开始编写你的 Markdown 内容...\n\n支持：\n- 基本 Markdown 语法\n- 数学公式 $\\LaTeX$ 和 $$\\LaTeX$$\n- 代码高亮\n- 表格、列表等",
   "mode": "模式",
   "unshareNote": "取消分享",
@@ -114,6 +116,7 @@
   "markdownWritingDesc": "支持完整的Markdown语法，包括代码高亮、数学公式和表格",
   "collaborativeSharing": "协作分享",
   "collaborativeSharingDesc": "一键生成分享链接，与他人轻松协作和分享笔记内容",
+  "quickFocusStartDesc": "快速进入专注模式，开启高效协作写作体验",
   "darkModeSupport": "深色模式",
   "darkModeSupportDesc": "内置深色主题，保护眼睛，适合夜间使用和长时间写作",
   "crossDevice": "跨设备同步",
@@ -523,6 +526,22 @@
       "feature": "新功能",
       "bugfix": "修复",
       "refactor": "重构"
+    },
+    "v040": {
+      "title": "博客系统与专注模式增强",
+      "description": "推出完整的博客系统，增强专注模式的交互体验，提供更便捷的一键操作。",
+      "blogSystem": {
+        "title": "博客系统",
+        "description": "全新的博客功能，支持文章发布、分类管理和内容分享，为用户提供更丰富的内容创作平台。"
+      },
+      "quickFocusStart": {
+        "title": "一键专注启动",
+        "description": "新增一键专注启动按钮，用户可以快速进入专注模式，开启高效的协作写作体验。"
+      },
+      "quickExitFocus": {
+        "title": "快速退出专注模式",
+        "description": "优化专注模式退出体验，在右下角添加悬浮式快速退出按钮，不占用编辑空间且更加便捷。"
+      }
     },
     "v030": {
       "title": "专注体验增强",

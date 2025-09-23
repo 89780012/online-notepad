@@ -54,6 +54,8 @@
   "yesterday": "Yesterday",
   "enterTitle": "Enter title...",
   "enterFocusMode": "Enter focus mode",
+  "quickFocusStart": "Quick Focus Start",
+  "quickExitFocus": "Quick Exit",
   "markdownPlaceholder": "Start writing your Markdown content...\n\nSupports:\n- Basic Markdown syntax\n- Math formulas $\\LaTeX$ and $$\\LaTeX$$\n- Code highlighting\n- Tables, lists, etc.",
   "mode": "Mode",
   "unshareNote": "Unshare",
@@ -247,6 +249,7 @@
   "benefit1": "No registration required, start using immediately",
   "benefit2": "Complete data control with privacy security",
   "benefit3": "Clean beautiful interface focused on writing",
+  "quickFocusStartDesc": "Quickly enter focus mode for efficient collaborative writing experience",
   "benefit4": "Rich practical features meeting various needs",
   "benefit5": "Completely free and open source with continuous updates",
   "howToUseTitle": "How to Use",
@@ -523,6 +526,22 @@
       "feature": "Feature",
       "bugfix": "Bugfix",
       "refactor": "Refactor"
+    },
+    "v040": {
+      "title": "Blog System & Focus Mode Enhancement",
+      "description": "Launch complete blog system, enhance focus mode interaction experience, and provide more convenient one-click operations.",
+      "blogSystem": {
+        "title": "Blog System",
+        "description": "Brand new blog functionality supporting article publishing, category management, and content sharing, providing users with a richer content creation platform."
+      },
+      "quickFocusStart": {
+        "title": "Quick Focus Start",
+        "description": "Added one-click focus start button, allowing users to quickly enter focus mode for efficient collaborative writing experience."
+      },
+      "quickExitFocus": {
+        "title": "Quick Exit Focus Mode",
+        "description": "Optimized focus mode exit experience, added floating quick exit button in bottom-right corner that doesn't occupy editing space and is more convenient."
+      }
     },
     "v030": {
       "title": "Focus Experience Enhancement",

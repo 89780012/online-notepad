@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { Menu, X, Plus, BookOpen, History, FileText } from 'lucide-react';
+import { Menu, X, Plus, BookOpen, History, FileText, Zap, LogOut } from 'lucide-react';
 import TUIMarkdownEditor from '@/components/TUIMarkdownEditor';
 import NoteList from '@/components/NoteList';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -244,6 +244,23 @@ export default function HomePage() {
       }
     } catch (error) {
       console.error('新建笔记自动保存失败:', error);
+    }
+  };
+
+  // 一键专注启动 - 快速进入协作模式
+  const handleQuickFocusStart = async () => {
+    // 如果没有当前笔记，先创建一个新笔记
+    if (!selectedNote || !currentTitle) {
+      await handleNewNote();
+      // 等待状态更新完成
+      setTimeout(() => {
+        setIsFocusMode(true);
+        setShowSidebar(true); // 在专注模式下显示侧边栏以便协作
+      }, 100);
+    } else {
+      // 如果有当前笔记，直接进入专注模式
+      setIsFocusMode(true);
+      setShowSidebar(true); // 在专注模式下显示侧边栏以便协作
     }
   };
 
@@ -502,19 +519,19 @@ export default function HomePage() {
     return (
       <>
         <div className="fixed inset-0 bg-card flex flex-col paper-texture z-50 h-screen">
-          {/* 专注模式退出按钮 */}
+          {/* 右下角快速退出按钮 */}
           <Button
-            variant="ghost"
-            size="sm"
             onClick={handleExitFocusMode}
-            className="absolute top-4 right-4 z-50 opacity-50 hover:opacity-100 transition-opacity hover:bg-accent/80"
-            title={t('exitFocusMode')}
+            className="fixed bottom-6 right-6 z-50 text-sm font-medium shadow-lg bg-red-500 hover:bg-red-600 text-white border-2 border-red-400 hover:border-red-300 transition-all duration-200 hover:scale-105"
+            size="sm"
+            title={t('quickExitFocus')}
           >
-            <X className="h-4 w-4" />
+            <LogOut className="h-4 w-4 mr-1" />
+            <span className="hidden sm:inline">{t('quickExitFocus')}</span>
           </Button>
           
-          {/* 专注模式快捷键提示 */}
-          <div className="absolute bottom-4 left-4 z-50 opacity-30 hover:opacity-80 transition-opacity text-sm text-muted-foreground flex items-center gap-1">
+          {/* 专注模式快捷键提示 - 调整位置避免与退出按钮重叠 */}
+          <div className="absolute bottom-6 left-6 z-50 opacity-30 hover:opacity-80 transition-opacity text-sm text-muted-foreground flex items-center gap-1">
             <span>按 ESC 键退出专注模式</span>
           </div>
 
@@ -607,6 +624,17 @@ export default function HomePage() {
           >
             <Plus className="h-4 w-4 mr-1" />
             <span className="hidden sm:inline">{t('newNote')}</span>
+          </Button>
+          
+          {/* 一键专注启动按钮 */}
+          <Button
+            onClick={handleQuickFocusStart}
+            className="text-sm font-medium shadow-sm bg-orange-500 hover:bg-orange-600 text-white"
+            size="sm"
+            title={t('quickFocusStart')}
+          >
+            <Zap className="h-4 w-4 mr-1" />
+            <span className="hidden sm:inline">{t('quickFocusStart')}</span>
           </Button>
           
           {/* 模板市场按钮 */}
