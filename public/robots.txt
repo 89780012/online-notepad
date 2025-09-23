@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
 
+# 优先抓取博客内容
+Crawl-delay: 1
+
+# Sitemaps
 Sitemap: https://www.mininotepad.com/sitemap.xml

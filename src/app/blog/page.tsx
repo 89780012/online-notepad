@@ -1,12 +1,38 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { Home } from 'lucide-react';
-import BlogList from '@/components/BlogList';
+import BlogListServer from '@/components/BlogListServer';
 
 export const metadata: Metadata = {
-  title: 'Blog - Online Notepad',
-  description: 'Discover insights about digital note-taking, markdown editing, and productivity tips.',
-  keywords: 'blog, digital notes, markdown, productivity, writing tips',
+  title: 'Blog - Online Notepad | Digital Note-Taking Insights & Tips',
+  description: 'Discover the latest trends in digital note-taking, markdown editing techniques, and productivity strategies. Expert insights to enhance your writing workflow and boost productivity.',
+  keywords: 'blog, digital notes, markdown, productivity, writing tips, note-taking, online notepad, markdown editor, digital writing, productivity tools',
+  openGraph: {
+    title: 'Digital Note-Taking Blog - Online Notepad',
+    description: 'Expert insights on digital note-taking, markdown editing, and productivity strategies.',
+    type: 'website',
+    url: 'https://www.mininotepad.com/blog',
+    siteName: 'Online Notepad',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Digital Note-Taking Blog - Online Notepad',
+    description: 'Expert insights on digital note-taking, markdown editing, and productivity strategies.',
+  },
+  alternates: {
+    canonical: 'https://www.mininotepad.com/blog',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function BlogPage() {
@@ -65,7 +91,7 @@ export default function BlogPage() {
       {/* Blog Content */}
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">
-          <BlogList />
+          <BlogListServer />
         </div>
       </div>
     </div>

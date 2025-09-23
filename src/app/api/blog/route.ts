@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
-import type { BlogPostCreateInput, BlogListResponse } from '@/types/blog';
+import type { BlogPostCreateInput, BlogListResponse, BlogPostSummary } from '@/types/blog';
 
 // Slug 生成函数
 function generateSlug(title: string): string {
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
     ]);
 
     const response: BlogListResponse = {
-      blogs: blogs.map(blog => ({
+      blogs: blogs.map((blog): BlogPostSummary => ({
         ...blog,
         publishedAt: blog.publishedAt?.toISOString() || null,
         createdAt: blog.createdAt.toISOString()

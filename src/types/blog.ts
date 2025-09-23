@@ -22,11 +22,19 @@ export interface BlogPostCreateInput extends BlogPostData {
 export interface BlogPostSummary {
   id: string;
   title: string;
-  description: string;
+  excerpt?: string; // 文章摘要
+  description?: string; // 为了向后兼容保留
   slug: string;
-  status: string;
+  status?: string;
+  coverImage?: string | null;
   publishedAt: string | null;
-  createdAt: string;
+  readingTime?: number;
+  tags?: string[];
+  createdAt?: string;
+  author?: {
+    name: string;
+    avatar?: string | null;
+  };
 }
 
 export interface BlogPostDetail extends BlogPostSummary {
