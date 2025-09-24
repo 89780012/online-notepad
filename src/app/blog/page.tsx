@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { Home } from 'lucide-react';
-import BlogListServer from '@/components/BlogListServer';
+import BlogList from '@/components/BlogList';
 
 export const metadata: Metadata = {
   title: 'Blog - Online Notepad | Digital Note-Taking Insights & Tips',
@@ -91,7 +91,7 @@ export default function BlogPage() {
       {/* Blog Content */}
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">
-          <BlogListServer />
+          <BlogList />
         </div>
       </div>
     </div>

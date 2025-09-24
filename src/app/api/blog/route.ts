@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
-    const pageSize = parseInt(searchParams.get('pageSize') || '10');
+    const pageSize = parseInt(searchParams.get('pageSize') || '30'); // 默认30条
     const status = searchParams.get('status') || 'published';
 
     const skip = (page - 1) * pageSize;
@@ -67,6 +67,7 @@ export async function GET(request: NextRequest) {
     const response: BlogListResponse = {
       blogs: blogs.map((blog): BlogPostSummary => ({
         ...blog,
+        excerpt: blog.description, // 使用description作为excerpt
         publishedAt: blog.publishedAt?.toISOString() || null,
         createdAt: blog.createdAt.toISOString()
       })),
