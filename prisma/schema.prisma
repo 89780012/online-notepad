@@ -7,6 +7,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  password  String
+  avatar    String?
+  name      String?
+  bio       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  notes     Note[]
+  passwordResetTokens PasswordResetToken[]
+
+  @@map("users")
+}
+
 model Note {
   id         String   @id @default(cuid())
   title      String
@@ -14,9 +30,11 @@ model Note {
   language   String   @default("en")
   isPublic   Boolean  @default(false)
   shareToken String?  @unique
+  customSlug String?  @unique
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  customSlug String?  @unique
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notes")
 }
@@ -34,4 +52,16 @@ model BlogPost {
   updatedAt   DateTime  @updatedAt
 
   @@map("blog_posts")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  used      Boolean  @default(false)
+
+  @@map("password_reset_tokens")
 }

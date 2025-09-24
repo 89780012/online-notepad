@@ -6,6 +6,9 @@ import TUIMarkdownEditor from '@/components/TUIMarkdownEditor';
 import NoteList from '@/components/NoteList';
 import LanguageToggle from '@/components/LanguageToggle';
 import ThemeToggle from '@/components/ThemeToggle';
+import LoginButton from '@/components/auth/LoginButton';
+import UserDropdown from '@/components/auth/UserDropdown';
+import { useAuth } from '@/contexts/AuthContext';
 import MarketingContent from '@/components/MarketingContent';
 import SharePopup from '@/components/SharePopup';
 import SaveAsDialog from '@/components/SaveAsDialog';
@@ -19,6 +22,7 @@ import Link from 'next/link';
 
 export default function HomePage() {
   const { notes, saveNote, deleteNote, loadNotes } = useLocalNotes();
+  const { user, isLoading: authLoading } = useAuth();
   const t = useTranslations();
   const locale = useLocale();
   const { toast } = useToast();
@@ -688,6 +692,20 @@ export default function HomePage() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <LanguageToggle />
+          
+          {/* 认证相关组件 */}
+          {!authLoading && (
+            <>
+              {user ? (
+                <UserDropdown />
+              ) : (
+                <div className="flex items-center gap-2">
+                  <LoginButton variant="login" />
+                  <LoginButton variant="register" />
+                </div>
+              )}
+            </>
+          )}
         </div>
       </header>
 
