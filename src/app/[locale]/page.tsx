@@ -59,7 +59,7 @@ export default function HomePage() {
     setShowSaveAsDialog(true);
   };
 
- const handleSaveNote = async () => {
+  const handleSaveNote = async () => {
     try {
       const savedNote = saveNote({
         title: currentTitle || t('untitled'),
@@ -266,46 +266,6 @@ export default function HomePage() {
       setIsFocusMode(true);
       setShowSidebar(true); // 在专注模式下显示侧边栏以便协作
     }
-  };
-
-  // 清除 Markdown 格式的函数
-  const stripMarkdown = (text: string): string => {
-    return text
-      // 移除标题
-      .replace(/^#{1,6}\s+/gm, '')
-      // 移除粗体和斜体
-      .replace(/\*\*([^*]+)\*\*/g, '$1')
-      .replace(/\*([^*]+)\*/g, '$1')
-      .replace(/__([^_]+)__/g, '$1')
-      .replace(/_([^_]+)_/g, '$1')
-      // 移除删除线
-      .replace(/~~([^~]+)~~/g, '$1')
-      // 移除代码块
-      .replace(/```[\s\S]*?```/g, '')
-      .replace(/`([^`]+)`/g, '$1')
-      // 移除链接
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-      // 移除图片
-      .replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1')
-      // 移除引用
-      .replace(/^>\s+/gm, '')
-      // 移除列表标记
-      .replace(/^[\s]*[-*+]\s+/gm, '')
-      .replace(/^[\s]*\d+\.\s+/gm, '')
-      // 移除任务列表
-      .replace(/^[\s]*-\s+\[[x\s]\]\s+/gm, '')
-      // 移除水平线
-      .replace(/^---+$/gm, '')
-      // 移除多余的空行
-      .replace(/\n\s*\n\s*\n/g, '\n\n')
-      .trim();
-  };
-
-  // 处理清除 Markdown 格式
-  const handleClearMarkdown = () => {
-    const plainText = stripMarkdown(currentContent);
-    setCurrentContent(plainText);
-    console.log('Markdown格式已清除');
   };
 
   const handleShare = async () => {
@@ -574,7 +534,6 @@ export default function HomePage() {
                 onSaveAs={handleSaveAs}
                 isFocusMode={true}
                 onToggleFocusMode={handleExitFocusMode}
-                onClearMarkdown={handleClearMarkdown}
                 showSidebar={showSidebar}
                 onToggleSidebar={toggleSidebar}
               />
@@ -665,18 +624,6 @@ export default function HomePage() {
             </Button>
           </Link>
 
-          {/* SEO文章按钮 */}
-          {/* <Link href={locale === 'en' ? '/articles' : `/${locale}/articles`}>
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-sm font-medium"
-            >
-              <FileText className="h-4 w-4 mr-1" />
-              <span className="hidden sm:inline">{locale === 'zh' ? '文章' : 'Articles'}</span>
-            </Button>
-          </Link>
-           */}
           {/* 更新日志按钮 */}
           <Link href={locale === 'en' ? '/changelog' : `/${locale}/changelog`}>
             <Button
@@ -748,7 +695,6 @@ export default function HomePage() {
                   onOpenFile={handleOpenFile}
                   onSaveAs={handleSaveAs}
                   onToggleFocusMode={toggleFocusMode}
-                  onClearMarkdown={handleClearMarkdown}
                   showSidebar={showSidebar}
                   onToggleSidebar={toggleSidebar}
                 />

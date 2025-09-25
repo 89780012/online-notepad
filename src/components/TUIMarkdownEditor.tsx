@@ -111,7 +111,6 @@ export default function TUIMarkdownEditor({
   isFocusMode = false,
   onToggleFocusMode,
   isAutoSaving = false,
-  onClearMarkdown,
   showSidebar = false,
   onToggleSidebar,
   previewStyle = 'vertical',
@@ -250,15 +249,6 @@ export default function TUIMarkdownEditor({
     }
   };
 
-  // 清除 Markdown 格式 (保持与原组件一致)
-  const handleClearMarkdown = () => {
-    if (onClearMarkdown) {
-      const plainText = stripMarkdown(content);
-      onContentChange(plainText);
-      onClearMarkdown();
-    }
-  };
-
   // 应用模板 - 修复：同时更新TUI Editor内容
   const handleApplyTemplate = (templateContent: string) => {
     const editorInstance = editorRef.current?.getInstance();
@@ -278,11 +268,6 @@ export default function TUIMarkdownEditor({
       onContentChange(templateContent);
     }
   };
-
-  // 🖼️ 图片插入处理
-  const handleImageDialogOpen = useCallback(() => {
-    setShowImageDialog(true);
-  }, []);
 
   const handleImageInsert = useCallback((markdown: string) => {
     const editorInstance = editorRef.current?.getInstance();
@@ -486,27 +471,6 @@ export default function TUIMarkdownEditor({
                 }
               </DropdownMenuContent>
             </DropdownMenu>
-
-            <Button
-              onClick={handleClearMarkdown}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-              title={t('clearMarkdownTitle')}
-            >
-              <Eraser className="w-4 h-4" />
-              {t('clearMarkdown')}
-            </Button>
-
-            <Button
-              onClick={handleImageDialogOpen}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-              title="插入图片"
-            >
-              {t('insertImage')}
-            </Button>
 
             <Button
               onClick={handleOpenFile}
