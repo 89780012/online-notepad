@@ -7,7 +7,7 @@
 
 import { useState, useCallback, useRef, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
-import { Maximize2, Minimize2, Save, Share2, FolderOpen, Download, Eraser, ChevronDown, Menu, X } from 'lucide-react';
+import { Maximize2, Minimize2, Save, Share2, FolderOpen, Download, ChevronDown, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -21,7 +21,6 @@ import {
 import { useTranslations } from 'next-intl';
 import { useTheme } from '@/contexts/ThemeContext';
 import EditorErrorBoundary from './EditorErrorBoundary';
-import ImageInsertDialog from './ImageInsertDialog';
 import { getTemplates, categories } from '@/data/templates';
 
 // 引入 TUI Editor 类型
@@ -66,38 +65,6 @@ const loadCodeSyntaxHighlight = async () => {
   return codeSyntaxHighlightPlugin;
 };
 
-// 清除 Markdown 格式的函数 (保持与原组件一致)
-const stripMarkdown = (text: string): string => {
-  return text
-    // 移除标题
-    .replace(/^#{1,6}\s+/gm, '')
-    // 移除粗体和斜体
-    .replace(/\*\*([^*]+)\*\*/g, '$1')
-    .replace(/\*([^*]+)\*/g, '$1')
-    .replace(/__([^_]+)__/g, '$1')
-    .replace(/_([^_]+)_/g, '$1')
-    // 移除删除线
-    .replace(/~~([^~]+)~~/g, '$1')
-    // 移除代码块
-    .replace(/```[\s\S]*?```/g, '')
-    .replace(/`([^`]+)`/g, '$1')
-    // 移除链接
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    // 移除图片
-    .replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1')
-    // 移除引用
-    .replace(/^>\s+/gm, '')
-    // 移除列表标记
-    .replace(/^[\s]*[-*+]\s+/gm, '')
-    .replace(/^[\s]*\d+\.\s+/gm, '')
-    // 移除任务列表
-    .replace(/^[\s]*-\s+\[[x\s]\]\s+/gm, '')
-    // 移除水平线
-    .replace(/^---+$/gm, '')
-    // 移除多余的空行
-    .replace(/\n\s*\n\s*\n/g, '\n\n')
-    .trim();
-};
 
 export default function TUIMarkdownEditor({
   title,
@@ -120,41 +87,31 @@ export default function TUIMarkdownEditor({
   const t = useTranslations();
   const { resolvedTheme } = useTheme();
 
-  // 状态管理 (保持与原组件一致)
+  // 状态管理
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [showSaveStatus, setShowSaveStatus] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
-  const [showImageDialog, setShowImageDialog] = useState(false);
+  const [lastSaveTime, setLastSaveTime] = useState<Date | null>(null);
+  const [isLocalSaving, setIsLocalSaving] = useState(false);
 
   // 引用管理
   const editorRef = useRef<TUIEditorRef>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const saveStatusTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const savingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 监听自动保存状态变化 (保持与原组件一致)
+  // 监听外部 isAutoSaving 和内部 isLocalSaving 状态
   useEffect(() => {
-    if (isAutoSaving) {
-      setShowSaveStatus(true);
-      if (saveStatusTimeoutRef.current) {
-        clearTimeout(saveStatusTimeoutRef.current);
-      }
-    } else if (showSaveStatus) {
-      // 保存完成后，显示"已保存"状态3秒
-      saveStatusTimeoutRef.current = setTimeout(() => {
-        setShowSaveStatus(false);
-      }, 3000);
-    }
-  }, [isAutoSaving, showSaveStatus]);
+    const currentSaving = isAutoSaving || isLocalSaving;
 
-  // 清理定时器 (保持与原组件一致)
+    if (!currentSaving) {
+      // 保存完成时，直接更新最后保存时间
+      setLastSaveTime(new Date());
+    }
+  }, [isAutoSaving, isLocalSaving]);
+
+  // 清理定时器
   useEffect(() => {
     return () => {
-      if (saveStatusTimeoutRef.current) {
-        clearTimeout(saveStatusTimeoutRef.current);
-      }
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
+      if (savingTimeoutRef.current) {
+        clearTimeout(savingTimeoutRef.current);
       }
     };
   }, []);
@@ -181,22 +138,22 @@ export default function TUIMarkdownEditor({
     if (!editorInstance) return;
 
     try {
-      // 获取 Markdown 内容 - 使用类型断言访问 TUI Editor 方法
+      // 获取 Markdown 内容
       const newContent = (editorInstance as { getMarkdown: () => string }).getMarkdown();
 
       // 调用父组件回调
       onContentChange(newContent);
 
-      // 设置正在输入状态（用于UI反馈）
-      setIsTyping(true);
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
+      // 模拟短暂的自动保存状态（因为 localStorage 是同步的）
+      setIsLocalSaving(true);
+      if (savingTimeoutRef.current) {
+        clearTimeout(savingTimeoutRef.current);
       }
 
-      // 1秒后清除输入状态
-      typingTimeoutRef.current = setTimeout(() => {
-        setIsTyping(false);
-      }, 1000);
+      // 300ms 后清除保存状态，模拟保存过程
+      savingTimeoutRef.current = setTimeout(() => {
+        setIsLocalSaving(false);
+      }, 300);
     } catch (error) {
       console.error('获取编辑器内容失败:', error);
     }
@@ -211,10 +168,12 @@ export default function TUIMarkdownEditor({
     }
   };
 
-  // 保存处理 (保持与原组件一致)
+  // 保存处理 - 更新最后保存时间
   const handleSave = () => {
     if (onSave) {
       onSave();
+      // 手动保存时更新最后保存时间
+      setLastSaveTime(new Date());
       console.log('保存操作已触发');
     }
   };
@@ -268,47 +227,6 @@ export default function TUIMarkdownEditor({
       onContentChange(templateContent);
     }
   };
-
-  const handleImageInsert = useCallback((markdown: string) => {
-    const editorInstance = editorRef.current?.getInstance();
-    if (editorInstance) {
-      try {
-        // 解析 markdown 格式的图片
-        const imageMatch = markdown.match(/!\[([^\]]*)\]\(([^)]+)\)/);
-        if (imageMatch) {
-          const [, altText, imageUrl] = imageMatch;
-          // 使用 TUI Editor 的图片插入 API - 类型断言
-          (editorInstance as { exec: (command: string, options: unknown) => void }).exec('insertImage', {
-            imageUrl: imageUrl.trim(),
-            altText: altText || 'Image'
-          });
-        } else {
-          // 如果解析失败，直接插入到当前位置
-          const tuiEditor = editorInstance as {
-            getMarkdown: () => string;
-            setMarkdown: (content: string) => void;
-            getCurrentModeEditor: () => { getSelection: () => { start: number; end: number } };
-          };
-
-          const currentContent = tuiEditor.getMarkdown();
-          const cursorPosition = tuiEditor.getCurrentModeEditor().getSelection();
-          const beforeCursor = currentContent.slice(0, cursorPosition.start);
-          const afterCursor = currentContent.slice(cursorPosition.end);
-          const newContent = beforeCursor + markdown + afterCursor;
-          tuiEditor.setMarkdown(newContent);
-        }
-
-        // 触发内容变化事件
-        setTimeout(handleContentChange, 100);
-      } catch (error) {
-        console.error('图片插入失败:', error);
-        // 降级方案：直接追加内容
-        const newContent = content + '\n\n' + markdown + '\n';
-        onContentChange(newContent);
-      }
-    }
-    setShowImageDialog(false);
-  }, [content, onContentChange, handleContentChange]);
 
   // 获取模板数据 (保持与原组件一致)
   const templates = getTemplates(t);
@@ -390,27 +308,23 @@ export default function TUIMarkdownEditor({
               className="flex-1 max-w-md border-none bg-transparent text-lg font-semibold focus:ring-0"
             />
 
-            {/* 状态提示 */}
-            {isTyping ? (
-              <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1">
-                <span className="w-2 h-2 bg-gray-500 rounded-full animate-pulse"></span>
-                {t('typing')}
+            {/* 状态提示 - 保存中或最后保存时间 */}
+            {(isAutoSaving || isLocalSaving) ? (
+              <div className="text-sm text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                {t('autoSaving')}
               </div>
-            ) : showSaveStatus && (
-              <>
-                {isAutoSaving ? (
-                  <div className="text-sm text-blue-600 dark:text-blue-400 flex items-center gap-1">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
-                    {t('autoSaving')}
-                  </div>
-                ) : (
-                  <div className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
-                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                    {t('allChangesSaved')}
-                  </div>
-                )}
-              </>
-            )}
+            ) : lastSaveTime ? (
+              <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1">
+                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                {t('lastSaved')}: {lastSaveTime.toLocaleTimeString('zh-CN', {
+                  hour12: false,
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit'
+                })}
+              </div>
+            ) : null}
           </div>
 
           {/* 工具栏按钮 - 保持与原组件完全一致 */}
@@ -554,12 +468,6 @@ export default function TUIMarkdownEditor({
           </EditorErrorBoundary>
         </div>
 
-        {/* 图片插入对话框 - 保持与原组件一致 */}
-        <ImageInsertDialog
-          isOpen={showImageDialog}
-          onClose={() => setShowImageDialog(false)}
-          onInsert={handleImageInsert}
-        />
       </div>
     </div>
   );

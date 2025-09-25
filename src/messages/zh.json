@@ -24,6 +24,7 @@
   "saving": "正在保存...",
   "autoSaving": "自动保存中...",
   "typing": "正在输入...",
+  "lastSaved": "最后保存",
   "unsavedChanges": "有未保存的更改",
   "allChangesSaved": "所有更改已保存",
   "searchNotes": "搜索笔记...",
