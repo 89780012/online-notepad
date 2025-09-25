@@ -13,10 +13,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   LogOut,
-  ChevronDown
+  ChevronDown,
+  KeyRound
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { generateAvatarUrl } from '@/lib/auth';
+import ChangePasswordDialog from './ChangePasswordDialog';
 
 interface UserDropdownProps {
   className?: string;
@@ -25,6 +27,7 @@ interface UserDropdownProps {
 export default function UserDropdown({ className }: UserDropdownProps) {
   const { user, logout } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   if (!user) return null;
 
@@ -91,29 +94,17 @@ export default function UserDropdown({ className }: UserDropdownProps) {
           </div>
         </DropdownMenuLabel>
         
-        {/* <DropdownMenuSeparator />
+        <DropdownMenuSeparator />
         
-        <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-          <User className="h-4 w-4" />
-          <span>Profile</span>
+        <DropdownMenuItem 
+          className="flex items-center gap-2 cursor-pointer"
+          onClick={() => setShowChangePassword(true)}
+        >
+          <KeyRound className="h-4 w-4" />
+          <span>Change Password</span>
         </DropdownMenuItem>
         
-        <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-          <FileText className="h-4 w-4" />
-          <span>My Notes</span>
-        </DropdownMenuItem>
-        
-        <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-          <Settings className="h-4 w-4" />
-          <span>Settings</span>
-        </DropdownMenuItem>
-        
-        <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-          <Crown className="h-4 w-4" />
-          <span>Upgrade to Pro</span>
-        </DropdownMenuItem> 
-        
-        <DropdownMenuSeparator />*/}
+        <DropdownMenuSeparator />
         
         <DropdownMenuItem 
           className="flex items-center gap-2 cursor-pointer text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400"
@@ -124,6 +115,12 @@ export default function UserDropdown({ className }: UserDropdownProps) {
           <span>{isLoading ? 'Logging out...' : 'Log out'}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
+      
+      {/* 修改密码对话框 */}
+      <ChangePasswordDialog
+        isOpen={showChangePassword}
+        onClose={() => setShowChangePassword(false)}
+      />
     </DropdownMenu>
   );
 }

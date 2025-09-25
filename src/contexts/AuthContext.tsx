@@ -12,6 +12,7 @@ interface AuthContextType {
   refreshUser: () => Promise<void>;
   forgotPassword: (email: string) => Promise<{ success: boolean; error?: string; previewUrl?: string }>;
   resetPassword: (token: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; error?: string }>;
   validateResetToken: (token: string) => Promise<{ valid: boolean; error?: string; user?: { email: string; username: string } }>;
 }
 
@@ -185,6 +186,31 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  // 修改密码
+  const changePassword = async (currentPassword: string, newPassword: string) => {
+    try {
+      const response = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        return { success: true };
+      } else {
+        return { success: false, error: data.error };
+      }
+    } catch (error) {
+      console.error('Change password error:', error);
+      return { success: false, error: 'Network error. Please try again.' };
+    }
+  };
+
   // 验证重置令牌
   const validateResetToken = async (token: string) => {
     try {
@@ -227,6 +253,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     refreshUser,
     forgotPassword,
     resetPassword,
+    changePassword,
     validateResetToken,
   };
 
