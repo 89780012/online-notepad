@@ -74,7 +74,7 @@ async function getArticleIndex(): Promise<ArticleIndex | null> {
 
 export async function generateMetadata({ params }: ArticleIndexPageProps): Promise<Metadata> {
   const { locale } = await params;
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://notepad.best';
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://notepad.best';
   const articlesUrl = `${baseUrl}/${locale}/articles`;
 
   const title = locale === 'zh'

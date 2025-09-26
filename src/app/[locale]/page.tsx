@@ -187,7 +187,7 @@ export default function HomePage() {
 
       return () => clearTimeout(timeoutId);
     }
-  }, [currentTitle, currentContent, selectedNote, showEditor, saveNote, t, user, isInitialSyncDone, syncNoteToCloud]);
+  }, [currentTitle, isFullSyncing, currentContent, selectedNote, showEditor, saveNote, t, user, isInitialSyncDone, syncNoteToCloud]);
 
   // 登录后自动同步 - 只同步一次
   useEffect(() => {

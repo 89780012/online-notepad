@@ -173,7 +173,7 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
     };
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://notepad.best';
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://notepad.best';
   const articleUrl = `${baseUrl}/${locale}/articles/${slug}`;
 
   return {

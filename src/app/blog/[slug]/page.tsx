@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, Clock, Tag, Home } from 'lucide-react';
 import BlogContent from '@/components/BlogContent';
+import { BlogPostJSONLD } from '@/components/SEOComponents';
+import { generateBlogSEO } from '@/lib/seo';
 import type { BlogDetailResponse } from '@/types/blog';
 
 interface BlogDetailPageProps {
@@ -42,23 +44,14 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
 
   const { blog } = blogData;
 
-  return {
-    title: `${blog.title} - Online Notepad Blog`,
+  return generateBlogSEO({
+    title: blog.title,
     description: blog.description,
-    keywords: blog.keywords,
-    openGraph: {
-      title: blog.title,
-      description: blog.description,
-      type: 'article',
-      publishedTime: blog.publishedAt || undefined,
-      modifiedTime: blog.updatedAt,
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: blog.title,
-      description: blog.description,
-    },
-  };
+    slug,
+    keywords: blog.keywords?.split(',').map(k => k.trim()) || [],
+    publishedAt: blog.publishedAt,
+    updatedAt: blog.updatedAt,
+  });
 }
 
 export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
@@ -253,27 +246,14 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
       </div>
 
       {/* 结构化数据 */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'BlogPosting',
-            headline: blog.title,
-            description: blog.description,
-            keywords: blog.keywords,
-            datePublished: blog.publishedAt,
-            dateModified: blog.updatedAt,
-            author: {
-              '@type': 'Organization',
-              name: 'Online Notepad Team'
-            },
-            publisher: {
-              '@type': 'Organization',
-              name: 'Online Notepad'
-            }
-          })
-        }}
+      <BlogPostJSONLD
+        title={blog.title}
+        description={blog.description}
+        url={`${process.env.NEXTAUTH_URL || 'https://www.mininotepad.com'}/blog/${slug}`}
+        publishedAt={blog.publishedAt}
+        updatedAt={blog.updatedAt}
+        keywords={blog.keywords?.split(',').map(k => k.trim())}
+        author="Online Notepad Team"
       />
     </div>
   );
