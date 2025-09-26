@@ -58,7 +58,10 @@ export function useNoteSyncManager(
     const localNotesByCloudId = new Map(
       notes.filter(n => n.cloudNoteId).map(n => [n.cloudNoteId!, n])
     );
-    
+
+    // 创建云端笔记ID集合，用于快速查找
+    const cloudNoteIds = new Set(cloudNotes.map(n => n.cloudNoteId));
+
       // 添加云端独有的笔记
       for (const cloudNote of cloudNotes) {
         if (!localNotesByCloudId.has(cloudNote.cloudNoteId!)) {
@@ -77,20 +80,50 @@ export function useNoteSyncManager(
             lastSyncAt: cloudNote.lastSyncAt,
             contentHash: cloudNote.contentHash
           });
+        } else {
+          // 云端和本地都有的笔记，更新为已同步状态
+          const localNote = localNotesByCloudId.get(cloudNote.cloudNoteId!);
+          if (localNote && localNote.syncStatus !== 'synced') {
+            console.log('更新已存在笔记为同步状态:', localNote.title);
+            saveNote({
+              ...localNote,
+              syncStatus: 'synced' as const,
+              lastSyncAt: new Date().toISOString(),
+              contentHash: calculateHash(localNote)
+            }, localNote.id);
+          }
         }
       }
 
-    // 上传本地独有的笔记
+    // 处理本地独有的笔记
     for (const localNote of notes) {
-      if (!localNote.cloudNoteId && localNote.syncStatus !== 'synced') {
+      if (!localNote.cloudNoteId) {
+        // 没有cloudNoteId的是本地独有笔记，设置为local_only状态
+        console.log('标记本地独有笔记:', localNote.title);
+        saveNote({
+          ...localNote,
+          syncStatus: 'local_only' as const,
+          contentHash: calculateHash(localNote)
+        }, localNote.id);
+
+        // 尝试上传到云端
         console.log('上传本地独有笔记:', localNote.title);
         const uploadedNote = await uploadToCloud(localNote);
         if (uploadedNote) {
           saveNote(uploadedNote, localNote.id);
         }
+      } else if (!cloudNoteIds.has(localNote.cloudNoteId)) {
+        // 有cloudNoteId但云端没有的笔记，可能是云端被删除了
+        console.log('云端已删除的笔记，标记为local_only:', localNote.title);
+        saveNote({
+          ...localNote,
+          syncStatus: 'local_only' as const,
+          cloudNoteId: undefined, // 清除云端ID
+          contentHash: calculateHash(localNote)
+        }, localNote.id);
       }
     }
-  }, [notes, saveNote, uploadToCloud]);
+  }, [notes, saveNote, uploadToCloud, calculateHash]);
   
 
   // 执行完整同步（仅在首次登录或手动触发时使用）

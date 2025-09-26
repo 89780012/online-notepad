@@ -67,42 +67,51 @@ export function ConflictResolutionDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex gap-4 h-[70vh]">
-          {/* 左侧：冲突列表 */}
-          <div className="w-1/3 border-r pr-4">
-            <h3 className="font-semibold mb-3">{t('sync.conflictNotesList')}</h3>
-            <ScrollArea className="h-full">
-              <div className="space-y-2">
-                {conflicts.map((conflict) => (
-                  <div
-                    key={conflict.noteId}
-                    className={`p-3 border rounded-lg cursor-pointer transition-colors hover:bg-accent/50 ${
-                      selectedConflict?.noteId === conflict.noteId ? 'bg-accent border-primary' : ''
-                    }`}
-                    onClick={() => setSelectedConflict(conflict)}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-medium text-sm truncate pr-2">
-                        {conflict.localNote.title}
-                      </h4>
-                      <Badge 
-                        variant="secondary" 
-                        className={`text-xs ${getConflictTypeColor(conflict.conflictType)}`}
-                      >
-                        {getConflictTypeText(conflict.conflictType)}
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {getContentPreview(conflict.localNote.content, 80)}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
+        <div className="flex flex-col gap-4 max-h-[80vh] min-h-[60vh]">
+          {/* 冲突概览信息 */}
+          <div className="flex items-center justify-between">
+            <Badge variant="destructive" className="flex items-center gap-1">
+              <AlertTriangle className="h-3 w-3" />
+              {conflicts.length} {t('sync.conflictsFound')}
+            </Badge>
           </div>
 
-          {/* 右侧：冲突详情和解决选项 */}
-          <div className="flex-1">
+          <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
+            {/* 左侧：冲突列表 */}
+            <div className="lg:w-1/3 lg:border-r lg:pr-4">
+              <h3 className="font-semibold mb-3">{t('sync.conflictNotesList')}</h3>
+              <ScrollArea className="h-48 lg:h-full">
+                <div className="space-y-2 pr-2">
+                  {conflicts.map((conflict) => (
+                    <div
+                      key={conflict.noteId}
+                      className={`p-3 border rounded-lg cursor-pointer transition-colors hover:bg-accent/50 ${
+                        selectedConflict?.noteId === conflict.noteId ? 'bg-accent border-primary' : ''
+                      }`}
+                      onClick={() => setSelectedConflict(conflict)}
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-medium text-sm truncate pr-2">
+                          {conflict.localNote.title}
+                        </h4>
+                        <Badge
+                          variant="secondary"
+                          className={`text-xs flex-shrink-0 ${getConflictTypeColor(conflict.conflictType)}`}
+                        >
+                          {getConflictTypeText(conflict.conflictType)}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {getContentPreview(conflict.localNote.content, 80)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
+
+            {/* 右侧：冲突详情和解决选项 */}
+            <div className="flex-1 min-h-0 flex flex-col">
             {selectedConflict ? (
               <div className="h-full flex flex-col">
                 <div className="flex items-center justify-between mb-3">
@@ -151,51 +160,56 @@ export function ConflictResolutionDialog({
                 </div>
 
                 {/* 版本比较 */}
-                <div className="flex-1 mb-4">
+                <div className="flex-1 mb-4 min-h-0">
                   {viewMode === 'diff' ? (
-                    <div className="border rounded-lg overflow-hidden">
-                      <div className="bg-muted/20 p-2 border-b">
+                    <div className="border rounded-lg overflow-hidden h-full flex flex-col">
+                      <div className="bg-muted/20 p-2 border-b flex-shrink-0">
                         <h4 className="text-sm font-medium">{t('sync.contentDiffComparison')}</h4>
                       </div>
-                      <div className="max-h-64 overflow-auto">
-                        <ReactDiffViewer
-                          oldValue={selectedConflict.cloudNote.content}
-                          newValue={selectedConflict.localNote.content}
-                          splitView={true}
-                          compareMethod={DiffMethod.WORDS}
-                          leftTitle={t('sync.cloudVersion')}
-                          rightTitle={t('sync.localVersion')}
-                          styles={{
-                            variables: {
-                              light: {
-                                codeFoldGutterBackground: '#f7f7f7',
-                                codeFoldBackground: '#f1f8ff',
-                                addedBackground: '#e6ffed',
-                                addedColor: '#24292e',
-                                removedBackground: '#ffeef0',
-                                removedColor: '#24292e',
-                                wordAddedBackground: '#acf2bd',
-                                wordRemovedBackground: '#fdb8c0',
-                                addedGutterBackground: '#cdffd8',
-                                removedGutterBackground: '#fdbdc8',
-                                gutterBackground: '#f7f7f7',
-                                gutterBackgroundDark: '#f3f4f6',
-                                highlightBackground: '#fffbdd',
-                                highlightGutterBackground: '#fff5b4',
+                      <ScrollArea className="flex-1 min-h-0">
+                        <div className="p-2">
+                          <ReactDiffViewer
+                            oldValue={selectedConflict.cloudNote.content}
+                            newValue={selectedConflict.localNote.content}
+                            splitView={true}
+                            compareMethod={DiffMethod.WORDS}
+                            leftTitle={t('sync.cloudVersion')}
+                            rightTitle={t('sync.localVersion')}
+                            styles={{
+                              variables: {
+                                light: {
+                                  codeFoldGutterBackground: '#f7f7f7',
+                                  codeFoldBackground: '#f1f8ff',
+                                  addedBackground: '#e6ffed',
+                                  addedColor: '#24292e',
+                                  removedBackground: '#ffeef0',
+                                  removedColor: '#24292e',
+                                  wordAddedBackground: '#acf2bd',
+                                  wordRemovedBackground: '#fdb8c0',
+                                  addedGutterBackground: '#cdffd8',
+                                  removedGutterBackground: '#fdbdc8',
+                                  gutterBackground: '#f7f7f7',
+                                  gutterBackgroundDark: '#f3f4f6',
+                                  highlightBackground: '#fffbdd',
+                                  highlightGutterBackground: '#fff5b4',
+                                }
+                              },
+                              line: {
+                                fontSize: '13px',
+                                lineHeight: '20px',
+                              },
+                              gutter: {
+                                fontSize: '12px',
+                              },
+                              contentText: {
+                                wordWrap: 'break-word',
                               }
-                            },
-                            line: {
-                              fontSize: '13px',
-                              lineHeight: '20px',
-                            },
-                            gutter: {
-                              fontSize: '12px',
-                            }
-                          }}
-                          showDiffOnly={false}
-                          hideLineNumbers={false}
-                        />
-                      </div>
+                            }}
+                            showDiffOnly={false}
+                            hideLineNumbers={false}
+                          />
+                        </div>
+                      </ScrollArea>
                       
                       {/* 标题差异（如果存在） */}
                       {selectedConflict.localNote.title !== selectedConflict.cloudNote.title && (
@@ -230,26 +244,26 @@ export function ConflictResolutionDialog({
                       )}
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-full">
                       {/* 本地版本 */}
-                      <div className="border rounded-lg overflow-hidden">
-                        <div className="bg-green-50 p-3 border-b">
+                      <div className="border rounded-lg overflow-hidden flex flex-col">
+                        <div className="bg-green-50 p-3 border-b flex-shrink-0">
                           <h4 className="font-medium text-green-800 flex items-center gap-2">
                             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                             {t('sync.localVersion')}
                           </h4>
                         </div>
-                        <ScrollArea className="h-64 p-3">
-                          <div className="space-y-3">
+                        <ScrollArea className="flex-1 min-h-0">
+                          <div className="p-3 space-y-3">
                             <div>
                               <p className="text-sm font-medium text-muted-foreground mb-1">{t('sync.syncFieldTitle')}</p>
-                              <p className="text-sm bg-muted p-2 rounded">
+                              <p className="text-sm bg-muted p-2 rounded break-words">
                                 {selectedConflict.localNote.title}
                               </p>
                             </div>
                             <div>
                               <p className="text-sm font-medium text-muted-foreground mb-1">{t('sync.syncFieldContent')}</p>
-                              <div className="text-sm bg-muted p-2 rounded whitespace-pre-wrap">
+                              <div className="text-sm bg-muted p-2 rounded whitespace-pre-wrap break-words">
                                 {selectedConflict.localNote.content}
                               </div>
                             </div>
@@ -258,24 +272,24 @@ export function ConflictResolutionDialog({
                       </div>
 
                       {/* 云端版本 */}
-                      <div className="border rounded-lg overflow-hidden">
-                        <div className="bg-blue-50 p-3 border-b">
+                      <div className="border rounded-lg overflow-hidden flex flex-col">
+                        <div className="bg-blue-50 p-3 border-b flex-shrink-0">
                           <h4 className="font-medium text-blue-800 flex items-center gap-2">
                             <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
                             {t('sync.cloudVersion')}
                           </h4>
                         </div>
-                        <ScrollArea className="h-64 p-3">
-                          <div className="space-y-3">
+                        <ScrollArea className="flex-1 min-h-0">
+                          <div className="p-3 space-y-3">
                             <div>
                               <p className="text-sm font-medium text-muted-foreground mb-1">{t('sync.syncFieldTitle')}</p>
-                              <p className="text-sm bg-muted p-2 rounded">
+                              <p className="text-sm bg-muted p-2 rounded break-words">
                                 {selectedConflict.cloudNote.title}
                               </p>
                             </div>
                             <div>
                               <p className="text-sm font-medium text-muted-foreground mb-1">{t('sync.syncFieldContent')}</p>
-                              <div className="text-sm bg-muted p-2 rounded whitespace-pre-wrap">
+                              <div className="text-sm bg-muted p-2 rounded whitespace-pre-wrap break-words">
                                 {selectedConflict.cloudNote.content}
                               </div>
                             </div>
@@ -286,19 +300,17 @@ export function ConflictResolutionDialog({
                   )}
                 </div>
 
-                <Separator className="my-4" />
-
                 {/* 解决选项 */}
-                <div className="space-y-3">
+                <div className="space-y-3 flex-shrink-0">
                   <h4 className="font-medium">{t('sync.chooseResolution')}</h4>
                   <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 mb-3">
-                    <p className="text-sm text-blue-800 flex items-center gap-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      {t('sync.resolutionHint')}
-                    </p>
+                    <div className="text-sm text-blue-800 flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                      <span>{t('sync.resolutionHint')}</span>
+                    </div>
                   </div>
-                  
-                  <div className="grid grid-cols-3 gap-3">
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <Button
                       variant="outline"
                       onClick={() => onResolve(selectedConflict.noteId, 'local')}
@@ -347,18 +359,7 @@ export function ConflictResolutionDialog({
             )}
           </div>
         </div>
-
-        {/* 底部操作栏 */}
-        {/* <div className="flex justify-between items-center pt-4 border-t">
-          <div className="text-sm text-muted-foreground">
-            还有 {conflicts.length} 个冲突待解决
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={onClose}>
-              稍后处理
-            </Button>
-          </div>
-        </div> */}
+        </div>
       </DialogContent>
     </Dialog>
   );

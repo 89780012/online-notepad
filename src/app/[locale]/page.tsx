@@ -24,7 +24,7 @@ import { SyncStatusIndicator } from '@/components/SyncStatusIndicator';
 import Link from 'next/link';
 
 export default function HomePage() {
-  const { notes, saveNote, deleteNote, loadNotes } = useLocalNotes();
+  const { notes, saveNote, deleteNote, loadNotes, updateNoteSyncStatus, sortNotes } = useLocalNotes();
   const { user, isLoading: authLoading } = useAuth();
   const t = useTranslations();
   const locale = useLocale();
@@ -198,17 +198,31 @@ export default function HomePage() {
         lastSyncTime,
         isInitialSyncDone
       });
+
+      // 先标记所有没有cloudNoteId的笔记为local_only状态
+      notes.forEach(note => {
+        if (!note.cloudNoteId && note.syncStatus !== 'local_only') {
+          console.log('标记本地笔记状态为local_only:', note.title);
+          updateNoteSyncStatus(note.id, 'local_only');
+        }
+      });
+
       // 延迟执行同步，避免与现有加载冲突
       setTimeout(async () => {
         setIsFullSyncing(true);
         try {
           await performFullSync();
+          // 同步完成后，确保按创建时间排序
+          setTimeout(() => {
+            console.log('同步完成，重新排序笔记列表');
+            sortNotes();
+          }, 500);
         } finally {
           setIsFullSyncing(false);
         }
       }, 1000);
     }
-  }, [user, authLoading, isInitialSyncDone, lastSyncTime, performFullSync]);
+  }, [user, authLoading, isInitialSyncDone, lastSyncTime, performFullSync, notes, updateNoteSyncStatus, sortNotes]);
   
 
   // 应用模板的函数

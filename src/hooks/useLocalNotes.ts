@@ -37,8 +37,8 @@ export function useLocalNotes() {
       if (stored) {
         try {
           const parsedNotes = JSON.parse(stored);
-          setNotes(parsedNotes.sort((a: LocalNote, b: LocalNote) => 
-            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          setNotes(parsedNotes.sort((a: LocalNote, b: LocalNote) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           ));
         } catch (error) {
           console.error('Failed to parse local notes:', error);
@@ -48,11 +48,47 @@ export function useLocalNotes() {
     }
   }, []);
 
-  const getNodeById = useCallback((existingId: string) => {
-      const currentNotes = [...notes];
-      const index = currentNotes.findIndex(note => note.id === existingId);
-      return currentNotes[index];
-  }, [notes])
+  // 更新笔记的同步状态，不影响其他字段
+  const updateNoteSyncStatus = useCallback((noteId: string, syncStatus: 'synced' | 'local_only' | 'cloud_only' | 'conflict') => {
+    setNotes(prevNotes => {
+      const updatedNotes = prevNotes.map(note =>
+        note.id === noteId
+          ? { ...note, syncStatus }
+          : note
+      ).sort((a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      // 同步保存到 localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedNotes));
+      }
+
+      return updatedNotes;
+    });
+  }, []);
+
+  // 批量更新笔记的同步状态
+  const batchUpdateSyncStatus = useCallback((updates: Array<{noteId: string, syncStatus: 'synced' | 'local_only' | 'cloud_only' | 'conflict'}>) => {
+    setNotes(prevNotes => {
+      const updateMap = new Map(updates.map(u => [u.noteId, u.syncStatus]));
+
+      const updatedNotes = prevNotes.map(note =>
+        updateMap.has(note.id)
+          ? { ...note, syncStatus: updateMap.get(note.id)! }
+          : note
+      ).sort((a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      // 同步保存到 localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedNotes));
+      }
+
+      return updatedNotes;
+    });
+  }, []);
 
   // 添加或更新笔记
   const saveNote = useCallback((noteData: Omit<LocalNote, 'id' | 'createdAt' | 'updatedAt'>, existingId?: string) => {
@@ -148,6 +184,28 @@ export function useLocalNotes() {
     );
   }, [notes]);
 
+  // 手动触发重新排序
+  const sortNotes = useCallback(() => {
+    setNotes(prevNotes => {
+      const sortedNotes = [...prevNotes].sort((a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      // 同步保存到 localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(sortedNotes));
+      }
+
+      return sortedNotes;
+    });
+  }, []);
+
+  const getNodeById = useCallback((existingId: string) => {
+      const currentNotes = [...notes];
+      const index = currentNotes.findIndex(note => note.id === existingId);
+      return currentNotes[index];
+  }, [notes])
+
   // 组件挂载时加载笔记
   useEffect(() => {
     loadNotes();
@@ -159,6 +217,9 @@ export function useLocalNotes() {
     deleteNote,
     searchNotes,
     loadNotes,
-    getNodeById
+    getNodeById,
+    updateNoteSyncStatus,
+    batchUpdateSyncStatus,
+    sortNotes
   };
 }

@@ -330,21 +330,29 @@ export default function NoteList({
                 
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-center">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-sm truncate text-sidebar-foreground flex items-center gap-2">
-                        {note.title || t('untitledNote')}
-                        
-                        {/* 同步状态图标 */}
+                    <div className="flex-1 min-w-0 pr-2">
+                      <div className="flex items-center gap-2">
+                        {/* 同步状态图标 - 移到标题前面，确保始终可见 */}
                         {note.syncStatus === 'synced' && (
-                          <div className="h-2 w-2 bg-green-500 rounded-full flex-shrink-0" title="已同步到云端" />
+                          <div className="h-2.5 w-2.5 bg-green-500 rounded-full flex-shrink-0" title="已同步到云端" />
                         )}
                         {note.syncStatus === 'local_only' && (
-                          <div className="h-2 w-2 bg-yellow-500 rounded-full flex-shrink-0" title="仅在本地" />
+                          <div className="h-2.5 w-2.5 bg-blue-500 rounded-full flex-shrink-0" title="仅在本地" />
+                        )}
+                        {note.syncStatus === 'cloud_only' && (
+                          <div className="h-2.5 w-2.5 bg-purple-500 rounded-full flex-shrink-0" title="仅在云端" />
                         )}
                         {note.syncStatus === 'conflict' && (
-                          <div className="h-2 w-2 bg-red-500 rounded-full flex-shrink-0" title="存在同步冲突" />
+                          <div className="h-2.5 w-2.5 bg-red-500 rounded-full flex-shrink-0" title="存在同步冲突" />
                         )}
-                      </h3>
+                        {(!note.syncStatus || note.syncStatus === undefined) && (
+                          <div className="h-2.5 w-2.5 bg-gray-400 rounded-full flex-shrink-0" title="状态未知" />
+                        )}
+
+                        <h3 className="font-medium text-sm truncate text-sidebar-foreground">
+                          {note.title || t('untitledNote')}
+                        </h3>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0 ml-2">
                       <span className="text-xs text-sidebar-foreground/60">
