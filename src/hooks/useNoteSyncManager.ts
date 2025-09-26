@@ -53,44 +53,44 @@ export function useNoteSyncManager(
   }, []);
   const { toast } = useToast();
 
-    // 无冲突合并
-    const mergeNotesWithoutConflicts = useCallback(async (cloudNotes: LocalNote[]) => {
-      const localNotesByCloudId = new Map(
-        notes.filter(n => n.cloudNoteId).map(n => [n.cloudNoteId!, n])
-      );
-      
-        // 添加云端独有的笔记
-        for (const cloudNote of cloudNotes) {
-          if (!localNotesByCloudId.has(cloudNote.cloudNoteId!)) {
-            console.log('添加云端独有笔记:', cloudNote.title);
-            saveNote({
-              title: cloudNote.title,
-              content: cloudNote.content,
-              mode: cloudNote.mode,
-              customSlug: cloudNote.customSlug || '',
-              isPublic: cloudNote.isPublic || false,
-              shareToken: cloudNote.shareToken,
-              cloudNoteId: cloudNote.cloudNoteId,
-              userId: cloudNote.userId,
-              cloudUpdatedAt: cloudNote.cloudUpdatedAt,
-              syncStatus: 'synced' as const,
-              lastSyncAt: cloudNote.lastSyncAt,
-              contentHash: cloudNote.contentHash
-            });
-          }
-        }
-  
-      // 上传本地独有的笔记
-      for (const localNote of notes) {
-        if (!localNote.cloudNoteId && localNote.syncStatus !== 'synced') {
-          console.log('上传本地独有笔记:', localNote.title);
-          const uploadedNote = await uploadToCloud(localNote);
-          if (uploadedNote) {
-            saveNote(uploadedNote, localNote.id);
-          }
+  // 无冲突合并
+  const mergeNotesWithoutConflicts = useCallback(async (cloudNotes: LocalNote[]) => {
+    const localNotesByCloudId = new Map(
+      notes.filter(n => n.cloudNoteId).map(n => [n.cloudNoteId!, n])
+    );
+    
+      // 添加云端独有的笔记
+      for (const cloudNote of cloudNotes) {
+        if (!localNotesByCloudId.has(cloudNote.cloudNoteId!)) {
+          console.log('添加云端独有笔记:', cloudNote.title);
+          saveNote({
+            title: cloudNote.title,
+            content: cloudNote.content,
+            mode: cloudNote.mode,
+            customSlug: cloudNote.customSlug || '',
+            isPublic: cloudNote.isPublic || false,
+            shareToken: cloudNote.shareToken,
+            cloudNoteId: cloudNote.cloudNoteId,
+            userId: cloudNote.userId,
+            cloudUpdatedAt: cloudNote.cloudUpdatedAt,
+            syncStatus: 'synced' as const,
+            lastSyncAt: cloudNote.lastSyncAt,
+            contentHash: cloudNote.contentHash
+          });
         }
       }
-    }, [notes, saveNote, uploadToCloud]);
+
+    // 上传本地独有的笔记
+    for (const localNote of notes) {
+      if (!localNote.cloudNoteId && localNote.syncStatus !== 'synced') {
+        console.log('上传本地独有笔记:', localNote.title);
+        const uploadedNote = await uploadToCloud(localNote);
+        if (uploadedNote) {
+          saveNote(uploadedNote, localNote.id);
+        }
+      }
+    }
+  }, [notes, saveNote, uploadToCloud]);
   
 
   // 执行完整同步（仅在首次登录或手动触发时使用）

@@ -69,6 +69,7 @@ export default function HomePage() {
   // 同步相关状态
   const [showConflictDialog, setShowConflictDialog] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
+  const [isFullSyncing, setIsFullSyncing] = useState(false);
 
 
   // 处理打开本地文件
@@ -165,7 +166,7 @@ export default function HomePage() {
   // 定时检测内容变化并自动保存（本地 + 云端）
   useEffect(() => {
     // 只有在有选中笔记且编辑器显示时才自动保存
-    if (!selectedNote || !showEditor || (!currentTitle && !currentContent)) return;
+    if (!selectedNote || !showEditor || (!currentTitle && !currentContent || isFullSyncing )) return;
     
     // 保存到本地
     const savedNote = saveNote({
@@ -187,6 +188,24 @@ export default function HomePage() {
       return () => clearTimeout(timeoutId);
     }
   }, [currentTitle, currentContent, selectedNote, showEditor, saveNote, t, user, isInitialSyncDone, syncNoteToCloud]);
+
+  // 登录后自动同步 - 只同步一次
+  useEffect(() => {
+    if (user && !authLoading && !isInitialSyncDone) {
+      console.log('用户已登录，开始首次同步...', {
+        userId: user.id,
+        username: user.username,
+        lastSyncTime,
+        isInitialSyncDone
+      });
+      // 延迟执行同步，避免与现有加载冲突
+      setTimeout(async () => {
+        setIsFullSyncing(true);
+        await performFullSync();
+      }, 1000);
+    }
+  }, [user, authLoading, isInitialSyncDone, lastSyncTime, performFullSync]);
+  
 
   // 应用模板的函数
   const handleApplyTemplate = useCallback(async (template: { nameKey?: string; name?: string; content: string }) => {
@@ -261,21 +280,6 @@ export default function HomePage() {
     }, 200); // 增加延迟时间确保组件完全加载
   }, [loadNotes, handleApplyTemplate, notes.length, t]);
 
-  // 登录后自动同步 - 只同步一次
-  useEffect(() => {
-    if (user && !authLoading && !isInitialSyncDone) {
-      console.log('用户已登录，开始首次同步...', {
-        userId: user.id,
-        username: user.username,
-        lastSyncTime,
-        isInitialSyncDone
-      });
-      // 延迟执行同步，避免与现有加载冲突
-      setTimeout(() => {
-        performFullSync();
-      }, 1000);
-    }
-  }, [user, authLoading, isInitialSyncDone, lastSyncTime, performFullSync]);
 
   // 监听网络状态
   useEffect(() => {
@@ -305,14 +309,6 @@ export default function HomePage() {
       window.removeEventListener('offline', handleOffline);
     };
   }, [user, isInitialSyncDone, autoSyncModifiedNotes]);
-
-  // 冲突检测
-  // useEffect(() => {
-  //   if (conflicts.length > 0) {
-  //     setShowConflictDialog(true);
-  //   }
-  // }, [conflicts]);
-
 
   const handleNoteSelect = (note: LocalNote) => {
     setSelectedNote(note);
