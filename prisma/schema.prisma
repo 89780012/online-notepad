@@ -8,34 +8,41 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  username  String   @unique
-  password  String
-  avatar    String?
-  name      String?
-  bio       String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  notes     Note[]
+  id                  String               @id @default(cuid())
+  email               String               @unique
+  username            String               @unique
+  password            String
+  avatar              String?
+  name                String?
+  bio                 String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  notes               Note[]
   passwordResetTokens PasswordResetToken[]
 
   @@map("users")
 }
 
 model Note {
-  id         String   @id @default(cuid())
-  title      String
-  content    String
-  language   String   @default("en")
-  isPublic   Boolean  @default(false)
-  shareToken String?  @unique
-  customSlug String?  @unique
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  userId     String?
-  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  language    String   @default("en")
+  isPublic    Boolean  @default(false)
+  shareToken  String?  @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String?
+  customSlug  String?  @unique
+  contentHash String   @default("")
+  localId     String?
+  noteMode    String   @default("markdown")
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
+  @@index([shareToken])
+  @@index([customSlug])
+  @@index([localId])
   @@map("notes")
 }
 
@@ -58,10 +65,10 @@ model PasswordResetToken {
   id        String   @id @default(cuid())
   token     String   @unique
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
   createdAt DateTime @default(now())
   used      Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("password_reset_tokens")
 }

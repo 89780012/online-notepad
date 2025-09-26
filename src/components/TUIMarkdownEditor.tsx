@@ -77,7 +77,6 @@ export default function TUIMarkdownEditor({
   onSaveAs,
   isFocusMode = false,
   onToggleFocusMode,
-  isAutoSaving = false,
   showSidebar = false,
   onToggleSidebar,
   previewStyle = 'vertical',
@@ -90,31 +89,13 @@ export default function TUIMarkdownEditor({
   // 状态管理
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [lastSaveTime, setLastSaveTime] = useState<Date | null>(null);
-  const [isLocalSaving, setIsLocalSaving] = useState(false);
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
 
   // 引用管理
   const editorRef = useRef<TUIEditorRef>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const savingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 监听外部 isAutoSaving 和内部 isLocalSaving 状态
-  useEffect(() => {
-    const currentSaving = isAutoSaving || isLocalSaving;
-
-    if (!currentSaving) {
-      // 保存完成时，直接更新最后保存时间
-      setLastSaveTime(new Date());
-    }
-  }, [isAutoSaving, isLocalSaving]);
-
-  // 清理定时器
-  useEffect(() => {
-    return () => {
-      if (savingTimeoutRef.current) {
-        clearTimeout(savingTimeoutRef.current);
-      }
-    };
-  }, []);
 
   // 🔥 核心修复：同步外部content变化到TUI Editor
   useEffect(() => {
@@ -132,7 +113,16 @@ export default function TUIMarkdownEditor({
     }
   }, [content]); // 监听content变化
 
-  // 🔥 核心功能：内容变化处理
+  // 清理定时器，避免内存泄漏
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
+  // 🔥 核心功能：内容变化处理（带防抖）
   const handleContentChange = useCallback(() => {
     const editorInstance = editorRef.current?.getInstance();
     if (!editorInstance) return;
@@ -140,22 +130,33 @@ export default function TUIMarkdownEditor({
     try {
       // 获取 Markdown 内容
       const newContent = (editorInstance as { getMarkdown: () => string }).getMarkdown();
-
-      // 调用父组件回调
-      onContentChange(newContent);
-
-      // 模拟短暂的自动保存状态（因为 localStorage 是同步的）
-      setIsLocalSaving(true);
-      if (savingTimeoutRef.current) {
-        clearTimeout(savingTimeoutRef.current);
+      
+      // 清除之前的定时器
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
       }
 
-      // 300ms 后清除保存状态，模拟保存过程
-      savingTimeoutRef.current = setTimeout(() => {
-        setIsLocalSaving(false);
-      }, 300);
+      // 设置正在自动保存状态
+      setIsAutoSaving(true);
+
+      // 设置新的防抖定时器，3秒后执行
+      debounceTimerRef.current = setTimeout(() => {
+        // 调用父组件回调
+        onContentChange(newContent);
+        
+        // 设置自动保存完成
+        setIsAutoSaving(false);
+        
+        // 更新最后保存时间
+        setLastSaveTime(new Date());
+        
+        // 清除定时器引用
+        debounceTimerRef.current = null;
+      }, 2000);
+
     } catch (error) {
       console.error('获取编辑器内容失败:', error);
+      setIsAutoSaving(false);
     }
   }, [onContentChange]);
 
@@ -309,7 +310,7 @@ export default function TUIMarkdownEditor({
             />
 
             {/* 状态提示 - 保存中或最后保存时间 */}
-            {(isAutoSaving || isLocalSaving) ? (
+            {(isAutoSaving ) ? (
               <div className="text-sm text-blue-600 dark:text-blue-400 flex items-center gap-1">
                 <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
                 {t('autoSaving')}

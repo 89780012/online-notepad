@@ -13,11 +13,14 @@ import MarketingContent from '@/components/MarketingContent';
 import SharePopup from '@/components/SharePopup';
 import SaveAsDialog from '@/components/SaveAsDialog';
 import { useLocalNotes, LocalNote } from '@/hooks/useLocalNotes';
+import { useNoteSyncManager } from '@/hooks/useNoteSyncManager';
 import { Button } from '@/components/ui/button';
 import { useTranslations, useLocale } from 'next-intl';
 import { NoteMode, NOTE_MODES } from '@/types';
 import { generateShareSlug } from '@/lib/id-utils';
 import { useToast } from '@/components/ui/use-toast';
+import { ConflictResolutionDialog } from '@/components/ConflictResolutionDialog';
+import { SyncStatusIndicator } from '@/components/SyncStatusIndicator';
 import Link from 'next/link';
 
 export default function HomePage() {
@@ -26,6 +29,25 @@ export default function HomePage() {
   const t = useTranslations();
   const locale = useLocale();
   const { toast } = useToast();
+
+  // 创建适配器函数来匹配类型
+  const saveNoteAdapter = useCallback((noteData: Omit<LocalNote, 'id' | 'createdAt' | 'updatedAt'>, existingId?: string) => {
+    return saveNote(noteData, existingId);
+  }, [saveNote]);
+
+  // 同步管理器
+  const {
+    syncInProgress,
+    conflicts,
+    lastSyncTime,
+    isInitialSyncDone,
+    performFullSync,
+    resolveConflict,
+    syncNoteToCloud,
+    deleteNoteFromCloud,
+    autoSyncModifiedNotes,
+    setConflicts
+  } = useNoteSyncManager(notes, saveNoteAdapter);
 
   const [selectedNote, setSelectedNote] = useState<LocalNote | null>(null);
   const [showEditor, setShowEditor] = useState(false);
@@ -43,6 +65,10 @@ export default function HomePage() {
 
   // 另存为相关状态
   const [showSaveAsDialog, setShowSaveAsDialog] = useState(false);
+
+  // 同步相关状态
+  const [showConflictDialog, setShowConflictDialog] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
 
 
   // 处理打开本地文件
@@ -136,19 +162,31 @@ export default function HomePage() {
       return generateShareSlug();
   }, []);
 
-  // 定时检测内容变化并自动保存
+  // 定时检测内容变化并自动保存（本地 + 云端）
   useEffect(() => {
     // 只有在有选中笔记且编辑器显示时才自动保存
     if (!selectedNote || !showEditor || (!currentTitle && !currentContent)) return;
     
-    saveNote({
+    // 保存到本地
+    const savedNote = saveNote({
       title: currentTitle || t('untitled'),
       content: currentContent,
       mode: NOTE_MODES.MARKDOWN,
       customSlug: selectedNote?.customSlug || '',
       isPublic: selectedNote?.isPublic || false
     }, selectedNote?.id);
-  }, [currentTitle, currentContent, selectedNote, showEditor, saveNote, t]);
+
+    // 如果用户已登录且完成初始同步，则自动同步到云端
+    if (user && isInitialSyncDone && savedNote) {
+      // 使用防抖，避免频繁同步
+      const timeoutId = setTimeout(() => {
+        console.log('自动同步笔记到云端:', savedNote.title);
+        syncNoteToCloud(savedNote);
+      }, 2000); // 2秒后同步
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [currentTitle, currentContent, selectedNote, showEditor, saveNote, t, user, isInitialSyncDone, syncNoteToCloud]);
 
   // 应用模板的函数
   const handleApplyTemplate = useCallback(async (template: { nameKey?: string; name?: string; content: string }) => {
@@ -198,6 +236,7 @@ export default function HomePage() {
   useEffect(() => {
     loadNotes();
     setCurrentMode(NOTE_MODES.MARKDOWN);
+    
     // 延迟检查模板，确保组件完全初始化
     setTimeout(() => {
       // 检查是否有待应用的模板
@@ -211,9 +250,68 @@ export default function HomePage() {
         } catch (error) {
           console.error('应用模板失败:', error);
         }
+      } else {
+        // 如果没有笔记，显示默认欢迎内容
+        if (notes.length === 0) {
+          setCurrentTitle(t('defaultNote.title'));
+          setCurrentContent(t('defaultNote.content'));
+          setShowEditor(true);
+        }
       }
     }, 200); // 增加延迟时间确保组件完全加载
-  }, [loadNotes, handleApplyTemplate]);
+  }, [loadNotes, handleApplyTemplate, notes.length, t]);
+
+  // 登录后自动同步 - 只同步一次
+  useEffect(() => {
+    if (user && !authLoading && !isInitialSyncDone) {
+      console.log('用户已登录，开始首次同步...', {
+        userId: user.id,
+        username: user.username,
+        lastSyncTime,
+        isInitialSyncDone
+      });
+      // 延迟执行同步，避免与现有加载冲突
+      setTimeout(() => {
+        performFullSync();
+      }, 1000);
+    }
+  }, [user, authLoading, isInitialSyncDone, lastSyncTime, performFullSync]);
+
+  // 监听网络状态
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      if (user && isInitialSyncDone) {
+        // 网络恢复后只同步修改的笔记，不做完整同步
+        setTimeout(() => {
+          console.log('网络恢复，开始增量同步...');
+          autoSyncModifiedNotes();
+        }, 1000);
+      }
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    // 初始化网络状态
+    setIsOnline(navigator.onLine);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [user, isInitialSyncDone, autoSyncModifiedNotes]);
+
+  // 冲突检测
+  // useEffect(() => {
+  //   if (conflicts.length > 0) {
+  //     setShowConflictDialog(true);
+  //   }
+  // }, [conflicts]);
 
 
   const handleNoteSelect = (note: LocalNote) => {
@@ -229,8 +327,8 @@ export default function HomePage() {
     setSelectedNote(null);
     setShowEditor(true);
     setShowSidebar(true);
-    const newTitle = t('newNoteTitle');
-    const newContent = ''; // 简单的空内容，用户可以选择模板
+    const newTitle = "New Note";
+    const newContent = ""; // 使用默认模板内容
     setCurrentTitle(newTitle);
     setCurrentContent(newContent);
 
@@ -432,7 +530,17 @@ export default function HomePage() {
     }
   }, [isFocusMode]);
 
-  const handleNoteDelete = (noteId: string) => {
+  const handleNoteDelete = async (noteId: string) => {
+    // 如果用户已登录，先从云端删除
+    const noteToDelete = notes.find(n => n.id === noteId);
+    if (user && isInitialSyncDone && noteToDelete?.cloudNoteId) {
+      console.log('删除云端笔记:', noteToDelete.title);
+      await deleteNoteFromCloud(noteToDelete);
+    }
+
+    // 删除本地笔记
+    deleteNote(noteId);
+
     // The hook handles the deletion. We just need to update the UI if the deleted note was being edited.
     if (selectedNote?.id === noteId) {
       setSelectedNote(null);
@@ -459,7 +567,16 @@ export default function HomePage() {
     }
   };
 
-  const handleMultipleNotesDelete = (noteIds: string[]) => {
+  const handleMultipleNotesDelete = async (noteIds: string[]) => {
+    // 如果用户已登录，批量删除云端笔记
+    if (user && isInitialSyncDone) {
+      const notesToDelete = notes.filter(n => noteIds.includes(n.id) && n.cloudNoteId);
+      console.log('批量删除云端笔记:', notesToDelete.length, '个');
+      
+      // 并行删除云端笔记
+      await Promise.all(notesToDelete.map(note => deleteNoteFromCloud(note)));
+    }
+
     // 检查是否有正在编辑的笔记被删除
     const currentNoteDeleted = selectedNote && noteIds.includes(selectedNote.id);
     
@@ -558,6 +675,29 @@ export default function HomePage() {
           onSave={handleDownload}
           defaultFilename={currentTitle || t('untitled')}
         />
+
+        {/* 同步状态指示器 - 专注模式也需要 */}
+        {user && (
+          <SyncStatusIndicator
+            isOnline={isOnline}
+            syncInProgress={syncInProgress}
+            lastSyncTime={lastSyncTime}
+            conflictCount={conflicts.length}
+            onSync={performFullSync}
+            onShowConflicts={() => setShowConflictDialog(true)}
+          />
+        )}
+
+        {/* 冲突解决对话框 - 专注模式也需要 */}
+        <ConflictResolutionDialog
+          conflicts={conflicts}
+          onResolve={resolveConflict}
+          onClose={() => {
+            setShowConflictDialog(false);
+            setConflicts([]);
+          }}
+          isOpen={showConflictDialog}
+        />
       </>
     );
   }
@@ -637,6 +777,21 @@ export default function HomePage() {
           </Link>
         </div>
         <div className="flex items-center gap-2">
+          {/* 存储状态指示器 */}
+          <div className="hidden md:flex items-center gap-1 px-2 py-1 rounded-md bg-muted/50 text-xs text-muted-foreground">
+            {user ? (
+              <>
+                <span className="text-green-600">☁️</span>
+                <span>{t('welcome.storageInfo.withAccount').replace('☁️ ', '')}</span>
+              </>
+            ) : (
+              <>
+                <span className="text-blue-600">📱</span>
+                <span>{t('welcome.storageInfo.localOnly').replace('📱 ', '')}</span>
+              </>
+            )}
+          </div>
+          
           <ThemeToggle />
           <LanguageToggle />
           
@@ -721,6 +876,29 @@ export default function HomePage() {
         onClose={() => setShowSaveAsDialog(false)}
         onSave={handleDownload}
         defaultFilename={currentTitle || t('untitled')}
+      />
+
+      {/* 同步状态指示器 */}
+      {user && (
+        <SyncStatusIndicator
+          isOnline={isOnline}
+          syncInProgress={syncInProgress}
+          lastSyncTime={lastSyncTime}
+          conflictCount={conflicts.length}
+          onSync={performFullSync}
+          onShowConflicts={() => setShowConflictDialog(true)}
+        />
+      )}
+
+      {/* 冲突解决对话框 */}
+      <ConflictResolutionDialog
+        conflicts={conflicts}
+        onResolve={resolveConflict}
+        onClose={() => {
+          setShowConflictDialog(false);
+          setConflicts([]);
+        }}
+        isOpen={showConflictDialog}
       />
     </div>
   );

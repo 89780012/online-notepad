@@ -331,8 +331,19 @@ export default function NoteList({
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-center">
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-sm truncate text-sidebar-foreground">
+                      <h3 className="font-medium text-sm truncate text-sidebar-foreground flex items-center gap-2">
                         {note.title || t('untitledNote')}
+                        
+                        {/* 同步状态图标 */}
+                        {note.syncStatus === 'synced' && (
+                          <div className="h-2 w-2 bg-green-500 rounded-full flex-shrink-0" title="已同步到云端" />
+                        )}
+                        {note.syncStatus === 'local_only' && (
+                          <div className="h-2 w-2 bg-yellow-500 rounded-full flex-shrink-0" title="仅在本地" />
+                        )}
+                        {note.syncStatus === 'conflict' && (
+                          <div className="h-2 w-2 bg-red-500 rounded-full flex-shrink-0" title="存在同步冲突" />
+                        )}
                       </h3>
                     </div>
                     <div className="flex items-center gap-2 shrink-0 ml-2">

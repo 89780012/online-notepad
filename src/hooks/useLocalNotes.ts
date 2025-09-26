@@ -16,6 +16,13 @@ export interface LocalNote {
   isPublic?: boolean;
   shareToken?: string;
   cloudNoteId?: string;
+  
+  // 新增同步相关字段
+  userId?: string;           // 所属用户ID
+  cloudUpdatedAt?: string;   // 云端最后更新时间
+  syncStatus?: 'synced' | 'local_only' | 'cloud_only' | 'conflict'; // 同步状态
+  lastSyncAt?: string;       // 最后同步时间
+  contentHash?: string;      // 内容哈希，用于快速比较
 }
 
 const STORAGE_KEY = 'notepad_local_notes';

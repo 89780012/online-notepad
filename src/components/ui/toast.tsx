@@ -33,7 +33,7 @@ const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
       <div
         ref={ref}
         className={cn(
-          "fixed top-4 right-4 z-50 flex w-full max-w-sm items-center justify-between rounded-lg border p-4 shadow-lg transition-all",
+          "fixed bottom-4 right-4 z-50 flex w-full max-w-sm items-center justify-between rounded-lg border p-4 shadow-lg transition-all",
           "animate-in slide-in-from-top-2 fade-in-0",
           {
             "border-border bg-background text-foreground": variant === "default",
