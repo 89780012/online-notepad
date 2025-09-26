@@ -201,7 +201,11 @@ export default function HomePage() {
       // 延迟执行同步，避免与现有加载冲突
       setTimeout(async () => {
         setIsFullSyncing(true);
-        await performFullSync();
+        try {
+          await performFullSync();
+        } finally {
+          setIsFullSyncing(false);
+        }
       }, 1000);
     }
   }, [user, authLoading, isInitialSyncDone, lastSyncTime, performFullSync]);
