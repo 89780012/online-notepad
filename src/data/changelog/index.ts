@@ -13,12 +13,36 @@ import {
   Code,
   Users,
   BookOpen,
-  LogOut
+  LogOut,
+  UserPlus,
+  Cloud
 } from 'lucide-react';
 import { ChangelogData } from './types';
 
 export const changelogData: ChangelogData = {
   entries: [
+    {
+      version: 'v0.5.0',
+      date: '2025-09-24',
+      titleKey: 'changelog.v050.title',
+      descriptionKey: 'changelog.v050.description',
+      features: [
+        {
+          type: 'feat',
+          icon: UserPlus,
+          titleKey: 'changelog.v050.userAuth.title',
+          descriptionKey: 'changelog.v050.userAuth.description',
+          commits: ['a1b2c3d']
+        },
+        {
+          type: 'feat',
+          icon: Cloud,
+          titleKey: 'changelog.v050.cloudSync.title',
+          descriptionKey: 'changelog.v050.cloudSync.description',
+          commits: ['e4f5g6h']
+        }
+      ]
+    },
     {
       version: 'v0.4.0',
       date: '2025-09-23',

@@ -528,6 +528,18 @@
       "bugfix": "Bugfix",
       "refactor": "Refactor"
     },
+    "v050": {
+      "title": "User Authentication & Cloud Storage",
+      "description": "Launch complete user authentication system and cloud storage functionality, enabling secure data synchronization across devices.",
+      "userAuth": {
+        "title": "User Authentication System",
+        "description": "Complete login and registration system with password reset functionality, enabling secure user account management and data protection."
+      },
+      "cloudSync": {
+        "title": "Cloud Storage & Sync",
+        "description": "Real-time cloud synchronization feature allowing users to access their notes across multiple devices with automatic conflict resolution."
+      }
+    },
     "v040": {
       "title": "Blog System & Focus Mode Enhancement",
       "description": "Launch complete blog system, enhance focus mode interaction experience, and provide more convenient one-click operations.",
