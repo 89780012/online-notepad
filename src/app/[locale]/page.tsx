@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Menu, X, Plus, BookOpen, History, FileText, Zap, LogOut } from 'lucide-react';
 import TUIMarkdownEditor from '@/components/TUIMarkdownEditor';
 import NoteList from '@/components/NoteList';
@@ -70,6 +70,9 @@ export default function HomePage() {
   const [showConflictDialog, setShowConflictDialog] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
   const [isFullSyncing, setIsFullSyncing] = useState(false);
+
+  // 定时器引用
+  const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
 
   // 处理打开本地文件
@@ -167,6 +170,11 @@ export default function HomePage() {
   useEffect(() => {
     // 只有在有选中笔记且编辑器显示时才自动保存
     if (!selectedNote || !showEditor || (!currentTitle && !currentContent || isFullSyncing )) return;
+
+    // 清理之前的定时器
+    if(saveTimerRef.current){
+      clearTimeout(saveTimerRef.current);
+    }
     
     // 保存到本地
     const savedNote = saveNote({
@@ -180,12 +188,22 @@ export default function HomePage() {
     // 如果用户已登录且完成初始同步，则自动同步到云端
     if (user && isInitialSyncDone && savedNote) {
       // 使用防抖，避免频繁同步
-      const timeoutId = setTimeout(() => {
+      saveTimerRef.current = setTimeout(() => {
         console.log('自动同步笔记到云端:', savedNote.title);
-        syncNoteToCloud(savedNote);
-      }, 2000); // 2秒后同步
-
-      return () => clearTimeout(timeoutId);
+        try {
+          syncNoteToCloud(savedNote);
+        } catch (error) {
+          console.error('同步失败:', error);
+        }
+        saveTimerRef.current = null;
+      }, 300);
+      // 清理函数
+      return () => {
+        if(saveTimerRef.current){
+          clearTimeout(saveTimerRef.current);
+          saveTimerRef.current = null;
+        }
+      };
     }
   }, [currentTitle, isFullSyncing, currentContent, selectedNote, showEditor, saveNote, t, user, isInitialSyncDone, syncNoteToCloud]);
 
@@ -290,7 +308,7 @@ export default function HomePage() {
       } else {
         // 如果没有笔记，显示默认欢迎内容
         if (notes.length === 0) {
-          setCurrentTitle(t('defaultNote.title'));
+          setCurrentTitle("");
           setCurrentContent(t('defaultNote.content'));
           setShowEditor(true);
         }

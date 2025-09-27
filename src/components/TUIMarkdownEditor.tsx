@@ -124,6 +124,11 @@ export default function TUIMarkdownEditor({
 
   // 🔥 核心功能：内容变化处理（带防抖）
   const handleContentChange = useCallback(() => {
+
+    if(!title){
+      return; //没有标题不保存
+    }
+
     const editorInstance = editorRef.current?.getInstance();
     if (!editorInstance) return;
 
@@ -152,13 +157,13 @@ export default function TUIMarkdownEditor({
         
         // 清除定时器引用
         debounceTimerRef.current = null;
-      }, 2000);
+      }, 1000);
 
     } catch (error) {
       console.error('获取编辑器内容失败:', error);
       setIsAutoSaving(false);
     }
-  }, [onContentChange]);
+  }, [onContentChange,title]);
 
   // 全屏切换处理 (保持与原组件一致)
   const handleFullScreenToggle = () => {

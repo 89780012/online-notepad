@@ -51,6 +51,8 @@ export function useCloudSync() {
   const uploadToCloud = useCallback(async (note: LocalNote): Promise<LocalNote | null> => {
     if (!user) return null;
 
+    if( !note.title || !note.content) return null;
+
     try {
       const contentHash = calculateHash(note);
       
