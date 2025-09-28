@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowLeft, Calendar, Clock, Tag, Home } from 'lucide-react';
 import BlogContent from '@/components/BlogContent';
 import { BlogPostJSONLD } from '@/components/SEOComponents';
+import FloatingHomeButton from '@/components/FloatingHomeButton';
 import { generateBlogSEO } from '@/lib/seo';
 import type { BlogDetailResponse } from '@/types/blog';
 
@@ -255,6 +256,9 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
         keywords={blog.keywords?.split(',').map(k => k.trim())}
         author="Online Notepad Team"
       />
+
+      {/* 浮动返回主页按钮 */}
+      <FloatingHomeButton />
     </div>
   );
 }
