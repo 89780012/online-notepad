@@ -109,7 +109,8 @@ export function useLocalNotes() {
       } else {
         // 如果找不到现有笔记，创建新笔记
         resultNote = {
-          id: generateNoteId(),
+          //id: generateNoteId(),
+          id: existingId,   //传递过来的表示一定是存在的
           ...noteData,
           mode: noteData.mode || NOTE_MODES.MARKDOWN,
           createdAt: now,

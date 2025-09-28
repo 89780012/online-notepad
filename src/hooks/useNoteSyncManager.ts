@@ -53,53 +53,63 @@ export function useNoteSyncManager(
   }, []);
   const { toast } = useToast();
 
-  // 无冲突合并
+  // 无冲突合并 - 使用 LocalNote 的 id 作为唯一标识
   const mergeNotesWithoutConflicts = useCallback(async (cloudNotes: LocalNote[]) => {
-    const localNotesByCloudId = new Map(
-      notes.filter(n => n.cloudNoteId).map(n => [n.cloudNoteId!, n])
-    );
+    // 使用笔记的 id 作为唯一标识创建映射
+    const localNotesById = new Map(notes.map(n => [n.id, n]));
 
     // 创建云端笔记ID集合，用于快速查找
-    const cloudNoteIds = new Set(cloudNotes.map(n => n.cloudNoteId));
+    const cloudNoteIds = new Set(cloudNotes.map(n => n.id));
 
-      // 添加云端独有的笔记
-      for (const cloudNote of cloudNotes) {
-        if (!localNotesByCloudId.has(cloudNote.cloudNoteId!)) {
-          console.log('添加云端独有笔记:', cloudNote.title);
+    // 添加云端独有的笔记（本地没有相同 id 的笔记）
+    for (const cloudNote of cloudNotes) {
+      if (!localNotesById.has(cloudNote.id)) {
+        console.log('添加云端独有笔记:', cloudNote.title, 'id:', cloudNote.id);
+        saveNote({
+          title: cloudNote.title,
+          content: cloudNote.content,
+          mode: cloudNote.mode,
+          customSlug: cloudNote.customSlug || '',
+          isPublic: cloudNote.isPublic || false,
+          shareToken: cloudNote.shareToken,
+          cloudNoteId: cloudNote.cloudNoteId,
+          userId: cloudNote.userId,
+          cloudUpdatedAt: cloudNote.cloudUpdatedAt,
+          syncStatus: 'synced' as const,
+          lastSyncAt: cloudNote.lastSyncAt,
+          contentHash: cloudNote.contentHash
+        }, cloudNote.id); // 使用云端笔记的 id 作为 existingId
+      } else {
+        // 云端和本地都有相同 id 的笔记，更新为已同步状态
+        const localNote = localNotesById.get(cloudNote.id);
+        if (localNote && localNote.syncStatus !== 'synced') {
+          console.log('更新已存在笔记为同步状态:', localNote.title, 'id:', localNote.id);
           saveNote({
+            ...localNote,
+            // 保留云端的最新数据
             title: cloudNote.title,
             content: cloudNote.content,
             mode: cloudNote.mode,
-            customSlug: cloudNote.customSlug || '',
-            isPublic: cloudNote.isPublic || false,
-            shareToken: cloudNote.shareToken,
+            customSlug: cloudNote.customSlug || localNote.customSlug,
+            isPublic: cloudNote.isPublic || localNote.isPublic,
+            shareToken: cloudNote.shareToken || localNote.shareToken,
             cloudNoteId: cloudNote.cloudNoteId,
             userId: cloudNote.userId,
             cloudUpdatedAt: cloudNote.cloudUpdatedAt,
             syncStatus: 'synced' as const,
-            lastSyncAt: cloudNote.lastSyncAt,
-            contentHash: cloudNote.contentHash
-          });
-        } else {
-          // 云端和本地都有的笔记，更新为已同步状态
-          const localNote = localNotesByCloudId.get(cloudNote.cloudNoteId!);
-          if (localNote && localNote.syncStatus !== 'synced') {
-            console.log('更新已存在笔记为同步状态:', localNote.title);
-            saveNote({
-              ...localNote,
-              syncStatus: 'synced' as const,
-              lastSyncAt: new Date().toISOString(),
-              contentHash: calculateHash(localNote)
-            }, localNote.id);
-          }
+            lastSyncAt: new Date().toISOString(),
+            contentHash: calculateHash(cloudNote)
+          }, localNote.id);
         }
       }
+    }
 
-    // 处理本地独有的笔记
+    // 处理本地独有的笔记（云端没有相同 id 的笔记）
     for (const localNote of notes) {
-      if (!localNote.cloudNoteId) {
-        // 没有cloudNoteId的是本地独有笔记，设置为local_only状态
-        console.log('标记本地独有笔记:', localNote.title);
+      if (!cloudNoteIds.has(localNote.id)) {
+        console.log('发现本地独有笔记，准备上传:', localNote.title, 'id:', localNote.id);
+        
+        // 标记为本地独有状态
         saveNote({
           ...localNote,
           syncStatus: 'local_only' as const,
@@ -112,15 +122,6 @@ export function useNoteSyncManager(
         if (uploadedNote) {
           saveNote(uploadedNote, localNote.id);
         }
-      } else if (!cloudNoteIds.has(localNote.cloudNoteId)) {
-        // 有cloudNoteId但云端没有的笔记，可能是云端被删除了
-        console.log('云端已删除的笔记，标记为local_only:', localNote.title);
-        saveNote({
-          ...localNote,
-          syncStatus: 'local_only' as const,
-          cloudNoteId: undefined, // 清除云端ID
-          contentHash: calculateHash(localNote)
-        }, localNote.id);
       }
     }
   }, [notes, saveNote, uploadToCloud, calculateHash]);
