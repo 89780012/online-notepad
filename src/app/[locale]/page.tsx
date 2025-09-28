@@ -383,19 +383,8 @@ export default function HomePage() {
 
   // 一键专注启动 - 快速进入协作模式
   const handleQuickFocusStart = async () => {
-    // 如果没有当前笔记，先创建一个新笔记
-    if (!selectedNote || !currentTitle) {
-      await handleNewNote();
-      // 等待状态更新完成
-      setTimeout(() => {
-        setIsFocusMode(true);
-        setShowSidebar(true); // 在专注模式下显示侧边栏以便协作
-      }, 100);
-    } else {
-      // 如果有当前笔记，直接进入专注模式
-      setIsFocusMode(true);
-      setShowSidebar(true); // 在专注模式下显示侧边栏以便协作
-    }
+     setIsFocusMode(true);
+     setShowSidebar(true); // 在专注模式下显示侧边栏以便协作
   };
 
   const handleShare = async () => {
