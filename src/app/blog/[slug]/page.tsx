@@ -5,6 +5,7 @@ import { ArrowLeft, Calendar, Clock, Tag, Home } from 'lucide-react';
 import BlogContent from '@/components/BlogContent';
 import { BlogPostJSONLD } from '@/components/SEOComponents';
 import FloatingHomeButton from '@/components/FloatingHomeButton';
+import RelatedArticles from '@/components/RelatedArticles';
 import { generateBlogSEO } from '@/lib/seo';
 import type { BlogDetailResponse } from '@/types/blog';
 
@@ -120,129 +121,128 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
         </div>
       </div>
 
-      {/* 英雄区域 */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-primary/[0.02] via-background to-secondary/[0.02]">
-        <div className="absolute inset-0 bg-grid-pattern opacity-[0.01]"></div>
-        <div className="relative container mx-auto px-4 py-16 sm:py-24">
-          <div className="max-w-4xl mx-auto">
+      {/* 精简的英雄区域 */}
+      <div className="relative bg-gradient-to-br from-primary/[0.02] via-background to-secondary/[0.02] border-b border-border/50">
+        <div className="container mx-auto px-4 py-8 sm:py-12">
+          <div className="max-w-8xl mx-auto">
             {/* 文章分类标签 */}
-            <div className="flex flex-wrap items-center gap-3 mb-8">
-              <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-primary/5 text-primary rounded-full text-sm font-semibold border border-primary/20 shadow-sm">
-                <Tag className="h-4 w-4" />
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-primary/10 to-primary/5 text-primary rounded-full text-sm font-semibold border border-primary/20">
+                <Tag className="h-3 w-3" />
                 Article
               </div>
               
               {blog.keywords && (
-                <div className="flex items-center gap-3">
-                  <div className="flex flex-wrap gap-2">
-                    {blog.keywords.split(',').map((keyword, index) => (
-                      <span
-                        key={index}
-                        className="px-4 py-2 bg-gradient-to-r from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-700 text-slate-800 dark:text-slate-100 rounded-lg text-sm font-bold border border-slate-200 dark:border-slate-600 shadow-sm hover:shadow-md hover:scale-105 transition-all duration-200 cursor-default"
-                      >
-                        #{keyword.trim()}
-                      </span>
-                    ))}
-                  </div>
+                <div className="flex flex-wrap gap-2">
+                  {blog.keywords.split(',').slice(0, 3).map((keyword, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-muted/50 text-muted-foreground rounded-md text-xs font-medium border border-border/30"
+                    >
+                      #{keyword.trim()}
+                    </span>
+                  ))}
+                  {blog.keywords.split(',').length > 3 && (
+                    <span className="px-3 py-1 text-muted-foreground text-xs">
+                      +{blog.keywords.split(',').length - 3} more
+                    </span>
+                  )}
                 </div>
               )}
               
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-full text-xs border border-green-200 dark:border-green-800">
-                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-sm shadow-green-500/50"></span>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-50 dark:bg-green-950/20 rounded-full text-xs border border-green-200 dark:border-green-800">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
                 <span className="font-medium text-green-700 dark:text-green-400">Published</span>
               </div>
             </div>
 
             {/* 文章标题 */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-8 leading-[1.1] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-4 leading-tight">
               {blog.title}
             </h1>
 
             {/* 文章描述 */}
-            <p className="text-xl sm:text-2xl text-muted-foreground mb-10 leading-relaxed max-w-3xl">
+            <p className="text-base sm:text-lg text-muted-foreground mb-6 leading-relaxed max-w-4xl">
               {blog.description}
             </p>
 
-            {/* 元信息卡片 */}
-            <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            {/* 元信息 */}
+            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
               {publishedDate && (
-                <div className="flex items-center gap-3 px-4 py-3 bg-card/50 backdrop-blur-sm rounded-xl border border-border/50">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Calendar className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <div className="text-xs text-muted-foreground font-medium">Published</div>
-                    <div className="text-sm font-semibold text-foreground">{publishedDate}</div>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  <span>{publishedDate}</span>
                 </div>
               )}
-
-              <div className="flex items-center gap-3 px-4 py-3 bg-card/50 backdrop-blur-sm rounded-xl border border-border/50">
-                <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
-                  <Clock className="h-5 w-5 text-secondary" />
-                </div>
-                <div>
-                  <div className="text-xs text-muted-foreground font-medium">Reading time</div>
-                  <div className="text-sm font-semibold text-foreground">{readingTime} minutes</div>
-                </div>
+              
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4" />
+                <span>{readingTime} min read</span>
               </div>
 
-              <div className="flex items-center gap-3 px-4 py-3 bg-card/50 backdrop-blur-sm rounded-xl border border-border/50">
-                <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
-                  <span className="text-lg">📚</span>
-                </div>
-                <div>
-                  <div className="text-xs text-muted-foreground font-medium">Sections</div>
-                  <div className="text-sm font-semibold text-foreground">{blog.content.length}</div>
-                </div>
+              <div className="flex items-center gap-2">
+                <span className="text-base">📚</span>
+                <span>{blog.content.length} sections</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 文章内容 */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
-          <article className="prose prose-lg dark:prose-invert max-w-none">
-            <BlogContent content={blog.content} />
-          </article>
+      {/* 主要内容区域 */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-8xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* 文章内容区域 */}
+            <div className="lg:col-span-3">
+              <article className="prose prose-lg dark:prose-invert max-w-none">
+                <BlogContent content={blog.content} />
+              </article>
 
-          {/* 文章结束装饰 */}
-          <div className="flex items-center justify-center my-16">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-primary rounded-full"></div>
-              <div className="w-8 h-px bg-gradient-to-r from-primary via-secondary to-primary"></div>
-              <div className="w-2 h-2 bg-secondary rounded-full"></div>
+              {/* 文章结束装饰 */}
+              <div className="flex items-center justify-center my-12">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-primary rounded-full"></div>
+                  <div className="w-8 h-px bg-gradient-to-r from-primary via-secondary to-primary"></div>
+                  <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                </div>
+              </div>
+
+              {/* 页脚导航 */}
+              <footer className="mt-12 pt-6 border-t border-border/50">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Link
+                      href="/"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-900/30 dark:hover:to-indigo-900/30 text-foreground font-medium rounded-lg transition-all duration-300 border border-blue-200/50 dark:border-blue-800/50 hover:border-blue-300 dark:hover:border-blue-700 group text-sm"
+                    >
+                      <Home className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                      <span>Back to Home</span>
+                    </Link>
+                    
+                    <Link
+                      href="/blog"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-secondary/10 hover:from-primary/20 hover:to-secondary/20 text-foreground font-medium rounded-lg transition-all duration-300 border border-transparent hover:border-primary/20 group text-sm"
+                    >
+                      <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+                      <span>All articles</span>
+                    </Link>
+                  </div>
+                  
+                  <div className="text-sm text-muted-foreground">
+                    Thank you for reading! 🙏
+                  </div>
+                </div>
+              </footer>
             </div>
+
+            {/* 相关文章侧边栏 */}
+            <aside className="lg:col-span-1">
+              <div className="lg:sticky lg:top-6">
+                <RelatedArticles currentSlug={slug} />
+              </div>
+            </aside>
           </div>
-
-          {/* 页脚导航 */}
-          <footer className="mt-16 pt-8 border-t border-border/50">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link
-                  href="/"
-                  className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-900/30 dark:hover:to-indigo-900/30 text-foreground font-medium rounded-xl transition-all duration-300 hover:shadow-lg border border-blue-200/50 dark:border-blue-800/50 hover:border-blue-300 dark:hover:border-blue-700 group"
-                >
-                  <Home className="h-5 w-5 group-hover:scale-110 transition-transform" />
-                  <span>Back to Home</span>
-                </Link>
-                
-                <Link
-                  href="/blog"
-                  className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-primary/10 to-secondary/10 hover:from-primary/20 hover:to-secondary/20 text-foreground font-medium rounded-xl transition-all duration-300 hover:shadow-lg border border-transparent hover:border-primary/20 group"
-                >
-                  <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
-                  <span>All articles</span>
-                </Link>
-              </div>
-              
-              <div className="text-sm text-muted-foreground">
-                Thank you for reading! 🙏
-              </div>
-            </div>
-          </footer>
         </div>
       </div>
 

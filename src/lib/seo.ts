@@ -50,7 +50,7 @@ export function generateSEOMetadata(config: SEOConfig): Metadata {
 
   // 处理标题
   const finalTitle = title
-    ? `${title} - ${SEO_CONFIG.siteName}`
+    ? `${title}`
     : SEO_CONFIG.defaultTitle;
 
   // 处理关键词
