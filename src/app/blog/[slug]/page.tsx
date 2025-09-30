@@ -124,7 +124,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
       {/* 精简的英雄区域 */}
       <div className="relative bg-gradient-to-br from-primary/[0.02] via-background to-secondary/[0.02] border-b border-border/50">
         <div className="container mx-auto px-4 py-8 sm:py-12">
-          <div className="max-w-8xl mx-auto">
+          <div className="max-w-7xl mx-auto">
             {/* 文章分类标签 */}
             <div className="flex flex-wrap items-center gap-3 mb-6">
               <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-primary/10 to-primary/5 text-primary rounded-full text-sm font-semibold border border-primary/20">
@@ -191,7 +191,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 
       {/* 主要内容区域 */}
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-8xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* 文章内容区域 */}
             <div className="lg:col-span-3">
