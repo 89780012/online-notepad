@@ -7,7 +7,7 @@
 
 import { useState, useCallback, useRef, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
-import { Maximize2, Minimize2, Save, Share2, FolderOpen, Download, ChevronDown, Menu, X } from 'lucide-react';
+import { Maximize2, Minimize2, Save, Share2, FolderOpen, Download, ChevronDown, Menu, X, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -214,6 +214,187 @@ export default function TUIMarkdownEditor({
     }
   };
 
+  // 打印功能 - 将 Markdown 内容转换为 HTML 并打印
+  const handlePrint = () => {
+    const editorInstance = editorRef.current?.getInstance();
+    if (!editorInstance) return;
+
+    try {
+      // 获取编辑器的 HTML 内容（TUI Editor 的预览内容）
+      const htmlContent = (editorInstance as { getHTML: () => string }).getHTML();
+      
+      // 创建打印窗口
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        alert(t('printBlocked') || 'Please allow pop-ups to enable printing');
+        return;
+      }
+
+      // 构建打印页面的 HTML
+      const printContent = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>${title || t('untitled')}</title>
+            <style>
+              * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+              }
+              
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                padding: 2cm;
+                max-width: 21cm;
+                margin: 0 auto;
+                background: white;
+              }
+              
+              h1 {
+                font-size: 2em;
+                margin-bottom: 0.5em;
+                padding-bottom: 0.3em;
+                border-bottom: 2px solid #eee;
+              }
+              
+              h2 {
+                font-size: 1.5em;
+                margin-top: 1em;
+                margin-bottom: 0.5em;
+                padding-bottom: 0.2em;
+                border-bottom: 1px solid #eee;
+              }
+              
+              h3 {
+                font-size: 1.25em;
+                margin-top: 0.8em;
+                margin-bottom: 0.4em;
+              }
+              
+              p {
+                margin-bottom: 1em;
+              }
+              
+              ul, ol {
+                margin-left: 2em;
+                margin-bottom: 1em;
+              }
+              
+              li {
+                margin-bottom: 0.3em;
+              }
+              
+              code {
+                background: #f5f5f5;
+                padding: 0.2em 0.4em;
+                border-radius: 3px;
+                font-family: 'Courier New', Courier, monospace;
+                font-size: 0.9em;
+              }
+              
+              pre {
+                background: #f5f5f5;
+                padding: 1em;
+                border-radius: 5px;
+                overflow-x: auto;
+                margin-bottom: 1em;
+              }
+              
+              pre code {
+                background: none;
+                padding: 0;
+              }
+              
+              blockquote {
+                border-left: 4px solid #ddd;
+                padding-left: 1em;
+                margin-left: 0;
+                margin-bottom: 1em;
+                color: #666;
+              }
+              
+              table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-bottom: 1em;
+              }
+              
+              th, td {
+                border: 1px solid #ddd;
+                padding: 0.5em;
+                text-align: left;
+              }
+              
+              th {
+                background: #f5f5f5;
+                font-weight: bold;
+              }
+              
+              img {
+                max-width: 100%;
+                height: auto;
+                margin-bottom: 1em;
+              }
+              
+              hr {
+                border: none;
+                border-top: 1px solid #ddd;
+                margin: 1.5em 0;
+              }
+              
+              a {
+                color: #0066cc;
+                text-decoration: none;
+              }
+              
+              a:hover {
+                text-decoration: underline;
+              }
+              
+              @media print {
+                body {
+                  padding: 0;
+                }
+                
+                @page {
+                  margin: 2cm;
+                }
+              }
+            </style>
+          </head>
+          <body>
+            <h1>${title || t('untitled')}</h1>
+            ${htmlContent}
+          </body>
+        </html>
+      `;
+
+      // 写入内容到新窗口
+      printWindow.document.open();
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+
+      // 等待内容加载完成后打印
+      printWindow.onload = () => {
+        printWindow.focus();
+        printWindow.print();
+        // 打印完成后关闭窗口
+        printWindow.onafterprint = () => {
+          printWindow.close();
+        };
+      };
+
+    } catch (error) {
+      console.error('打印失败:', error);
+      alert(t('printFailed') || 'Print failed. Please try again.');
+    }
+  };
+
   // 应用模板 - 修复：同时更新TUI Editor内容
   const handleApplyTemplate = (templateContent: string) => {
     const editorInstance = editorRef.current?.getInstance();
@@ -412,6 +593,17 @@ export default function TUIMarkdownEditor({
             >
               <Download className="w-4 h-4" />
               {t('saveAs')}
+            </Button>
+
+            <Button
+              onClick={handlePrint}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+              title={t('print')}
+            >
+              <Printer className="w-4 h-4" />
+              {t('print')}
             </Button>
 
             <Button
