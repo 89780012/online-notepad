@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Menu, X, Plus, BookOpen, History, FileText, Zap, LogOut } from 'lucide-react';
+import { Menu, X, Plus, BookOpen, History, FileText, Zap, LogOut, MoreHorizontal } from 'lucide-react';
 import TUIMarkdownEditor from '@/components/TUIMarkdownEditor';
 import NoteList from '@/components/NoteList';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -15,6 +15,7 @@ import SaveAsDialog from '@/components/SaveAsDialog';
 import { useLocalNotes, LocalNote } from '@/hooks/useLocalNotes';
 import { useNoteSyncManager } from '@/hooks/useNoteSyncManager';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useTranslations, useLocale } from 'next-intl';
 import { NoteMode, NOTE_MODES } from '@/types';
 import { generateShareSlug } from '@/lib/id-utils';
@@ -725,32 +726,14 @@ export default function HomePage() {
 
   return (
     <div className="h-screen flex flex-col paper-texture">
-      {/* 顶部导航 - 纸张风格 */}
-      <header className="flex justify-between items-center p-4 bg-card/80 backdrop-blur-sm border-b border-border shadow-sm">
+      {/* 顶部导航*/}
+      <header className="flex justify-between items-center p-2 bg-card/80 backdrop-blur-sm border-b border-border shadow-sm">
         <div className="flex items-center gap-3">
-          {/* 侧边栏切换按钮 - 所有屏幕尺寸下都显示 */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleSidebar}
-            className="text-muted-foreground hover:text-foreground hover:bg-accent/80"
-            title={showSidebar ? t('hideSidebar') : t('showSidebar')}
-          >
-            {showSidebar ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </Button>
-          <h1 className="text-2xl lg:text-3xl font-bold text-foreground font-serif">Mini Notepad</h1>
-          
-          {/* 新建笔记按钮 - 移动到标题右侧 */}
-          <Button
-            onClick={handleNewNote}
-            className="text-sm font-medium shadow-sm bg-primary hover:bg-primary/90"
-            size="sm"
-          >
-            <Plus className="h-4 w-4 mr-1" />
-            <span className="hidden sm:inline">{t('newNote')}</span>
-          </Button>
-          
-          {/* 一键专注启动按钮 */}
+         
+          <h1 className="text-sm whitespace-nowrap font-bold text-foreground font-serif">Mini Notepad</h1>
+     
+                 
+          {/* 快速专注 - 外显 */}
           <Button
             onClick={handleQuickFocusStart}
             className="text-sm font-medium shadow-sm bg-orange-500 hover:bg-orange-600 text-white"
@@ -760,42 +743,7 @@ export default function HomePage() {
             <Zap className="h-4 w-4 mr-1" />
             <span className="hidden sm:inline">{t('quickFocusStart')}</span>
           </Button>
-          
-          {/* 模板市场按钮 */}
-          <Link href={locale === 'en' ? '/templates' : `/${locale}/templates`}>
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-sm font-medium"
-            >
-              <BookOpen className="h-4 w-4 mr-1" />
-              <span className="hidden sm:inline">{t('browseTemplates')}</span>
-            </Button>
-          </Link>
 
-          {/* 博客按钮 */}
-          <Link href="/blog">
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-sm font-medium"
-            >
-              <FileText className="h-4 w-4 mr-1" />
-              <span className="hidden sm:inline">Blog</span>
-            </Button>
-          </Link>
-
-          {/* 更新日志按钮 */}
-          <Link href={locale === 'en' ? '/changelog' : `/${locale}/changelog`}>
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-sm font-medium"
-            >
-              <History className="h-4 w-4 mr-1" />
-              <span className="hidden sm:inline">{t('changelog.title')}</span>
-            </Button>
-          </Link>
         </div>
         <div className="flex items-center gap-2">
           {/* 存储状态指示器 */}
@@ -803,21 +751,23 @@ export default function HomePage() {
             {user ? (
               <>
                 <span className="text-green-600">☁️</span>
-                <span>{t('welcome.storageInfo.withAccount').replace('☁️ ', '')}</span>
+                {/* <span>{t('welcome.storageInfo.withAccount').replace('☁️ ', '')}</span> */}
               </>
             ) : (
               <>
                 <span className="text-blue-600">📱</span>
-                <span>{t('welcome.storageInfo.localOnly').replace('📱 ', '')}</span>
+                <span>local</span>
               </>
             )}
           </div>
           
           <ThemeToggle />
+   
+          {/* 语言切换 - 外显 */}
           <LanguageToggle />
-          
-          {/* 认证相关组件 */}
-          {!authLoading && (
+
+             {/* 认证相关组件 */}
+             {!authLoading && (
             <>
               {user ? (
                 <UserDropdown />
@@ -829,6 +779,38 @@ export default function HomePage() {
               )}
             </>
           )}
+
+          {/* 更多操作菜单 */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="text-sm font-medium">
+                <MoreHorizontal className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">more</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem asChild>
+                <Link href={locale === 'en' ? '/templates' : `/${locale}/templates`} className="flex items-center">
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  <span>{t('browseTemplates')}</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/blog" className="flex items-center">
+                  <FileText className="h-4 w-4 mr-2" />
+                  <span>Blog</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={locale === 'en' ? '/changelog' : `/${locale}/changelog`} className="flex items-center">
+                  <History className="h-4 w-4 mr-2" />
+                  <span>{t('changelog.title')}</span>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+       
         </div>
       </header>
 
