@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Menu, X, Plus, BookOpen, History, FileText, Zap, LogOut, MoreHorizontal } from 'lucide-react';
+import { BookOpen, History, FileText, Zap, LogOut, MoreHorizontal } from 'lucide-react';
 import TUIMarkdownEditor from '@/components/TUIMarkdownEditor';
 import NoteList from '@/components/NoteList';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -15,7 +15,7 @@ import SaveAsDialog from '@/components/SaveAsDialog';
 import { useLocalNotes, LocalNote } from '@/hooks/useLocalNotes';
 import { useNoteSyncManager } from '@/hooks/useNoteSyncManager';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useTranslations, useLocale } from 'next-intl';
 import { NoteMode, NOTE_MODES } from '@/types';
 import { generateShareSlug } from '@/lib/id-utils';
@@ -669,6 +669,7 @@ export default function HomePage() {
                 onContentChange={setCurrentContent}
                 onSave={handleSaveNote}
                 onShare={handleShare}
+                onNewNote={handleNewNote}
                 onOpenFile={handleOpenFile}
                 onSaveAs={handleSaveAs}
                 isFocusMode={true}
@@ -848,6 +849,7 @@ export default function HomePage() {
                   content={currentContent}
                   onTitleChange={setCurrentTitle}
                   onContentChange={setCurrentContent}
+                  onNewNote={handleNewNote}
                   onSave={handleSaveNote}
                   onShare={handleShare}
                   onOpenFile={handleOpenFile}

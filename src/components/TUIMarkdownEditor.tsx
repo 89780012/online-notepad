@@ -7,9 +7,8 @@
 
 import { useState, useCallback, useRef, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
-import { Maximize2, Minimize2, Save, Share2, FolderOpen, Download, ChevronDown, Menu, X, Printer } from 'lucide-react';
+import { Maximize2, Minimize2,Plus ,Save, Share2, FolderOpen, Download, Menu, X, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -75,6 +74,7 @@ export default function TUIMarkdownEditor({
   onShare,
   onOpenFile,
   onSaveAs,
+  onNewNote,
   isFocusMode = false,
   onToggleFocusMode,
   showSidebar = false,
@@ -464,175 +464,219 @@ export default function TUIMarkdownEditor({
   return (
     <div className={`flex flex-col h-full ${isFocusMode ? 'h-screen' : ''}`}>
       <div className={`editor-container flex flex-col h-full ${isFocusMode ? 'border-none shadow-none rounded-none' : ''}`}>
-        {/* Header 工具栏 - 保持与原组件完全一致 */}
-        <div className="flex items-center justify-between p-4 bg-card border-b border-border">
-          <div className="flex items-center gap-4 flex-1">
-            {/* 侧边栏切换按钮 */}
-            {onToggleSidebar && (
-              <Button
-                onClick={onToggleSidebar}
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground hover:text-foreground hover:bg-accent/80"
-                title={showSidebar ? t('hideSidebar') : t('showSidebar')}
-              >
-                {showSidebar ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-              </Button>
-            )}
+        {/* Header 工具栏 - 现代化菜单栏布局 */}
+        <div className="flex flex-col bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
+          {/* 第一行：优雅的菜单栏 */}
+          <div className="flex items-center justify-between h-10 px-4 border-b border-border/40">
+            <div className="flex items-center gap-0.5">
+              {/* 侧边栏切换 */}
+              {onToggleSidebar && (
+                <Button
+                  onClick={onToggleSidebar}
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors"
+                  title={showSidebar ? t('hideSidebar') : t('showSidebar')}
+                >
+                  {showSidebar ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+                </Button>
+              )}
 
-            {/* 装饰性指示器 */}
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-red-500 dark:bg-red-400 rounded-full"></div>
-              <div className="w-3 h-3 bg-yellow-500 dark:bg-yellow-400 rounded-full"></div>
-              <div className="w-3 h-3 bg-green-500 dark:bg-green-400 rounded-full"></div>
+              <div className="w-px h-4 bg-border/60 mx-1.5"></div>
+
+              {/* File 菜单 */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 px-3 text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-accent/50 transition-colors"
+                  >
+                    {t('file') || '文件'}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-52 shadow-lg">
+                  <DropdownMenuItem onClick={onNewNote} className="cursor-pointer gap-3 py-2.5">
+                    <Plus className="w-4 h-4 text-muted-foreground" />
+                    <span className="flex-1">{t('newNote')}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleOpenFile} className="cursor-pointer gap-3 py-2.5">
+                    <FolderOpen className="w-4 h-4 text-muted-foreground" />
+                    <span className="flex-1">{t('openFile')}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSave} className="cursor-pointer gap-3 py-2.5">
+                    <Save className="w-4 h-4 text-muted-foreground" />
+                    <span className="flex-1">{t('save')}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSaveAs} className="cursor-pointer gap-3 py-2.5">
+                    <Download className="w-4 h-4 text-muted-foreground" />
+                    <span>{t('saveAs')}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handlePrint} className="cursor-pointer gap-3 py-2.5">
+                    <Printer className="w-4 h-4 text-muted-foreground" />
+                    <span>{t('print')}</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Insert 菜单 */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 px-3 text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-accent/50 transition-colors"
+                  >
+                    {t('insert') || '插入'}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-72 max-h-[32rem] overflow-y-auto shadow-lg">
+                  <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    {t('selectTemplate')}
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {categories
+                    .filter(category => category.id !== 'all')
+                    .map((category) => {
+                      const categoryTemplates = templatesByCategory[category.id];
+                      if (!categoryTemplates || categoryTemplates.length === 0) return null;
+
+                      const Icon = category.icon;
+                      return (
+                        <div key={category.id}>
+                          <DropdownMenuLabel className="flex items-center gap-2 text-xs font-semibold text-muted-foreground mt-2 mb-1">
+                            <Icon className="w-3.5 h-3.5" />
+                            <span>{t(category.name)}</span>
+                          </DropdownMenuLabel>
+                          {categoryTemplates.map((template) => {
+                            const TemplateIcon = template.icon;
+                            return (
+                              <DropdownMenuItem
+                                key={template.id}
+                                onClick={() => handleApplyTemplate(template.content)}
+                                className="cursor-pointer py-2.5 pl-8"
+                              >
+                                <div className="flex items-start gap-3 w-full">
+                                  <TemplateIcon className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                                  <div className="flex-1 min-w-0">
+                                    <div className="font-medium text-sm">{t(template.name)}</div>
+                                    <div className="text-xs text-muted-foreground line-clamp-1">
+                                      {t(template.description)}
+                                    </div>
+                                  </div>
+                                </div>
+                              </DropdownMenuItem>
+                            );
+                          })}
+                          <DropdownMenuSeparator className="my-1" />
+                        </div>
+                      );
+                    })
+                  }
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* View 菜单 */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 px-3 text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-accent/50 transition-colors"
+                  >
+                    {t('view') || '视图'}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-52 shadow-lg">
+                  <DropdownMenuItem 
+                    onClick={handleFullScreenToggle} 
+                    className="cursor-pointer gap-3 py-2.5"
+                  >
+                    {isFocusMode ? (
+                      <>
+                        <Minimize2 className="w-4 h-4 text-muted-foreground" />
+                        <span>{t('exitFocusMode')}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Maximize2 className="w-4 h-4 text-muted-foreground" />
+                        <span>{t('enterFocusMode')}</span>
+                      </>
+                    )}
+                  </DropdownMenuItem>
+                  {onToggleSidebar && (
+                    <DropdownMenuItem 
+                      onClick={onToggleSidebar} 
+                      className="cursor-pointer gap-3 py-2.5"
+                    >
+                      {showSidebar ? (
+                        <>
+                          <X className="w-4 h-4 text-muted-foreground" />
+                          <span>{t('hideSidebar')}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Menu className="w-4 h-4 text-muted-foreground" />
+                          <span>{t('showSidebar')}</span>
+                        </>
+                      )}
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <div className="w-px h-4 bg-border/60 mx-1.5"></div>
+
+              {/* Share 按钮 - 强调样式 */}
+              <Button 
+                onClick={onShare}
+                variant="ghost" 
+                size="sm" 
+                className="h-8 px-3 text-sm font-medium text-primary hover:text-primary hover:bg-primary/10 transition-colors gap-2"
+              >
+                <Share2 className="w-3.5 h-3.5" />
+                <span>{t('share') || '分享'}</span>
+              </Button>
             </div>
 
-            {/* 标题输入 */}
-            <Input
+            {/* 右侧：优雅的保存状态指示 */}
+            <div className="flex items-center gap-3 pr-2">
+              {(isAutoSaving ) ? (
+                <div className="flex items-center gap-2 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 px-2.5 py-1 rounded-md">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                  </span>
+                  <span>{t('autoSaving')}</span>
+                </div>
+              ) : lastSaveTime ? (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                  <span>{t('lastSaved')}: {lastSaveTime.toLocaleTimeString('zh-CN', {
+                    hour12: false,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                  })}</span>
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          {/* 第二行：简洁优雅的标题区域 */}
+          <div className="group px-8 py-4 hover:bg-accent/20 transition-colors duration-200">
+            <input
+              type="text"
               value={title}
               onChange={(e) => onTitleChange(e.target.value)}
               placeholder={t('enterTitle')}
-              className="flex-1 max-w-md border-none bg-transparent text-lg font-semibold focus:ring-0"
+              className="w-full text-xl font-semibold bg-transparent border-none outline-none placeholder:text-muted-foreground/30 text-foreground transition-all duration-200 hover:placeholder:text-muted-foreground/50 focus:placeholder:text-muted-foreground/50"
+              style={{
+                caretColor: 'hsl(var(--primary))',
+              }}
             />
-
-            {/* 状态提示 - 保存中或最后保存时间 */}
-            {(isAutoSaving ) ? (
-              <div className="text-sm text-blue-600 dark:text-blue-400 flex items-center gap-1">
-                <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
-                {t('autoSaving')}
-              </div>
-            ) : lastSaveTime ? (
-              <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1">
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                {t('lastSaved')}: {lastSaveTime.toLocaleTimeString('zh-CN', {
-                  hour12: false,
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit'
-                })}
-              </div>
-            ) : null}
-          </div>
-
-          {/* 工具栏按钮 - 保持与原组件完全一致 */}
-          <div className="flex items-center gap-2">
-            {/* 模板选择下拉菜单 */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2"
-                >
-                  📝 {t('useTemplate')}
-                  <ChevronDown className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-64 max-h-96 overflow-y-auto">
-                <DropdownMenuLabel>{t('selectTemplate')}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-
-                {categories
-                  .filter(category => category.id !== 'all')
-                  .map((category) => {
-                    const categoryTemplates = templatesByCategory[category.id];
-                    if (!categoryTemplates || categoryTemplates.length === 0) return null;
-
-                    const Icon = category.icon;
-                    return (
-                      <div key={category.id}>
-                        <DropdownMenuLabel className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                          <Icon className="w-3 h-3" />
-                          {t(category.name)}
-                        </DropdownMenuLabel>
-                        {categoryTemplates.map((template) => {
-                          const TemplateIcon = template.icon;
-                          return (
-                            <DropdownMenuItem
-                              key={template.id}
-                              onClick={() => handleApplyTemplate(template.content)}
-                              className="cursor-pointer"
-                            >
-                              <div className="flex items-center gap-2">
-                                <TemplateIcon className="w-4 h-4" />
-                                <div>
-                                  <div className="font-medium">{t(template.name)}</div>
-                                  <div className="text-xs text-muted-foreground truncate">
-                                    {t(template.description)}
-                                  </div>
-                                </div>
-                              </div>
-                            </DropdownMenuItem>
-                          );
-                        })}
-                        <DropdownMenuSeparator />
-                      </div>
-                    );
-                  })
-                }
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <Button
-              onClick={handleOpenFile}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-              title={t('openFile')}
-            >
-              <FolderOpen className="w-4 h-4" />
-              {t('openFile')}
-            </Button>
-
-            <Button
-              onClick={handleSaveAs}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-              title={t('saveAs')}
-            >
-              <Download className="w-4 h-4" />
-              {t('saveAs')}
-            </Button>
-
-            <Button
-              onClick={handlePrint}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-              title={t('print')}
-            >
-              <Printer className="w-4 h-4" />
-              {t('print')}
-            </Button>
-
-            <Button
-              onClick={handleSave}
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <Save className="w-4 h-4" />
-              {t('save')}
-            </Button>
-
-            <Button
-              onClick={onShare}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <Share2 className="w-4 h-4" />
-              {t('share')}
-            </Button>
-
-            <Button
-              onClick={handleFullScreenToggle}
-              variant="ghost"
-              size="sm"
-              title={isFocusMode ? t('exitFocusMode') : t('enterFocusMode')}
-            >
-              {isFocusMode ? <Minimize2 className="w-4 w-4" /> : <Maximize2 className="w-4 w-4" />}
-            </Button>
           </div>
         </div>
 

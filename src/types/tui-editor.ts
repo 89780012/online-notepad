@@ -85,6 +85,7 @@ export interface TUIMarkdownEditorProps {
   onOpenFile?: (title: string, content: string) => void;
   onSaveAs?: (title: string, content: string) => void;
   onClearMarkdown?: () => void;
+  onNewNote?: () => void;
 
   // 状态控制 - 与原组件保持一致
   isFocusMode?: boolean;
