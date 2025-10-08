@@ -533,7 +533,24 @@
     "labels": {
       "feature": "Feature",
       "bugfix": "Bugfix",
-      "refactor": "Refactor"
+      "refactor": "Refactor",
+      "improvement": "Improvement"
+    },
+    "v060": {
+      "title": "Editor Interface Modernization",
+      "description": "Complete upgrade of editor interface design with menu bar layout, providing a more professional and elegant user experience.",
+      "menuBarLayout": {
+        "title": "Menu Bar Layout",
+        "description": "Transformed toolbar into a menu bar design similar to Notion and Google Docs, including File, Insert, and View menus, better aligned with user habits."
+      },
+      "modernUI": {
+        "title": "Modern Visual Design",
+        "description": "Featuring frosted glass effects, refined shadows, and smooth transition animations for a more elegant and sophisticated interface experience."
+      },
+      "titleArea": {
+        "title": "Title Area Optimization",
+        "description": "Redesigned title input area with clean and elegant styling, hover effects, and theme-colored cursor for enhanced visual quality."
+      }
     },
     "v050": {
       "title": "User Authentication & Cloud Storage",

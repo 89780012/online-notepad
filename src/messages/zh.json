@@ -533,7 +533,24 @@
     "labels": {
       "feature": "新功能",
       "bugfix": "修复",
-      "refactor": "重构"
+      "refactor": "重构",
+      "improvement": "优化"
+    },
+    "v060": {
+      "title": "编辑器界面现代化改造",
+      "description": "全面升级编辑器界面设计，采用菜单栏式布局，提供更专业优雅的使用体验。",
+      "menuBarLayout": {
+        "title": "菜单栏式布局",
+        "description": "将工具栏改造成类似 Notion、Google Docs 的菜单栏设计，包含文件、插入、视图等菜单，更符合用户使用习惯。"
+      },
+      "modernUI": {
+        "title": "现代化视觉设计",
+        "description": "采用毛玻璃效果、精致的阴影和流畅的过渡动画，提供更加优雅精致的界面体验。"
+      },
+      "titleArea": {
+        "title": "标题区域优化",
+        "description": "重新设计标题输入区域，采用简洁优雅的样式，hover 效果和主题色光标，提升视觉品质。"
+      }
     },
     "v050": {
       "title": "用户认证与云端存储",

@@ -1,6 +1,6 @@
 import { LucideIcon } from 'lucide-react';
 
-export type FeatureType = 'feat' | 'fix' | 'refactor';
+export type FeatureType = 'feat' | 'fix' | 'refactor' | 'improvement';
 
 export interface Feature {
   type: FeatureType;

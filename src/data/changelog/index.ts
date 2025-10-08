@@ -15,12 +15,43 @@ import {
   BookOpen,
   LogOut,
   UserPlus,
-  Cloud
+  Cloud,
+  Paintbrush,
+  Menu
 } from 'lucide-react';
 import { ChangelogData } from './types';
 
 export const changelogData: ChangelogData = {
   entries: [
+    {
+      version: 'v0.6.0',
+      date: '2025-10-08',
+      titleKey: 'changelog.v060.title',
+      descriptionKey: 'changelog.v060.description',
+      features: [
+        {
+          type: 'feat',
+          icon: Menu,
+          titleKey: 'changelog.v060.menuBarLayout.title',
+          descriptionKey: 'changelog.v060.menuBarLayout.description',
+          commits: ['editor-ui-v1']
+        },
+        {
+          type: 'feat',
+          icon: Paintbrush,
+          titleKey: 'changelog.v060.modernUI.title',
+          descriptionKey: 'changelog.v060.modernUI.description',
+          commits: ['editor-ui-v2']
+        },
+        {
+          type: 'improvement',
+          icon: Layout,
+          titleKey: 'changelog.v060.titleArea.title',
+          descriptionKey: 'changelog.v060.titleArea.description',
+          commits: ['editor-ui-v3']
+        }
+      ]
+    },
     {
       version: 'v0.5.0',
       date: '2025-09-24',
