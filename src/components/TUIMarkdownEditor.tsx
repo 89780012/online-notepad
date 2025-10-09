@@ -1,10 +1,4 @@
 'use client';
-
-/**
- * TUI Markdown Editor - 基于 TOAST UI Editor 的 Markdown 编辑器
- * 用于替换原有的 @uiw/react-md-editor，提供 WYSIWYG 编辑体验
- */
-
 import { useState, useCallback, useRef, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { Maximize2, Minimize2,Plus ,Save, Share2, FolderOpen, Download, Menu, X, Printer } from 'lucide-react';
@@ -21,6 +15,7 @@ import { useTranslations } from 'next-intl';
 import { useTheme } from '@/contexts/ThemeContext';
 import EditorErrorBoundary from './EditorErrorBoundary';
 import { getTemplates, categories } from '@/data/templates';
+import { printMarkdownContent } from '@/lib/print-utils';
 
 // 引入 TUI Editor 类型
 import type {
@@ -214,7 +209,7 @@ export default function TUIMarkdownEditor({
     }
   };
 
-  // 打印功能 - 将 Markdown 内容转换为 HTML 并打印
+  // 打印功能 - 使用优化的打印工具（无需打开新窗口）
   const handlePrint = () => {
     const editorInstance = editorRef.current?.getInstance();
     if (!editorInstance) return;
@@ -223,171 +218,20 @@ export default function TUIMarkdownEditor({
       // 获取编辑器的 HTML 内容（TUI Editor 的预览内容）
       const htmlContent = (editorInstance as { getHTML: () => string }).getHTML();
       
-      // 创建打印窗口
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) {
-        alert(t('printBlocked') || 'Please allow pop-ups to enable printing');
-        return;
-      }
-
-      // 构建打印页面的 HTML
-      const printContent = `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>${title || t('untitled')}</title>
-            <style>
-              * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-              }
-              
-              body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                line-height: 1.6;
-                color: #333;
-                padding: 2cm;
-                max-width: 21cm;
-                margin: 0 auto;
-                background: white;
-              }
-              
-              h1 {
-                font-size: 2em;
-                margin-bottom: 0.5em;
-                padding-bottom: 0.3em;
-                border-bottom: 2px solid #eee;
-              }
-              
-              h2 {
-                font-size: 1.5em;
-                margin-top: 1em;
-                margin-bottom: 0.5em;
-                padding-bottom: 0.2em;
-                border-bottom: 1px solid #eee;
-              }
-              
-              h3 {
-                font-size: 1.25em;
-                margin-top: 0.8em;
-                margin-bottom: 0.4em;
-              }
-              
-              p {
-                margin-bottom: 1em;
-              }
-              
-              ul, ol {
-                margin-left: 2em;
-                margin-bottom: 1em;
-              }
-              
-              li {
-                margin-bottom: 0.3em;
-              }
-              
-              code {
-                background: #f5f5f5;
-                padding: 0.2em 0.4em;
-                border-radius: 3px;
-                font-family: 'Courier New', Courier, monospace;
-                font-size: 0.9em;
-              }
-              
-              pre {
-                background: #f5f5f5;
-                padding: 1em;
-                border-radius: 5px;
-                overflow-x: auto;
-                margin-bottom: 1em;
-              }
-              
-              pre code {
-                background: none;
-                padding: 0;
-              }
-              
-              blockquote {
-                border-left: 4px solid #ddd;
-                padding-left: 1em;
-                margin-left: 0;
-                margin-bottom: 1em;
-                color: #666;
-              }
-              
-              table {
-                border-collapse: collapse;
-                width: 100%;
-                margin-bottom: 1em;
-              }
-              
-              th, td {
-                border: 1px solid #ddd;
-                padding: 0.5em;
-                text-align: left;
-              }
-              
-              th {
-                background: #f5f5f5;
-                font-weight: bold;
-              }
-              
-              img {
-                max-width: 100%;
-                height: auto;
-                margin-bottom: 1em;
-              }
-              
-              hr {
-                border: none;
-                border-top: 1px solid #ddd;
-                margin: 1.5em 0;
-              }
-              
-              a {
-                color: #0066cc;
-                text-decoration: none;
-              }
-              
-              a:hover {
-                text-decoration: underline;
-              }
-              
-              @media print {
-                body {
-                  padding: 0;
-                }
-                
-                @page {
-                  margin: 2cm;
-                }
-              }
-            </style>
-          </head>
-          <body>
-            <h1>${title || t('untitled')}</h1>
-            ${htmlContent}
-          </body>
-        </html>
-      `;
-
-      // 写入内容到新窗口
-      printWindow.document.open();
-      printWindow.document.write(printContent);
-      printWindow.document.close();
-
-      // 等待内容加载完成后打印
-      printWindow.onload = () => {
-        printWindow.focus();
-        printWindow.print();
-        // 打印完成后关闭窗口
-        printWindow.onafterprint = () => {
-          printWindow.close();
-        };
-      };
+      // 使用打印工具函数
+      // 用户取消打印是正常操作，只在真正的错误（如 iframe 创建失败）时才提示
+      printMarkdownContent({
+        title: title || t('untitled') || 'Untitled',
+        htmlContent,
+        onError: (error) => {
+          // 只记录到控制台，不打扰用户
+          console.error('打印初始化失败:', error);
+          // 只在真正无法初始化时才提示用户
+          if (error.message.includes('无法') || error.message.includes('failed')) {
+            alert(t('printFailed') || 'Print initialization failed. Please try again.');
+          }
+        }
+      });
 
     } catch (error) {
       console.error('打印失败:', error);
