@@ -14,8 +14,8 @@ import { useTranslations, useLocale } from 'next-intl';
 
 // 音乐选项列表
 export const musicOptions = [
-  { id: 'stream', name: '流水声', nameEn: 'Stream', nameHi: 'जल प्रवाह', url: '/audio/stream.wav', icon: '💧' },
-  { id: 'rain', name: '下雨声', nameEn: 'Rain', nameHi: 'बारिश', url: '/audio/rain.wav', icon: '🌧️' },
+  { id: 'stream', name: '流水声', nameEn: 'Stream', nameHi: 'जल प्रवाह', url: 'https://image.mininotepad.com/audio/stream.wav', icon: '💧' },
+  { id: 'rain', name: '下雨声', nameEn: 'Rain', nameHi: 'बारिश', url: 'https://image.mininotepad.com/audio/rain.wav', icon: '🌧️' },
 ];
 
 interface BackgroundMusicPlayerProps {

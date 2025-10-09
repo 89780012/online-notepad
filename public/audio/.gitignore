@@ -1,9 +1,0 @@
-# 忽略所有音频文件（用户需要自己下载）
-*.mp3
-*.wav
-*.ogg
-*.m4a
-
-# 但保留 README.md
-!README.md
-
