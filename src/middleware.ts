@@ -15,6 +15,6 @@ export const config = {
     // 匹配根路径
     '/',
     // 匹配所有路径，但排除博客路径和其他静态资源
-    '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|llms.txt|og-image.png|blog).*)'
+    '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|llms.txt|og-image.png|blog|audio).*)'
   ]
 };

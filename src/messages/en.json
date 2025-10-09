@@ -80,6 +80,7 @@
   "file": "File",
   "insert": "Insert",
   "view": "View",
+  "music": "Music",
   "template": "Template",
   "print": "Print",
   "printBlocked": "Please allow pop-ups to enable printing",
@@ -490,6 +491,14 @@
   "optional": "optional",
   "width": "Width",
   "loading": "Loading...",
+  "backgroundMusic": "Background Music",
+  "stopMusic": "Stop Playing",
+  "stopAllMusic": "Stop All Music",
+  "playing": "Playing",
+  "selectMusicToPlay": "Select music to play",
+  "volume": "Volume",
+  "mute": "Mute",
+  "unmute": "Unmute",
   "privacyPolicy": "Privacy Policy",
   "termsOfService": "Terms of Service",
   "lastUpdatedDate": "Last updated: September 14, 2025",
@@ -535,6 +544,14 @@
       "bugfix": "Bugfix",
       "refactor": "Refactor",
       "improvement": "Improvement"
+    },
+    "v070": {
+      "title": "Background Music Feature",
+      "description": "Added background music playback feature with various white noise options including stream and rain sounds to help users stay focused and relaxed while writing.",
+      "backgroundMusic": {
+        "title": "Background Music Player",
+        "description": "Supports multiple white noise sounds playing simultaneously including stream and rain, with volume control and mute options for an immersive writing environment."
+      }
     },
     "v060": {
       "title": "Editor Interface Modernization",

@@ -80,6 +80,7 @@
   "file": "文件",
   "insert": "插入",
   "view": "视图",
+  "music": "音乐",
   "template": "模板",
   "print": "打印",
   "printBlocked": "请允许弹出窗口以启用打印功能",
@@ -490,6 +491,14 @@
   "optional": "可选",
   "width": "宽度",
   "loading": "加载中...",
+  "backgroundMusic": "背景音乐",
+  "stopMusic": "停止播放",
+  "stopAllMusic": "停止所有音乐",
+  "playing": "正在播放",
+  "selectMusicToPlay": "选择音乐开始播放",
+  "volume": "音量",
+  "mute": "静音",
+  "unmute": "取消静音",
   "privacyPolicy": "隐私政策",
   "termsOfService": "服务条款",
   "lastUpdatedDate": "最后更新：2025年9月14日",
@@ -535,6 +544,14 @@
       "bugfix": "修复",
       "refactor": "重构",
       "improvement": "优化"
+    },
+    "v070": {
+      "title": "背景音乐功能",
+      "description": "新增背景音乐播放功能，提供流水声、雨声等多种白噪音选项，帮助用户在写作时保持专注和放松。",
+      "backgroundMusic": {
+        "title": "背景音乐播放器",
+        "description": "支持多种白噪音同时播放，包括流水声和雨声，可自由控制音量和静音，提供沉浸式的写作环境。"
+      }
     },
     "v060": {
       "title": "编辑器界面现代化改造",

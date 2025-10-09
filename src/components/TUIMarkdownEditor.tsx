@@ -16,6 +16,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import EditorErrorBoundary from './EditorErrorBoundary';
 import { getTemplates, categories } from '@/data/templates';
 import { printMarkdownContent } from '@/lib/print-utils';
+import BackgroundMusicPlayer from './BackgroundMusicPlayer';
 
 // 引入 TUI Editor 类型
 import type {
@@ -470,6 +471,9 @@ export default function TUIMarkdownEditor({
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
+
+              {/* Music 菜单 */}
+              <BackgroundMusicPlayer />
 
               <div className="w-px h-4 bg-border/60 mx-1.5"></div>
 

@@ -17,12 +17,28 @@ import {
   UserPlus,
   Cloud,
   Paintbrush,
-  Menu
+  Menu,
+  Music
 } from 'lucide-react';
 import { ChangelogData } from './types';
 
 export const changelogData: ChangelogData = {
   entries: [
+    {
+      version: 'v0.7.0',
+      date: '2025-10-09',
+      titleKey: 'changelog.v070.title',
+      descriptionKey: 'changelog.v070.description',
+      features: [
+        {
+          type: 'feat',
+          icon: Music,
+          titleKey: 'changelog.v070.backgroundMusic.title',
+          descriptionKey: 'changelog.v070.backgroundMusic.description',
+          commits: ['music-feature']
+        }
+      ]
+    },
     {
       version: 'v0.6.0',
       date: '2025-10-08',
