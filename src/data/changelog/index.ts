@@ -18,12 +18,50 @@ import {
   Cloud,
   Paintbrush,
   Menu,
-  Music
+  Music,
+  Keyboard,
+  AlertCircle
 } from 'lucide-react';
 import { ChangelogData } from './types';
 
 export const changelogData: ChangelogData = {
   entries: [
+    {
+      version: 'v0.8.0',
+      date: '2025-01-16',
+      titleKey: 'changelog.v080.title',
+      descriptionKey: 'changelog.v080.description',
+      features: [
+        {
+          type: 'feat',
+          icon: Keyboard,
+          titleKey: 'changelog.v080.keyboardShortcuts.title',
+          descriptionKey: 'changelog.v080.keyboardShortcuts.description',
+          commits: ['keyboard-shortcuts-system']
+        },
+        {
+          type: 'feat',
+          icon: Menu,
+          titleKey: 'changelog.v080.shortcutHints.title',
+          descriptionKey: 'changelog.v080.shortcutHints.description',
+          commits: ['shortcut-hints-ui']
+        },
+        {
+          type: 'feat',
+          icon: BookOpen,
+          titleKey: 'changelog.v080.shortcutHelp.title',
+          descriptionKey: 'changelog.v080.shortcutHelp.description',
+          commits: ['shortcut-help-dialog']
+        },
+        {
+          type: 'fix',
+          icon: AlertCircle,
+          titleKey: 'changelog.v080.browserConflict.title',
+          descriptionKey: 'changelog.v080.browserConflict.description',
+          commits: ['fix-browser-shortcuts-conflict']
+        }
+      ]
+    },
     {
       version: 'v0.7.0',
       date: '2025-10-09',

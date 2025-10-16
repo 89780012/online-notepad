@@ -154,6 +154,16 @@
   "keyboardShortcuts": "Keyboard Shortcuts",
   "keyboardShortcutsDesc": "Rich keyboard shortcut support to boost your writing efficiency",
   "powerUserFriendly": "Power user friendly",
+  "help": "Help",
+  "shortcutsDescription": "Use keyboard shortcuts to boost your editing efficiency",
+  "fileOperations": "File Operations",
+  "viewOperations": "View Operations",
+  "otherOperations": "Other Operations",
+  "toggleFocusMode": "Toggle Focus Mode",
+  "toggleSidebar": "Toggle Sidebar",
+  "showShortcuts": "Show Keyboard Shortcuts",
+  "shortcutsNote": "Note: Some shortcuts use Alt combinations to avoid conflicts with browser default shortcuts.",
+  "editorShortcutsHint": "TUI Editor also supports more built-in shortcuts (like Ctrl+B for bold, Ctrl+I for italic, etc.), explore them in the editor.",
   "quickStartGuide": "Quick Start Guide",
   "step1Title": "Click New Note",
   "step1Desc": "Click the 'New Note' button on the page to get started",
@@ -544,6 +554,26 @@
       "bugfix": "Bugfix",
       "refactor": "Refactor",
       "improvement": "Improvement"
+    },
+    "v080": {
+      "title": "Keyboard Shortcuts System",
+      "description": "Implemented complete keyboard shortcuts system with 8 core shortcuts support, significantly boosting editing efficiency and professional user experience.",
+      "keyboardShortcuts": {
+        "title": "Complete Shortcuts System",
+        "description": "Added 8 core shortcuts including Alt+N for new note, Alt+O for open file, Ctrl+S for save, Ctrl+P for print, F11 for focus mode, Ctrl+B for toggle sidebar, Ctrl+Shift+S for share, and Ctrl+/ for help, following mainstream editor conventions."
+      },
+      "shortcutHints": {
+        "title": "Menu Shortcut Hints",
+        "description": "All menu items automatically display corresponding shortcut labels on the right side, intelligently adapting to different operating systems (Mac shows ⌘ symbol, Windows shows Ctrl), providing an intuitive shortcut learning experience."
+      },
+      "shortcutHelp": {
+        "title": "Shortcuts Help Dialog",
+        "description": "Added Ctrl+/ quick-open shortcuts help dialog, displaying all available shortcuts categorized by function, providing a friendly interface for learning and querying shortcuts."
+      },
+      "browserConflict": {
+        "title": "Browser Conflict Optimization",
+        "description": "Optimized shortcut scheme to avoid conflicts with browser system-level shortcuts, changed new note and open file to Alt combinations, ensuring shortcuts work properly in all browsers."
+      }
     },
     "v070": {
       "title": "Background Music Feature",

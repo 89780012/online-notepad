@@ -1,7 +1,7 @@
 'use client';
 import { useState, useCallback, useRef, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
-import { Maximize2, Minimize2,Plus ,Save, Share2, FolderOpen, Download, Menu, X, Printer } from 'lucide-react';
+import { Maximize2, Minimize2,Plus ,Save, Share2, FolderOpen, Download, Menu, X, Printer, Keyboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -11,6 +11,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useTranslations } from 'next-intl';
 import { useTheme } from '@/contexts/ThemeContext';
 import EditorErrorBoundary from './EditorErrorBoundary';
@@ -86,6 +93,7 @@ export default function TUIMarkdownEditor({
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [lastSaveTime, setLastSaveTime] = useState<Date | null>(null);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [showShortcutsDialog, setShowShortcutsDialog] = useState(false);
 
   // 引用管理
   const editorRef = useRef<TUIEditorRef>(null);
@@ -117,6 +125,133 @@ export default function TUIMarkdownEditor({
       }
     };
   }, []);
+
+  // 全屏切换处理 (移到前面以避免依赖错误)
+  const handleFullScreenToggle = useCallback(() => {
+    if (onToggleFocusMode) {
+      onToggleFocusMode();
+    } else {
+      setIsFullScreen(!isFullScreen);
+    }
+  }, [onToggleFocusMode, isFullScreen]);
+
+  // 打开本地文件
+  const handleOpenFile = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  // 打印功能
+  const handlePrint = useCallback(() => {
+    const editorInstance = editorRef.current?.getInstance();
+    if (!editorInstance) return;
+
+    try {
+      const htmlContent = (editorInstance as { getHTML: () => string }).getHTML();
+      printMarkdownContent({
+        title: title || t('untitled') || 'Untitled',
+        htmlContent,
+        onError: (error) => {
+          console.error('打印初始化失败:', error);
+          if (error.message.includes('无法') || error.message.includes('failed')) {
+            alert(t('printFailed') || 'Print initialization failed. Please try again.');
+          }
+        }
+      });
+    } catch (error) {
+      console.error('打印失败:', error);
+      alert(t('printFailed') || 'Print failed. Please try again.');
+    }
+  }, [title, t]);
+
+  // 🔥 快捷键监听：完整的快捷键系统
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      const modKey = isMac ? event.metaKey : event.ctrlKey;
+
+      // Ctrl+S / Cmd+S: 保存
+      if (modKey && !event.shiftKey && !event.altKey && event.key === 's') {
+        event.preventDefault();
+        if (onSave) {
+          onSave();
+          setLastSaveTime(new Date());
+          console.log('快捷键保存已触发');
+        }
+        return;
+      }
+
+      // Alt+N: 新建笔记（避免与浏览器Ctrl+N冲突）
+      if (event.altKey && !modKey && !event.shiftKey && event.key === 'n') {
+        event.preventDefault();
+        if (onNewNote) {
+          onNewNote();
+          console.log('快捷键新建笔记已触发 (Alt+N)');
+        }
+        return;
+      }
+
+      // Alt+O: 打开文件（避免与浏览器Ctrl+O冲突）
+      if (event.altKey && !modKey && !event.shiftKey && event.key === 'o') {
+        event.preventDefault();
+        handleOpenFile();
+        console.log('快捷键打开文件已触发 (Alt+O)');
+        return;
+      }
+
+      // Ctrl+P / Cmd+P: 打印
+      if (modKey && !event.shiftKey && event.key === 'p') {
+        event.preventDefault();
+        handlePrint();
+        console.log('快捷键打印已触发');
+        return;
+      }
+
+      // F11: 专注模式（Windows/Linux常用）
+      if (event.key === 'F11') {
+        event.preventDefault();
+        handleFullScreenToggle();
+        console.log('快捷键切换专注模式已触发 (F11)');
+        return;
+      }
+
+      // Ctrl+B / Cmd+B: 切换侧边栏
+      if (modKey && !event.shiftKey && event.key === 'b') {
+        event.preventDefault();
+        if (onToggleSidebar) {
+          onToggleSidebar();
+          console.log('快捷键切换侧边栏已触发');
+        }
+        return;
+      }
+
+      // Ctrl+Shift+S / Cmd+Shift+S: 分享
+      if (modKey && event.shiftKey && event.key === 'S') {
+        event.preventDefault();
+        if (onShare) {
+          onShare();
+          console.log('快捷键分享已触发');
+        }
+        return;
+      }
+
+      // Ctrl+/ / Cmd+/: 快捷键帮助
+      if (modKey && event.key === '/') {
+        event.preventDefault();
+        setShowShortcutsDialog(true);
+        console.log('快捷键帮助已打开');
+        return;
+      }
+
+    };
+
+    // 添加事件监听
+    window.addEventListener('keydown', handleKeyDown);
+
+    // 清理事件监听
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onSave, onNewNote, onShare, onToggleSidebar, handleFullScreenToggle]); // 依赖所有回调
 
   // 🔥 核心功能：内容变化处理（带防抖）
   const handleContentChange = useCallback(() => {
@@ -161,15 +296,6 @@ export default function TUIMarkdownEditor({
     }
   }, [onContentChange,title]);
 
-  // 全屏切换处理 (保持与原组件一致)
-  const handleFullScreenToggle = () => {
-    if (onToggleFocusMode) {
-      onToggleFocusMode();
-    } else {
-      setIsFullScreen(!isFullScreen);
-    }
-  };
-
   // 保存处理 - 更新最后保存时间
   const handleSave = () => {
     if (onSave) {
@@ -178,11 +304,6 @@ export default function TUIMarkdownEditor({
       setLastSaveTime(new Date());
       console.log('保存操作已触发');
     }
-  };
-
-  // 打开本地文件 (保持与原组件一致)
-  const handleOpenFile = () => {
-    fileInputRef.current?.click();
   };
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -207,36 +328,6 @@ export default function TUIMarkdownEditor({
   const handleSaveAs = () => {
     if (onSaveAs) {
       onSaveAs(title, content);
-    }
-  };
-
-  // 打印功能 - 使用优化的打印工具（无需打开新窗口）
-  const handlePrint = () => {
-    const editorInstance = editorRef.current?.getInstance();
-    if (!editorInstance) return;
-
-    try {
-      // 获取编辑器的 HTML 内容（TUI Editor 的预览内容）
-      const htmlContent = (editorInstance as { getHTML: () => string }).getHTML();
-      
-      // 使用打印工具函数
-      // 用户取消打印是正常操作，只在真正的错误（如 iframe 创建失败）时才提示
-      printMarkdownContent({
-        title: title || t('untitled') || 'Untitled',
-        htmlContent,
-        onError: (error) => {
-          // 只记录到控制台，不打扰用户
-          console.error('打印初始化失败:', error);
-          // 只在真正无法初始化时才提示用户
-          if (error.message.includes('无法') || error.message.includes('failed')) {
-            alert(t('printFailed') || 'Print initialization failed. Please try again.');
-          }
-        }
-      });
-
-    } catch (error) {
-      console.error('打印失败:', error);
-      alert(t('printFailed') || 'Print failed. Please try again.');
     }
   };
 
@@ -340,28 +431,40 @@ export default function TUIMarkdownEditor({
                     {t('file') || '文件'}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-52 shadow-lg">
+                <DropdownMenuContent align="start" className="w-64 shadow-lg">
                   <DropdownMenuItem onClick={onNewNote} className="cursor-pointer gap-3 py-2.5">
                     <Plus className="w-4 h-4 text-muted-foreground" />
                     <span className="flex-1">{t('newNote')}</span>
+                    <kbd className="ml-auto text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                      Alt+N
+                    </kbd>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleOpenFile} className="cursor-pointer gap-3 py-2.5">
                     <FolderOpen className="w-4 h-4 text-muted-foreground" />
                     <span className="flex-1">{t('openFile')}</span>
+                    <kbd className="ml-auto text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                      Alt+O
+                    </kbd>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSave} className="cursor-pointer gap-3 py-2.5">
                     <Save className="w-4 h-4 text-muted-foreground" />
                     <span className="flex-1">{t('save')}</span>
+                    <kbd className="ml-auto text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                      {navigator.platform.toUpperCase().indexOf('MAC') >= 0 ? '⌘S' : 'Ctrl+S'}
+                    </kbd>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleSaveAs} className="cursor-pointer gap-3 py-2.5">
                     <Download className="w-4 h-4 text-muted-foreground" />
-                    <span>{t('saveAs')}</span>
+                    <span className="flex-1">{t('saveAs')}</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handlePrint} className="cursor-pointer gap-3 py-2.5">
                     <Printer className="w-4 h-4 text-muted-foreground" />
-                    <span>{t('print')}</span>
+                    <span className="flex-1">{t('print')}</span>
+                    <kbd className="ml-auto text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                      {navigator.platform.toUpperCase().indexOf('MAC') >= 0 ? '⌘P' : 'Ctrl+P'}
+                    </kbd>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -434,7 +537,7 @@ export default function TUIMarkdownEditor({
                     {t('view') || '视图'}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-52 shadow-lg">
+                <DropdownMenuContent align="start" className="w-64 shadow-lg">
                   <DropdownMenuItem 
                     onClick={handleFullScreenToggle} 
                     className="cursor-pointer gap-3 py-2.5"
@@ -442,14 +545,17 @@ export default function TUIMarkdownEditor({
                     {isFocusMode ? (
                       <>
                         <Minimize2 className="w-4 h-4 text-muted-foreground" />
-                        <span>{t('exitFocusMode')}</span>
+                        <span className="flex-1">{t('exitFocusMode')}</span>
                       </>
                     ) : (
                       <>
                         <Maximize2 className="w-4 h-4 text-muted-foreground" />
-                        <span>{t('enterFocusMode')}</span>
+                        <span className="flex-1">{t('enterFocusMode')}</span>
                       </>
                     )}
+                    <kbd className="ml-auto text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                      F11
+                    </kbd>
                   </DropdownMenuItem>
                   {onToggleSidebar && (
                     <DropdownMenuItem 
@@ -459,14 +565,17 @@ export default function TUIMarkdownEditor({
                       {showSidebar ? (
                         <>
                           <X className="w-4 h-4 text-muted-foreground" />
-                          <span>{t('hideSidebar')}</span>
+                          <span className="flex-1">{t('hideSidebar')}</span>
                         </>
                       ) : (
                         <>
                           <Menu className="w-4 h-4 text-muted-foreground" />
-                          <span>{t('showSidebar')}</span>
+                          <span className="flex-1">{t('showSidebar')}</span>
                         </>
                       )}
+                      <kbd className="ml-auto text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                        {navigator.platform.toUpperCase().indexOf('MAC') >= 0 ? '⌘B' : 'Ctrl+B'}
+                      </kbd>
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuContent>
@@ -483,10 +592,38 @@ export default function TUIMarkdownEditor({
                 variant="ghost" 
                 size="sm" 
                 className="h-8 px-3 text-sm font-medium text-primary hover:text-primary hover:bg-primary/10 transition-colors gap-2"
+                title={`${t('share')} (${navigator.platform.toUpperCase().indexOf('MAC') >= 0 ? '⌘⇧S' : 'Ctrl+Shift+S'})`}
               >
                 <Share2 className="w-3.5 h-3.5" />
                 <span>{t('share') || '分享'}</span>
               </Button>
+
+              <div className="w-px h-4 bg-border/60 mx-1.5"></div>
+
+              {/* Help 菜单 */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 px-3 text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-accent/50 transition-colors"
+                  >
+                    {t('help') || '帮助'}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-64 shadow-lg">
+                  <DropdownMenuItem 
+                    onClick={() => setShowShortcutsDialog(true)} 
+                    className="cursor-pointer gap-3 py-2.5"
+                  >
+                    <Keyboard className="w-4 h-4 text-muted-foreground" />
+                    <span className="flex-1">{t('keyboardShortcuts') || '键盘快捷键'}</span>
+                    <kbd className="ml-auto text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                      {navigator.platform.toUpperCase().indexOf('MAC') >= 0 ? '⌘/' : 'Ctrl+/'}
+                    </kbd>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             {/* 右侧：优雅的保存状态指示 */}
@@ -559,6 +696,119 @@ export default function TUIMarkdownEditor({
         </div>
 
       </div>
+
+      {/* 🎹 快捷键帮助对话框 */}
+      <Dialog open={showShortcutsDialog} onOpenChange={setShowShortcutsDialog}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <Keyboard className="w-5 h-5" />
+              {t('keyboardShortcuts') || '键盘快捷键'}
+            </DialogTitle>
+            <DialogDescription>
+              {t('shortcutsDescription') || '使用快捷键提升编辑效率'}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 mt-4">
+            {/* 文件操作 */}
+            <div>
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                {t('fileOperations') || '文件操作'}
+              </h3>
+              <div className="space-y-2">
+                <ShortcutItem 
+                  shortcut="Alt + N"
+                  description={t('newNote') || '新建笔记'}
+                />
+                <ShortcutItem 
+                  shortcut="Alt + O"
+                  description={t('openFile') || '打开文件'}
+                />
+                <ShortcutItem 
+                  shortcut={navigator.platform.toUpperCase().indexOf('MAC') >= 0 ? '⌘ S' : 'Ctrl + S'}
+                  description={t('save') || '保存'}
+                  highlight
+                />
+                <ShortcutItem 
+                  shortcut={navigator.platform.toUpperCase().indexOf('MAC') >= 0 ? '⌘ P' : 'Ctrl + P'}
+                  description={t('print') || '打印'}
+                />
+              </div>
+            </div>
+
+            {/* 视图操作 */}
+            <div>
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                {t('viewOperations') || '视图操作'}
+              </h3>
+              <div className="space-y-2">
+                <ShortcutItem 
+                  shortcut="F11"
+                  description={t('toggleFocusMode') || '切换专注模式'}
+                />
+                <ShortcutItem 
+                  shortcut={navigator.platform.toUpperCase().indexOf('MAC') >= 0 ? '⌘ B' : 'Ctrl + B'}
+                  description={t('toggleSidebar') || '切换侧边栏'}
+                />
+              </div>
+            </div>
+
+            {/* 分享与帮助 */}
+            <div>
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                {t('otherOperations') || '其他操作'}
+              </h3>
+              <div className="space-y-2">
+                <ShortcutItem 
+                  shortcut={navigator.platform.toUpperCase().indexOf('MAC') >= 0 ? '⌘ ⇧ S' : 'Ctrl + Shift + S'}
+                  description={t('share') || '分享笔记'}
+                />
+                <ShortcutItem 
+                  shortcut={navigator.platform.toUpperCase().indexOf('MAC') >= 0 ? '⌘ /' : 'Ctrl + /'}
+                  description={t('showShortcuts') || '显示快捷键帮助'}
+                />
+              </div>
+            </div>
+
+            {/* 快捷键说明 */}
+            <div className="pt-4 border-t space-y-2">
+              <p className="text-xs text-muted-foreground">
+                ℹ️ {t('shortcutsNote') || '注意：部分快捷键使用 Alt 组合避免与浏览器默认快捷键冲突。'}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                💡 {t('editorShortcutsHint') || 'TUI Editor 还支持更多编辑器内置快捷键（如 Ctrl+B 加粗、Ctrl+I 斜体等），请在编辑器中探索使用。'}
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+// 快捷键项组件
+function ShortcutItem({ 
+  shortcut, 
+  description, 
+  highlight = false 
+}: { 
+  shortcut: string; 
+  description: string; 
+  highlight?: boolean;
+}) {
+  return (
+    <div className={`flex items-center justify-between py-2 px-3 rounded-lg transition-colors ${
+      highlight ? 'bg-primary/5 border border-primary/20' : 'hover:bg-accent/50'
+    }`}>
+      <span className="text-sm text-foreground">{description}</span>
+      <kbd className={`text-xs font-mono px-2 py-1 rounded ${
+        highlight 
+          ? 'bg-primary/10 text-primary border border-primary/30' 
+          : 'bg-muted text-muted-foreground'
+      }`}>
+        {shortcut}
+      </kbd>
     </div>
   );
 }

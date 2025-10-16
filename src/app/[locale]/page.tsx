@@ -52,7 +52,7 @@ export default function HomePage() {
 
   const [selectedNote, setSelectedNote] = useState<LocalNote | null>(null);
   const [showEditor, setShowEditor] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false); // 侧边栏默认隐藏
+  const [showSidebar, setShowSidebar] = useState(true); // 侧边栏默认隐藏
   const [currentMode, setCurrentMode] = useState<NoteMode>(NOTE_MODES.MARKDOWN); // 当前编辑模式
   const [currentTitle, setCurrentTitle] = useState('');
   const [currentContent, setCurrentContent] = useState('');

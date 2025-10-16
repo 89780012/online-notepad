@@ -155,6 +155,16 @@
   "keyboardShortcuts": "键盘快捷键",
   "keyboardShortcutsDesc": "丰富的快捷键支持，提升您的写作效率",
   "powerUserFriendly": "高效用户友好",
+  "help": "帮助",
+  "shortcutsDescription": "使用快捷键提升编辑效率",
+  "fileOperations": "文件操作",
+  "viewOperations": "视图操作",
+  "otherOperations": "其他操作",
+  "toggleFocusMode": "切换专注模式",
+  "toggleSidebar": "切换侧边栏",
+  "showShortcuts": "显示快捷键帮助",
+  "shortcutsNote": "注意：部分快捷键使用 Alt 组合避免与浏览器默认快捷键冲突。",
+  "editorShortcutsHint": "TUI Editor 还支持更多编辑器内置快捷键（如 Ctrl+B 加粗、Ctrl+I 斜体等），请在编辑器中探索使用。",
   "quickStartGuide": "快速入门指南",
   "step1Title": "点击新建笔记",
   "step1Desc": "点击页面上的新建笔记按钮开始",
@@ -544,6 +554,26 @@
       "bugfix": "修复",
       "refactor": "重构",
       "improvement": "优化"
+    },
+    "v080": {
+      "title": "键盘快捷键系统",
+      "description": "实现完整的键盘快捷键系统，提供8个核心快捷键支持，大幅提升编辑效率和专业用户体验。",
+      "keyboardShortcuts": {
+        "title": "完整快捷键系统",
+        "description": "新增8个核心快捷键，包括Alt+N新建笔记、Alt+O打开文件、Ctrl+S保存、Ctrl+P打印、F11专注模式、Ctrl+B切换侧边栏、Ctrl+Shift+S分享、Ctrl+/查看帮助等，符合主流编辑器使用习惯。"
+      },
+      "shortcutHints": {
+        "title": "菜单快捷键提示",
+        "description": "所有菜单项右侧自动显示对应的快捷键标签，智能适配不同操作系统（Mac显示⌘符号，Windows显示Ctrl），提供直观的快捷键学习体验。"
+      },
+      "shortcutHelp": {
+        "title": "快捷键帮助对话框",
+        "description": "新增Ctrl+/快速打开的快捷键帮助对话框，按功能分类展示所有可用快捷键，提供友好的快捷键学习和查询界面。"
+      },
+      "browserConflict": {
+        "title": "浏览器冲突优化",
+        "description": "优化快捷键方案避免与浏览器系统级快捷键冲突，将新建笔记和打开文件改为Alt组合键，确保快捷键在所有浏览器中都能正常工作。"
+      }
     },
     "v070": {
       "title": "背景音乐功能",
