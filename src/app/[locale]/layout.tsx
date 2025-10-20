@@ -107,7 +107,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} className="h-full">
-      <Head>
+      <head>
         {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-42Z60J1HD7"
@@ -122,7 +122,7 @@ export default async function LocaleLayout({
           `}
         </Script>
         <Script src="https://analytics.ahrefs.com/analytics.js" data-key="OrJ3i+lM1VT6Cr8bJZJupw" async></Script>
-      </Head>
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
         suppressHydrationWarning={true}
