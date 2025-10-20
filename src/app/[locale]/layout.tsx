@@ -9,6 +9,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import Script from 'next/script';
 import "../globals.css";
 import { Analytics } from "@vercel/analytics/next"
+import Head from 'next/head';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -106,10 +107,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} className="h-full">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
-        suppressHydrationWarning={true}
-      >
+      <Head>
         {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-42Z60J1HD7"
@@ -123,7 +121,12 @@ export default async function LocaleLayout({
             gtag('config', 'G-42Z60J1HD7');
           `}
         </Script>
-
+        <Script src="https://analytics.ahrefs.com/analytics.js" data-key="OrJ3i+lM1VT6Cr8bJZJupw" async></Script>
+      </Head>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
+        suppressHydrationWarning={true}
+      >
         <ThemeProvider defaultTheme="system">
           <NextIntlClientProvider messages={messages}>
             <AuthProvider>
