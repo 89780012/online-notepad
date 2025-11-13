@@ -6,6 +6,7 @@ import { ArrowLeft, Calendar, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import changelogData from '@/data/changelog';
+import LanguageToggle from '@/components/LanguageToggle';
 
 interface ChangelogContentProps {
   locale: string;
@@ -14,6 +15,12 @@ interface ChangelogContentProps {
 export default function ChangelogContent({ locale }: ChangelogContentProps) {
   const t = useTranslations();
   const router = useRouter();
+
+  const handleBack = () => {
+    // 返回首页
+    const homePath = locale === 'en' ? '/' : `/${locale}`;
+    router.push(homePath);
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -70,7 +77,7 @@ export default function ChangelogContent({ locale }: ChangelogContentProps) {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => router.back()}
+              onClick={handleBack}
               className="text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -80,6 +87,7 @@ export default function ChangelogContent({ locale }: ChangelogContentProps) {
               {t('changelog.title')}
             </h1>
           </div>
+          <LanguageToggle />
         </div>
       </header>
 

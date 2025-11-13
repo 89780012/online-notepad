@@ -466,6 +466,7 @@
   "noTemplatesFound": "未找到模板",
   "tryDifferentCategory": "尝试选择其他分类",
   "browseTemplates": "浏览模板",
+  "preview": "预览",
   "insertImage": "插入图片",
   "insertImageDescription": "选择图片 URL 或上传本地文件，并配置显示样式。",
   "imageUrl": "图片链接",
@@ -554,6 +555,22 @@
       "bugfix": "修复",
       "refactor": "重构",
       "improvement": "优化"
+    },
+    "v081": {
+      "title": "模板预览增强",
+      "description": "新增完整的模板预览功能，用户可以在独立页面中查看模板的完整 Markdown 渲染效果，优化导航体验。",
+      "templatePreview": {
+        "title": "模板预览页面",
+        "description": "新增独立的模板预览页面（/templates/[id]），支持完整的 Markdown 渲染，包括数学公式、代码高亮等，提供沉浸式的模板浏览体验。"
+      },
+      "previewButton": {
+        "title": "预览按钮",
+        "description": "在模板市场的每个模板卡片上添加预览按钮，用户可以在决定使用前先查看模板的完整内容和格式。"
+      },
+      "navigationImprovement": {
+        "title": "导航优化",
+        "description": "优化返回按钮的导航逻辑：模板市场返回首页，模板预览返回模板市场，提供更清晰的导航路径。"
+      }
     },
     "v080": {
       "title": "键盘快捷键系统",

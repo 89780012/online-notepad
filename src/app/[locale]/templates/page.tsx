@@ -4,9 +4,10 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Download, FileText } from 'lucide-react';
+import { ArrowLeft, Download, FileText, Eye } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
 import { getTemplates, categories, TemplateCategoryId, ProcessedTemplate } from '@/data/templates';
+import LanguageToggle from '@/components/LanguageToggle';
 
 export default function TemplatesPage() {
   const t = useTranslations();
@@ -34,6 +35,12 @@ export default function TemplatesPage() {
     router.push(homePath);
   };
 
+  const handlePreviewTemplate = (templateId: string) => {
+    // 导航到模板预览页面
+    const previewPath = locale === 'en' ? `/templates/${templateId}` : `/${locale}/templates/${templateId}`;
+    router.push(previewPath);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* 头部导航 */}
@@ -43,7 +50,10 @@ export default function TemplatesPage() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => router.back()}
+              onClick={() => {
+                const homePath = locale === 'en' ? '/' : `/${locale}`;
+                router.push(homePath);
+              }}
               className="text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -53,6 +63,7 @@ export default function TemplatesPage() {
               {t('templateMarket')}
             </h1>
           </div>
+          <LanguageToggle />
         </div>
       </header>
 
@@ -121,6 +132,15 @@ export default function TemplatesPage() {
 
                   {/* 操作按钮 */}
                   <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => handlePreviewTemplate(template.id)}
+                      className="flex-1 flex items-center gap-2"
+                      size="sm"
+                    >
+                      <Eye className="h-4 w-4" />
+                      {t('preview')}
+                    </Button>
                     <Button
                       onClick={() => handleApplyTemplate(template)}
                       className="flex-1 flex items-center gap-2"

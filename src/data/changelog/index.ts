@@ -20,12 +20,42 @@ import {
   Menu,
   Music,
   Keyboard,
-  AlertCircle
+  AlertCircle,
+  Eye
 } from 'lucide-react';
 import { ChangelogData } from './types';
 
 export const changelogData: ChangelogData = {
   entries: [
+    {
+      version: 'v0.8.1',
+      date: '2025-01-17',
+      titleKey: 'changelog.v081.title',
+      descriptionKey: 'changelog.v081.description',
+      features: [
+        {
+          type: 'feat',
+          icon: Eye,
+          titleKey: 'changelog.v081.templatePreview.title',
+          descriptionKey: 'changelog.v081.templatePreview.description',
+          commits: ['template-preview-page']
+        },
+        {
+          type: 'feat',
+          icon: Layout,
+          titleKey: 'changelog.v081.previewButton.title',
+          descriptionKey: 'changelog.v081.previewButton.description',
+          commits: ['add-preview-button']
+        },
+        {
+          type: 'improvement',
+          icon: Settings,
+          titleKey: 'changelog.v081.navigationImprovement.title',
+          descriptionKey: 'changelog.v081.navigationImprovement.description',
+          commits: ['improve-navigation']
+        }
+      ]
+    },
     {
       version: 'v0.8.0',
       date: '2025-01-16',

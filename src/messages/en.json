@@ -466,6 +466,7 @@
   "noTemplatesFound": "No templates found",
   "tryDifferentCategory": "Try selecting a different category",
   "browseTemplates": "Browse Templates",
+  "preview": "Preview",
   "insertImage": "Insert Image",
   "insertImageDescription": "Select an image URL or upload a local file, and configure display styles.",
   "imageUrl": "Image URL",
@@ -554,6 +555,22 @@
       "bugfix": "Bugfix",
       "refactor": "Refactor",
       "improvement": "Improvement"
+    },
+    "v081": {
+      "title": "Template Preview Enhancement",
+      "description": "Added comprehensive template preview functionality, allowing users to view complete Markdown rendering in a dedicated page, with improved navigation experience.",
+      "templatePreview": {
+        "title": "Template Preview Page",
+        "description": "Added dedicated template preview page (/templates/[id]) with full Markdown rendering support including math formulas, code highlighting, and more, providing an immersive template browsing experience."
+      },
+      "previewButton": {
+        "title": "Preview Button",
+        "description": "Added preview button on each template card in the template market, allowing users to view complete content and format before deciding to use it."
+      },
+      "navigationImprovement": {
+        "title": "Navigation Improvement",
+        "description": "Optimized back button navigation logic: template market returns to homepage, template preview returns to template market, providing clearer navigation paths."
+      }
     },
     "v080": {
       "title": "Keyboard Shortcuts System",

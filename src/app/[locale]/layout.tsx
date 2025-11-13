@@ -9,7 +9,6 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import Script from 'next/script';
 import "../globals.css";
 import { Analytics } from "@vercel/analytics/next"
-import Head from 'next/head';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
