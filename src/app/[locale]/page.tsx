@@ -731,7 +731,7 @@ export default function HomePage() {
       <header className="flex justify-between items-center p-2 bg-card/80 backdrop-blur-sm border-b border-border shadow-sm">
         <div className="flex items-center gap-3">
          
-          <h1 className="text-sm whitespace-nowrap font-bold text-foreground font-serif">Mini Notepad</h1>
+          <div className="text-sm whitespace-nowrap font-bold text-foreground font-serif">Mini Notepad</div>
      
                  
           {/* 快速专注 - 外显 */}

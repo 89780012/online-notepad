@@ -9,7 +9,7 @@ export default function SEOContent() {
   return (
     <div className="sr-only">
       {/* SEO优化的隐藏内容，包含关键词 */}
-      <h1>{t('seoH1')}</h1>
+      <strong>{t('seoH1')}</strong>
       <h2>{t('seoH2Free')}</h2>
       <h2>{t('seoH2Offline')}</h2>
       <h2>{t('seoH2DarkMode')}</h2>
