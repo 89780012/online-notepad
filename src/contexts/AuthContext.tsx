@@ -3,6 +3,26 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { AuthUser } from '@/lib/auth';
 
+const AUTH_SESSION_KEY = 'notepad-auth-session';
+
+const hasAuthSession = () => {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+  return localStorage.getItem(AUTH_SESSION_KEY) === 'true';
+};
+
+const setAuthSession = (isAuthenticated: boolean) => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  if (isAuthenticated) {
+    localStorage.setItem(AUTH_SESSION_KEY, 'true');
+  } else {
+    localStorage.removeItem(AUTH_SESSION_KEY);
+  }
+};
+
 interface AuthContextType {
   user: AuthUser | null;
   isLoading: boolean;
@@ -36,6 +56,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // 检查用户认证状态
   const checkAuthStatus = async () => {
+    if (!hasAuthSession()) {
+      setUser(null);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch('/api/auth/me', {
         method: 'GET',
@@ -45,12 +71,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (response.ok) {
         const data = await response.json();
         setUser(data.user);
+        setAuthSession(true);
       } else {
         setUser(null);
+        setAuthSession(false);
       }
     } catch (error) {
       console.error('Auth check error:', error);
       setUser(null);
+      setAuthSession(false);
     } finally {
       setIsLoading(false);
     }
@@ -75,6 +104,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (response.ok) {
         setUser(data.user);
+        setAuthSession(true);
         return { success: true };
       } else {
         return { success: false, error: data.error };
@@ -106,6 +136,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (response.ok) {
         setUser(data.user);
+        setAuthSession(true);
         return { success: true };
       } else {
         return { success: false, error: data.error };
@@ -127,6 +158,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       console.error('Logout error:', error);
     } finally {
       setUser(null);
+      setAuthSession(false);
     }
   };
 
