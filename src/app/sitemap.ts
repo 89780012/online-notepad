@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { prisma } from '@/lib/prisma';
+import { locales, defaultLocale } from '@/i18n/config';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.mininotepad.com';
@@ -21,73 +22,63 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Failed to fetch blog posts for sitemap:', error);
   }
 
-  // 静态页面
-  const staticPages = [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/zh`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/hi`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/templates`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/zh/templates`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/hi/templates`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.8,
-    },
-    // 博客首页
-    {
-      url: `${baseUrl}/blog`,
-      lastModified: new Date(),
-      changeFrequency: 'daily' as const,
-      priority: 0.9,
-    },
-    // 法律页面
-    {
-      url: `${baseUrl}/privacy`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly' as const,
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/terms`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly' as const,
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/changelog`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    },
-  ];
+  const staticPages: MetadataRoute.Sitemap = [];
+  const now = new Date();
 
-  // 动态博客文章页面
+  // 为所有语言生成多语言页面
+  for (const locale of locales) {
+    const localePrefix = locale === defaultLocale ? '' : `/${locale}`;
+
+    // 主页
+    staticPages.push({
+      url: `${baseUrl}${localePrefix}`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: locale === defaultLocale ? 1.0 : 0.9,
+    });
+
+    // 模板页面
+    staticPages.push({
+      url: `${baseUrl}${localePrefix}/templates`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    });
+
+    // 隐私政策页面
+    staticPages.push({
+      url: `${baseUrl}${localePrefix}/privacy`,
+      lastModified: now,
+      changeFrequency: 'yearly',
+      priority: 0.3,
+    });
+
+    // 服务条款页面
+    staticPages.push({
+      url: `${baseUrl}${localePrefix}/terms`,
+      lastModified: now,
+      changeFrequency: 'yearly',
+      priority: 0.3,
+    });
+
+    // 更新日志页面
+    staticPages.push({
+      url: `${baseUrl}${localePrefix}/changelog`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    });
+  }
+
+  // 博客首页（不需要多语言）
+  staticPages.push({
+    url: `${baseUrl}/blog`,
+    lastModified: now,
+    changeFrequency: 'daily',
+    priority: 0.9,
+  });
+
+  // 动态博客文章页面（不需要多语言）
   const blogPages = blogPosts.map(post => ({
     url: `${baseUrl}/blog/${post.slug}`,
     lastModified: post.updatedAt,
