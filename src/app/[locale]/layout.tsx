@@ -9,6 +9,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import Script from 'next/script';
 import "../globals.css";
 import { Analytics } from "@vercel/analytics/next"
+import { locales as supportedLocales, defaultLocale } from '@/i18n/config';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,9 +29,16 @@ export async function generateMetadata({
 }: Props): Promise<Metadata> {
   const messages = await getMessages();
   const locale = await getLocale();
+  const siteUrl = 'https://www.mininotepad.com';
+  const localizedUrl = locale === defaultLocale ? siteUrl : `${siteUrl}/${locale}`;
+  const alternateLanguages = supportedLocales.reduce<Record<string, string>>((acc, localeCode) => {
+    acc[localeCode] = localeCode === defaultLocale ? siteUrl : `${siteUrl}/${localeCode}`;
+    return acc;
+  }, {});
+  alternateLanguages['x-default'] = siteUrl;
 
   return {
-    metadataBase: new URL('https://www.mininotepad.com'),
+    metadataBase: new URL(siteUrl),
     title: {
       template: "%s | Mini Notepad",
       default: messages.seoTitle as string || messages.title as string,
@@ -62,7 +70,7 @@ export async function generateMetadata({
     openGraph: {
       type: 'website',
       locale: locale === 'zh' ? 'zh_CN' : 'en_US',
-      url: locale === 'en' ? 'https://www.mininotepad.com' : `https://www.mininotepad.com/${locale}`,
+      url: localizedUrl,
       title: messages.seoTitle as string || messages.title as string,
       description: messages.seoDescription as string || messages.metaDescription as string,
       siteName: 'Mini Notepad',
@@ -85,13 +93,8 @@ export async function generateMetadata({
       google: "E0GDXD3a6YNYh4z337vXsHw5kIwitdrAhD0wQe23BNM",
     },
     alternates: {
-      languages: {
-        en: "https://www.mininotepad.com",
-        zh: "https://www.mininotepad.com/zh",
-        hi: "https://www.mininotepad.com/hi",
-        'x-default': 'https://www.mininotepad.com',
-      },
-      canonical: locale === 'en' ? 'https://www.mininotepad.com' : `https://www.mininotepad.com/${locale}`,
+      languages: alternateLanguages,
+      canonical: localizedUrl,
     },
     category: 'productivity',
   };

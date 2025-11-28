@@ -1,8 +1,9 @@
-export const locales = ['en', 'zh'] as const;
+import { locales as supportedLocales, defaultLocale } from '@/i18n/config';
+import type { Locale } from '@/i18n/config';
 
-export type Locale = typeof locales[number];
-
-export const defaultLocale: Locale = 'en';
+export { defaultLocale };
+export type { Locale };
+export const locales = supportedLocales;
 
 export function getLocaleFromPath(pathname: string): Locale {
   const segments = pathname.split('/');

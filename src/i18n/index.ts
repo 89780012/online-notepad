@@ -9,19 +9,21 @@ import { defaultLocale, Locale } from '@/i18n/config';
 const COOKIE_NAME = 'NEXT_LOCALE';
 
 export async function getLocale(): Promise<Locale> {
-  // 优先从 next-intl middleware 设置的 header 获取
-  const headersList = await headers();
-  const localeFromUrl = headersList.get('x-next-intl-locale');
-
-  if (localeFromUrl) {
-    return localeFromUrl as Locale;
+  // 1. Prefer locale from request header (set by next-intl based on URL like /zh)
+  const headerStore = await headers();
+  const headerLocale = headerStore.get('x-next-intl-locale') as Locale | null;
+  if (headerLocale) {
+    console.log('current get locale from header:', headerLocale, 'default locale:', defaultLocale);
+    return headerLocale;
   }
 
-  // 其次从 Cookie 获取
+  // 2. Fallback to cookie
   const cookieStore = await cookies();
-  const localeFromCookie = cookieStore.get(COOKIE_NAME)?.value;
+  const cookieLocale = cookieStore.get(COOKIE_NAME)?.value as Locale | undefined;
+  console.log('current get locale from cookie:', cookieLocale, 'default locale:', defaultLocale);
 
-  return (localeFromCookie as Locale) || defaultLocale;
+  // 3. Finally fallback to defaultLocale
+  return cookieLocale || defaultLocale;
 }
 
 export async function setLocale(locale: Locale) {
