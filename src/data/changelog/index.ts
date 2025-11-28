@@ -29,7 +29,7 @@ export const changelogData: ChangelogData = {
   entries: [
     {
       version: 'v0.8.1',
-      date: '2025-01-17',
+      date: '2025-11-17',
       titleKey: 'changelog.v081.title',
       descriptionKey: 'changelog.v081.description',
       features: [
@@ -58,7 +58,7 @@ export const changelogData: ChangelogData = {
     },
     {
       version: 'v0.8.0',
-      date: '2025-01-16',
+      date: '2025-10-16',
       titleKey: 'changelog.v080.title',
       descriptionKey: 'changelog.v080.description',
       features: [
