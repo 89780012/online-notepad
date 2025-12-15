@@ -33,11 +33,13 @@ const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
       <div
         ref={ref}
         className={cn(
-          "fixed bottom-4 right-4 z-50 flex w-full max-w-sm items-center justify-between rounded-lg border p-4 shadow-lg transition-all",
+          "flex w-full items-center justify-between rounded-lg border p-4 shadow-lg transition-all",
           "animate-in slide-in-from-top-2 fade-in-0",
           {
             "border-border bg-background text-foreground": variant === "default",
-            "border-destructive/50 bg-destructive text-destructive-foreground": variant === "destructive",
+            // Solid destructive palette (no transparency allowed)
+            "border-destructive bg-destructive text-destructive-foreground dark:border-destructive dark:bg-destructive dark:text-destructive-foreground":
+              variant === "destructive",
             "border-green-500/50 bg-green-50 text-green-900 dark:bg-green-900/20 dark:text-green-100": variant === "success",
           },
           className

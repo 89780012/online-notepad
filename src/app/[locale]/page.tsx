@@ -450,6 +450,8 @@ export default function HomePage() {
               description: t('shareErrorDescription') || 'Failed to create share link',
               duration: 4000
             });
+            // 分享失败时关闭弹窗以避免显示错误状态
+            setShowSharePopup(false);
             return;
           }
         } else {
@@ -460,6 +462,8 @@ export default function HomePage() {
             description: result.error === 'Invalid data' ? t('shareInvalidDataError') || 'Invalid note data' : result.error,
             duration: 4000
           });
+          // 分享失败时关闭弹窗以避免显示错误状态
+          setShowSharePopup(false);
           return;
         }
       }
@@ -485,6 +489,8 @@ export default function HomePage() {
       setShareUrl(shareUrl);
     } catch (error) {
       console.error('分享失败:', error);
+      // 分享失败时关闭弹窗以避免显示错误状态
+      setShowSharePopup(false);
     } finally {
       setIsGenerating(false);
     }
