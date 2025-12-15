@@ -6,8 +6,6 @@ import TUIMarkdownEditor from '@/components/TUIMarkdownEditor';
 import NoteList from '@/components/NoteList';
 import LanguageToggle from '@/components/LanguageToggle';
 import ThemeToggle from '@/components/ThemeToggle';
-import LoginButton from '@/components/auth/LoginButton';
-import UserDropdown from '@/components/auth/UserDropdown';
 import { useAuth } from '@/contexts/AuthContext';
 import MarketingContent from '@/components/MarketingContent';
 import SharePopup from '@/components/SharePopup';
@@ -747,39 +745,10 @@ export default function HomePage() {
 
         </div>
         <div className="flex items-center gap-2">
-          {/* 存储状态指示器 */}
-          <div className="hidden md:flex items-center gap-1 px-2 py-1 rounded-md bg-muted/50 text-xs text-muted-foreground">
-            {user ? (
-              <>
-                <span className="text-green-600">☁️</span>
-                {/* <span>{t('welcome.storageInfo.withAccount').replace('☁️ ', '')}</span> */}
-              </>
-            ) : (
-              <>
-                <span className="text-blue-600">📱</span>
-                <span>local</span>
-              </>
-            )}
-          </div>
-          
           <ThemeToggle />
    
           {/* 语言切换 - 外显 */}
           <LanguageToggle />
-
-             {/* 认证相关组件 */}
-             {!authLoading && (
-            <>
-              {user ? (
-                <UserDropdown />
-              ) : (
-                <div className="flex items-center gap-2">
-                  <LoginButton variant="login" />
-                  <LoginButton variant="register" />
-                </div>
-              )}
-            </>
-          )}
 
           {/* 更多操作菜单 */}
           <DropdownMenu>
