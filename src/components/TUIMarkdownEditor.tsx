@@ -24,6 +24,7 @@ import EditorErrorBoundary from './EditorErrorBoundary';
 import { getTemplates, categories } from '@/data/templates';
 import { printMarkdownContent } from '@/lib/print-utils';
 import BackgroundMusicPlayer from './BackgroundMusicPlayer';
+import PaperColorSelector from './PaperColorSelector';
 
 // 引入 TUI Editor 类型
 import type {
@@ -583,6 +584,9 @@ export default function TUIMarkdownEditor({
 
               {/* Music 菜单 */}
               <BackgroundMusicPlayer />
+
+              {/* Paper Color 选择器 */}
+              <PaperColorSelector />
 
               <div className="w-px h-4 bg-border/60 mx-1.5"></div>
 

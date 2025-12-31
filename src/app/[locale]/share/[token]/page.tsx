@@ -3,7 +3,8 @@ import LanguageToggle from '@/components/LanguageToggle';
 import TUIMarkdownViewer from '@/components/TUIMarkdownViewer';
 import ClientDateFormatter from '@/components/ClientDateFormatter';
 import { ThemeProvider } from '@/contexts/ThemeContext';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { PaperColorProvider } from '@/contexts/PaperColorContext';
+import ThemeSelector from '@/components/ThemeSelector';
 
 interface SharedNote {
   id: string;
@@ -46,45 +47,47 @@ export default async function SharedNotePage({
 
   return (
     <ThemeProvider defaultTheme="system">
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto p-4 max-w-4xl">
-          <header className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-foreground">
-              {t('title')}
-            </h1>
-            <div className="flex items-center gap-4">
-              <ThemeToggle />
-              <LanguageToggle />
-            </div>
-          </header>
-        
-          <main>
-            {/* 笔记标题 */}
-            <div className="flex items-center justify-between mb-6 p-4 border border-border rounded-lg bg-card">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 bg-red-400 rounded-full shadow-sm"></div>
-                <div className="w-3 h-3 bg-yellow-400 rounded-full shadow-sm"></div>
-                <div className="w-3 h-3 bg-green-400 rounded-full shadow-sm"></div>
-                <h1 className="text-xl font-semibold text-card-foreground ml-4">
-                  {note.title || t('untitledNote')}
-                </h1>
+      <PaperColorProvider>
+        <div className="min-h-screen bg-background">
+          <div className="container mx-auto p-4 max-w-4xl">
+            <header className="flex justify-between items-center mb-8">
+              <h1 className="text-3xl font-bold text-foreground">
+                {t('title')}
+              </h1>
+              <div className="flex items-center gap-4">
+                <ThemeSelector />
+                <LanguageToggle />
               </div>
-              <ClientDateFormatter
-                dateString={note.updatedAt}
-                className="text-sm text-muted-foreground"
-              />
-            </div>
+            </header>
+          
+            <main>
+              {/* 笔记标题 */}
+              <div className="flex items-center justify-between mb-6 p-4 border border-border rounded-lg bg-card">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 bg-red-400 rounded-full shadow-sm"></div>
+                  <div className="w-3 h-3 bg-yellow-400 rounded-full shadow-sm"></div>
+                  <div className="w-3 h-3 bg-green-400 rounded-full shadow-sm"></div>
+                  <h1 className="text-xl font-semibold text-card-foreground ml-4">
+                    {note.title || t('untitledNote')}
+                  </h1>
+                </div>
+                <ClientDateFormatter
+                  dateString={note.updatedAt}
+                  className="text-sm text-muted-foreground"
+                />
+              </div>
 
-            {/* Markdown 内容预览 */}
-            <div className="bg-card border border-border rounded-lg p-6">
-              <TUIMarkdownViewer
-                content={note.content}
-                className="prose prose-slate dark:prose-invert max-w-none prose-lg"
-              />
-            </div>
-          </main>
+              {/* Markdown 内容预览 */}
+              <div className="bg-card border border-border rounded-lg p-6">
+                <TUIMarkdownViewer
+                  content={note.content}
+                  className="prose prose-slate dark:prose-invert max-w-none prose-lg"
+                />
+              </div>
+            </main>
+          </div>
         </div>
-      </div>
+      </PaperColorProvider>
     </ThemeProvider>
   );
 }

@@ -50,6 +50,11 @@
   "toggleToSystemMode": "切换到系统模式", 
   "toggleToLightMode": "切换到亮色模式",
   "toggleTheme": "切换主题",
+  "themeSettings": "主题设置",
+  "themeMode": "显示模式",
+  "lightMode": "浅色模式",
+  "darkMode": "深色模式",
+  "systemMode": "跟随系统",
   "untitled": "无标题",
   "saveNoteFailed": "保存笔记失败",
   "yesterday": "昨天",
@@ -803,5 +808,14 @@
   "defaultNote": {
     "title": "欢迎使用迷你记事本",
     "content": "## 欢迎使用迷你记事本！🎉\n\n感谢您尝试我们简洁、快速、安全的记事本。您可以这样使用：\n\n## ✨ 主要功能\n\n- **离线优先**：无需网络即可使用\n- **Markdown 支持**：使用 Markdown 格式化文本\n- **注重隐私**：数据默认保存在您的设备上\n- **按需分享**：生成链接与他人分享笔记\n- **深色模式**：保护您的眼睛\n\n## 🚀 快速开始\n\n1. 开始输入以替换此内容\n2. 您的更改会自动保存\n3. 使用工具栏进行格式化\n4. 点击分享按钮与他人分享\n\n## 💾 存储选项\n\n**未登录？** 您的笔记保存在本设备上。\n**想要同步？** 登录后可将笔记保存到云端，随时随地访问。\n\n---\n\n*这是您的空间 - 让它属于您！在下方开始写作或创建新笔记。*"
+  },
+  "paperColor": {
+    "label": "纸张",
+    "selectLabel": "选择纸张颜色",
+    "default": "默认白色",
+    "eyeCare": "护眼黄",
+    "sepia": "复古牛皮纸",
+    "lightBlue": "淡蓝色",
+    "lightGreen": "淡绿色"
   }
 }

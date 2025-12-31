@@ -3,6 +3,7 @@ import {getLocale,getMessages} from 'next-intl/server';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { PaperColorProvider } from '@/contexts/PaperColorContext';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ToastProvider } from '@/components/ui/use-toast';
 import ErrorBoundary from '@/components/ErrorBoundary';
@@ -130,15 +131,17 @@ export default async function LocaleLayout({
         suppressHydrationWarning={true}
       >
         <ThemeProvider defaultTheme="system">
-          <NextIntlClientProvider messages={messages}>
-            <AuthProvider>
-              <ToastProvider>
-                <ErrorBoundary>
-                  {children}
-                </ErrorBoundary>
-              </ToastProvider>
-            </AuthProvider>
-          </NextIntlClientProvider>
+          <PaperColorProvider>
+            <NextIntlClientProvider messages={messages}>
+              <AuthProvider>
+                <ToastProvider>
+                  <ErrorBoundary>
+                    {children}
+                  </ErrorBoundary>
+                </ToastProvider>
+              </AuthProvider>
+            </NextIntlClientProvider>
+          </PaperColorProvider>
         </ThemeProvider>
         <Analytics />
       </body>

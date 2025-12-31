@@ -5,7 +5,7 @@ import { BookOpen, History, FileText, Zap, LogOut, MoreHorizontal } from 'lucide
 import TUIMarkdownEditor from '@/components/TUIMarkdownEditor';
 import NoteList from '@/components/NoteList';
 import LanguageToggle from '@/components/LanguageToggle';
-import ThemeToggle from '@/components/ThemeToggle';
+import ThemeSelector from '@/components/ThemeSelector';
 import { useAuth } from '@/contexts/AuthContext';
 import MarketingContent from '@/components/MarketingContent';
 import SharePopup from '@/components/SharePopup';
@@ -751,7 +751,7 @@ export default function HomePage() {
 
         </div>
         <div className="flex items-center gap-2">
-          <ThemeToggle />
+          <ThemeSelector />
    
           {/* 语言切换 - 外显 */}
           <LanguageToggle />

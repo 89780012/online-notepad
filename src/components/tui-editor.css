@@ -16,3 +16,81 @@
 .focus-mode .toastui-editor-defaultUI .toastui-editor-toolbar {
   display: none;
 }
+
+/* 纸张颜色主题支持 */
+.toastui-editor-defaultUI {
+  background-color: var(--paper-background, var(--card)) !important;
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* 工具栏应用纸张颜色 */
+.toastui-editor-defaultUI .toastui-editor-toolbar {
+  background-color: var(--paper-background, var(--card)) !important;
+  border-bottom-color: var(--paper-muted, var(--border)) !important;
+  transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+}
+
+/* 工具栏组和按钮 */
+.toastui-editor-defaultUI .toastui-editor-toolbar-group {
+  background-color: transparent !important;
+}
+
+.toastui-editor-defaultUI .toastui-editor-toolbar-icons {
+  background-color: transparent !important;
+  color: var(--paper-foreground, var(--foreground)) !important;
+}
+
+/* 工具栏按钮 */
+.toastui-editor-defaultUI .toastui-editor-toolbar button {
+  background-color: transparent !important;
+  color: var(--paper-foreground, var(--foreground)) !important;
+}
+
+.toastui-editor-defaultUI .toastui-editor-toolbar button:hover {
+  background-color: var(--paper-muted, var(--accent)) !important;
+}
+
+/* 工具栏分隔线 - 使用更柔和的颜色 */
+.toastui-editor-defaultUI .toastui-editor-toolbar-divider {
+  background-color: var(--paper-muted, var(--border)) !important;
+  opacity: 0.4 !important;
+}
+
+/* 工具栏组之间的分隔 */
+.toastui-editor-defaultUI .toastui-editor-toolbar-group {
+  border-color: transparent !important;
+}
+
+/* 移除按钮边框 */
+.toastui-editor-defaultUI .toastui-editor-toolbar button {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 确保所有工具栏子元素都透明 */
+.toastui-editor-defaultUI .toastui-editor-toolbar * {
+  background-color: transparent;
+  border-color: transparent !important;
+}
+
+.toastui-editor-defaultUI .toastui-editor-md-container,
+.toastui-editor-defaultUI .toastui-editor-ww-container {
+  background-color: var(--paper-background, var(--card)) !important;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.toastui-editor-defaultUI .toastui-editor-md-container .toastui-editor-md-preview,
+.toastui-editor-defaultUI .toastui-editor-ww-container .toastui-editor {
+  background-color: var(--paper-background, var(--card)) !important;
+  color: var(--paper-foreground, var(--foreground)) !important;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.toastui-editor-defaultUI .ProseMirror {
+  background-color: var(--paper-background, var(--card)) !important;
+  color: var(--paper-foreground, var(--foreground)) !important;
+}
+
+.toastui-editor-defaultUI .toastui-editor-md-splitter {
+  background-color: var(--border) !important;
+}
